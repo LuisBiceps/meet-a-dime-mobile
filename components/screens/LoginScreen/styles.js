@@ -5,7 +5,7 @@ export default StyleSheet.create({
     marginTop: height / 3.25,
     flex: 1,
     justifyContent: "center",
-    maxHeight: height / 1.9,
+    height: height / 1.9,
   },
   innerContainer: { borderStyle: "solid", borderWidth: 0 },
   title: { justifyContent: "center" },

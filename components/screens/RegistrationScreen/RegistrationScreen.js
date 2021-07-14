@@ -8,7 +8,9 @@ import {
   View,
 } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import { HeaderBackButton } from "@react-navigation/stack";
 import DateTimePicker from "@react-native-community/datetimepicker";
+import { Picker } from "@react-native-picker/picker";
 import styles from "./styles";
 import moment from "moment";
 // import Slider from "@react-native-community/slider";
@@ -19,20 +21,35 @@ import RailSelected from "../../slider/RailSelected";
 import Label from "../../slider/Label";
 import Notch from "../../slider/Notch";
 
+import { useAuth } from "../../contexts/AuthContext";
+import axios from "axios";
+const DEFAULT_COIN_IMAGE =
+  "https://firebasestorage.googleapis.com/v0/b/meet-a-dime.appspot.com/o/default_1.png?alt=media&token=23ab5b95-0214-42e3-9c54-d7811362aafc";
+
 export default function RegistrationScreen({ navigation }) {
   const [firstName, setFirstName] = useState("");
+  // const firstName = useRef();
   const [lastName, setLastName] = useState("");
+  // const lastName = useRef();
+
   const [email, setEmail] = useState("");
+  // const email = useRef();
   const [password, setPassword] = useState("");
+  // const password = useRef();
   const [confirmPassword, setConfirmPassword] = useState("");
+  // const confirmPassword = useRef();
   const [value, setValue] = useState(18);
+  const [response, setResponse] = useState("");
+  const [phone, setPhone] = useState("");
 
   const [rangeDisabled, setRangeDisabled] = useState(false);
   const [low, setLow] = useState(18);
   const [high, setHigh] = useState(24);
   const [min, setMin] = useState(18);
   const [max, setMax] = useState(72);
-  const [floatingLabel, setFloatingLabel] = useState(false);
+  const [floatingLabel, setFloatingLabel] = useState(true);
+
+  const { signup, logout } = useAuth();
 
   const renderThumb = useCallback(() => <Thumb />, []);
   const renderRail = useCallback(() => <Rail />, []);
@@ -44,19 +61,19 @@ export default function RegistrationScreen({ navigation }) {
     setHigh(high);
   }, []);
 
-  const toggleRangeEnabled = useCallback(
-    () => setRangeDisabled(!rangeDisabled),
-    [rangeDisabled]
-  );
-  const setMinTo50 = useCallback(() => setMin(50), []);
-  const setMinTo0 = useCallback(() => setMin(0), []);
-  const setMaxTo100 = useCallback(() => setMax(100), []);
-  const setMaxTo500 = useCallback(() => setMax(500), []);
-  const toggleFloatingLabel = useCallback(
-    () => setFloatingLabel(!floatingLabel),
-    [floatingLabel]
-  );
-
+  // const toggleRangeEnabled = useCallback(
+  //   () => setRangeDisabled(!rangeDisabled),
+  //   [rangeDisabled]
+  // );
+  // const setMinTo50 = useCallback(() => setMin(50), []);
+  // const setMinTo0 = useCallback(() => setMin(0), []);
+  // const setMaxTo100 = useCallback(() => setMax(100), []);
+  // const setMaxTo500 = useCallback(() => setMax(500), []);
+  // const toggleFloatingLabel = useCallback(
+  //   () => setFloatingLabel(!floatingLabel),
+  //   [floatingLabel]
+  // );
+  moment.suppressDeprecationWarnings = true;
   var fromToday = moment().subtract(18, "years").add(1, "day").calendar();
   var dob = moment(fromToday).format("YYYY-MM-DD");
 
@@ -64,16 +81,72 @@ export default function RegistrationScreen({ navigation }) {
 
   const [date, setDate] = useState(new Date(dob));
   const [show, setShow] = useState(false);
-  const [display, setDisplay] = useState(false);
-  const [birth, setBirth] = useState("Select Date of Birth");
+  const [sexPick, setSexPick] = useState(false);
+  const [orientPick, setOrientPick] = useState(false);
+  const [birth, setBirth] = useState("Select your Date of Birth");
+
+  const [sex, setSex] = useState("Choose your sex...");
+  const [orientation, setOrientation] = useState(
+    "Choose your sexual orientation..."
+  );
+
+  var orient = {
+    1: "Heterosexual",
+    2: "Homosexual",
+    3: "Bisexual",
+    4: "Bisexual",
+  };
 
   const onFooterLinkPress = () => {
     navigation.navigate("Login");
   };
 
-  const onNextPress = () => {
-    navigation.navigate("Login");
-  };
+  async function handleRegister() {
+    // navigation.navigate("Login");
+    // ******* Form validation still needed *******
+    navigation.navigate("Verify");
+    // try {
+    //   var cred = await signup(email.trim(), password);
+    //   var newUser = cred.user;
+    //   var obj = {
+    //     firstName: firstName.trim(),
+    //     lastName: lastName.trim(),
+    //     email: newUser.email,
+    //     sex: sex,
+    //     sexOrientation: orientation,
+    //     birth: cleanDate.current,
+    //     phone: phone,
+    //     exitMessage: response.trim(),
+    //     userID: newUser.uid,
+    //     photo: DEFAULT_COIN_IMAGE,
+    //     displayName: newUser.displayName === null ? "" : newUser.displayName,
+    //     initializedProfile: 0,
+    //     FailMatch: [],
+    //     SuccessMatch: [],
+    //     ageRangeMin: low,
+    //     ageRangeMax: high,
+    //   };
+
+    //   console.log(obj);
+
+    //   var config = {
+    //     method: "post",
+    //     url: "https://meetadime.herokuapp.com/api/newuser",
+    //     headers: {
+    //       "Content-Type": "application/json",
+    //     },
+    //     data: obj,
+    //   };
+
+    //   var res = await axios(config);
+    //   // console.log(response.data);
+    //   if (res.data.error === "") {
+    //     navigation.navigate("Verify");
+    //   }
+    // } catch (error) {
+    //   console.log(error);
+    // }
+  }
 
   const onChange = (event, selectedDate) => {
     var currentDate = selectedDate || date;
@@ -86,16 +159,32 @@ export default function RegistrationScreen({ navigation }) {
     var realDate = currentDate.toJSON();
     realDate = JSON.stringify(realDate);
     // cleanDate used for database
-    cleanDate.current = realDate.replace("T01:00:00.000Z", "");
-    cleanDate.current = cleanDate.current.replace("T00:00:00.000Z", "");
+    cleanDate.current = moment(currentDate).add(1, "day").format("YYYY-MM-DD");
     setBirth(temp);
     console.log(value);
     console.log(cleanDate.current);
   };
 
-  const handleChange = (event, newValue) => {
-    setValue(newValue);
-  };
+  function formatNumber(val) {
+    if (!val) return val;
+
+    const number = val.replace(/[^\d]/g, "");
+    if (number.length < 4) return number;
+
+    if (number.length < 7) {
+      return `(${number.slice(0, 3)}) ${number.slice(3)}`;
+    }
+
+    return `(${number.slice(0, 3)}) ${number.slice(3, 6)}-${number.slice(
+      6,
+      10
+    )}`;
+  }
+
+  function phoneWork(phone) {
+    const formattedNumber = formatNumber(phone);
+    setPhone(formattedNumber);
+  }
 
   const showDatePicker = () => {
     if (show) {
@@ -103,18 +192,23 @@ export default function RegistrationScreen({ navigation }) {
     } else setShow(true);
   };
 
-  const hideDatePicker = () => {
-    if (display) {
-      setShow(false);
-      setDisplay(false);
-    } else setDisplay(true);
+  const showSexPicker = () => {
+    if (sexPick) {
+      setSexPick(false);
+    } else setSexPick(true);
+  };
+  const showOrientPicker = () => {
+    if (orientPick) {
+      setOrientPick(false);
+    } else setOrientPick(true);
   };
 
   return (
     <View style={styles.container}>
       <KeyboardAwareScrollView
         style={{ flex: 1, width: "100%" }}
-        keyboardShouldPersistTaps="always"
+        keyboardShouldPersistTaps="never"
+        scrollEnabled="false"
       >
         <Image
           style={styles.logo}
@@ -128,7 +222,7 @@ export default function RegistrationScreen({ navigation }) {
             onChangeText={(text) => setFirstName(text)}
             value={firstName}
             underlineColorAndroid="transparent"
-            autoCapitalize="none"
+            autoCapitalize="words"
           />
           <TextInput
             style={styles.lastname}
@@ -137,7 +231,7 @@ export default function RegistrationScreen({ navigation }) {
             onChangeText={(text) => setLastName(text)}
             value={lastName}
             underlineColorAndroid="transparent"
-            autoCapitalize="none"
+            autoCapitalize="words"
           />
         </View>
         <TextInput
@@ -169,17 +263,61 @@ export default function RegistrationScreen({ navigation }) {
           underlineColorAndroid="transparent"
           autoCapitalize="none"
         />
+
+        <TextInput
+          style={styles.input}
+          placeholder="Phone Number"
+          placeholderTextColor="#aaaaaa"
+          onChangeText={(num) => phoneWork(num)}
+          value={phone}
+          underlineColorAndroid="transparent"
+          autoCapitalize="none"
+        />
+
+        <TouchableOpacity style={styles.toggle} onPress={() => showSexPicker()}>
+          <Text style={styles.buttonTitle}>{sex}</Text>
+        </TouchableOpacity>
+
+        {sexPick && (
+          <Picker selectedValue={sex} onValueChange={(e) => setSex(e)}>
+            <Picker.Item
+              label="Choose your sex..."
+              value="Choose your sex..."
+            />
+            <Picker.Item label="Male" value="Male" />
+            <Picker.Item label="Female" value="Female" />
+          </Picker>
+        )}
+
         <TouchableOpacity
-          style={styles.button}
+          style={styles.toggle}
+          onPress={() => showOrientPicker()}
+        >
+          <Text style={styles.buttonTitle}>{orientation}</Text>
+        </TouchableOpacity>
+
+        {orientPick && (
+          <Picker
+            selectedValue={orientation}
+            onValueChange={(e) => setOrientation(e)}
+          >
+            <Picker.Item
+              label="Choose your sexual orientation..."
+              value="Choose your sexual orientation..."
+            />
+            <Picker.Item label="Heterosexual" value="Heterosexual" />
+            <Picker.Item label="Homosexual" value="Homosexual" />
+            <Picker.Item label="Bisexual" value="Bisexual" />
+            <Picker.Item label="Other" value="Other" />
+          </Picker>
+        )}
+
+        <TouchableOpacity
+          style={styles.toggle}
           onPress={() => showDatePicker()}
         >
           <Text style={styles.buttonTitle}>{birth}</Text>
         </TouchableOpacity>
-        <View style={styles.Confirm}>
-          <Text style={{ fontSize: 10 }}>
-            {show ? "Tap to Close" : "Tap to Open"}
-          </Text>
-        </View>
         {show && (
           <DateTimePicker
             testID="dateTimePicker"
@@ -190,6 +328,7 @@ export default function RegistrationScreen({ navigation }) {
             onChange={onChange}
           />
         )}
+
         <View style={styles.rangeContainer}>
           <Text style={styles.range}>Select an age range</Text>
           {/* <Slider
@@ -203,6 +342,7 @@ export default function RegistrationScreen({ navigation }) {
           <Text style={styles.range}>
             {Math.floor(low) + " - " + Math.floor(high)}
           </Text>
+
           <Slider
             style={styles.slider}
             min={min}
@@ -218,17 +358,25 @@ export default function RegistrationScreen({ navigation }) {
             onValueChanged={handleValueChange}
           />
         </View>
-        <TouchableOpacity style={styles.button} onPress={() => onNextPress()}>
-          <Text style={styles.buttonTitle}>Next</Text>
-        </TouchableOpacity>
-        <View style={styles.footerView}>
-          <Text style={styles.footerText}>
-            Already got an account?{" "}
-            <Text onPress={onFooterLinkPress} style={styles.footerLink}>
-              Log in
-            </Text>
-          </Text>
+
+        <TextInput
+          style={styles.input}
+          placeholder="End of Chat Response"
+          placeholderTextColor="#aaaaaa"
+          onChangeText={(text) => setResponse(text)}
+          value={response}
+          underlineColorAndroid="transparent"
+          autoCapitalize="none"
+        />
+        <View style={styles.responseContainer}>
+          <Text style={styles.response}>This can be changed later...</Text>
         </View>
+        <TouchableOpacity
+          style={styles.toggle}
+          onPress={() => handleRegister()}
+        >
+          <Text style={styles.buttonTitle}>Register</Text>
+        </TouchableOpacity>
       </KeyboardAwareScrollView>
     </View>
   );

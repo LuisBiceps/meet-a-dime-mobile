@@ -12,12 +12,12 @@ const Label = ({ text, ...restProps }) => {
 const styles = StyleSheet.create({
   root: {
     alignItems: "center",
-    padding: 8,
-    backgroundColor: "#4499ff",
+    padding: 10,
+    backgroundColor: "#b39bc8",
     borderRadius: 4,
   },
   text: {
-    fontSize: 16,
+    fontSize: 24,
     color: "#fff",
   },
 });

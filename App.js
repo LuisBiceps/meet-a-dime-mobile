@@ -2,10 +2,11 @@ import "react-native-gesture-handler";
 import React, { useEffect, useState } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
+import { HeaderBackButton } from "@react-navigation/stack";
 import LoginScreen from "./components/screens/LoginScreen/LoginScreen";
 import HomeScreen from "./components/screens/HomeScreen/HomeScreen";
 import RegistrationScreen from "./components/screens/RegistrationScreen/RegistrationScreen";
-import RegistrationScreen2 from "./components/screens/RegistrationScreen/RegistrationScreen2";
+import VerifyScreen from "./components/screens/VerifyScreen/VerifyScreen";
 import { decode, encode } from "base-64";
 import firebase from "firebase/app";
 import "firebase/auth";
@@ -41,11 +42,37 @@ export default function App() {
               component={LoginScreen}
               options={{ headerShown: false }}
             />
-            <Stack.Screen name="Registration" component={RegistrationScreen} />
-            {/* <Stack.Screen
-              name="Registration Continued..."
-              component={RegistrationScreen2}
-            /> */}
+            <Stack.Screen
+              name="Registration"
+              component={RegistrationScreen}
+              options={({ navigation, route }) => ({
+                headerLeft: (props) => (
+                  <HeaderBackButton
+                    {...props}
+                    onPress={() => navigation.navigate("Login")}
+                  />
+                ),
+                headerTransparent: "true",
+                headerTitle: "",
+                headerTintColor: "#e64398",
+              })}
+            />
+            <Stack.Screen
+              name="Verify"
+              component={VerifyScreen}
+              options={({ navigation, route }) => ({
+                headerLeft: (props) => (
+                  <HeaderBackButton
+                    {...props}
+                    onPress={() => navigation.navigate("Login")}
+                  />
+                ),
+                headerBackTitle: "Login",
+                headerTransparent: "true",
+                headerTitle: "",
+                headerTintColor: "#e64398",
+              })}
+            />
           </>
         </Stack.Navigator>
       </AuthProvider>

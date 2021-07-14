@@ -67,7 +67,7 @@ export default function LoginScreen({ navigation }) {
       <KeyboardAwareScrollView
         contentContainerStyle={styles.viewContainer}
         // style={{ flexGrow: 1, width: "100%" }}
-        keyboardShouldPersistTaps="always"
+        keyboardShouldPersistTaps="never"
       >
         <View style={styles.innerContainer}>
           <Image

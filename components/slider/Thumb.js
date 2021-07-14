@@ -13,7 +13,7 @@ const styles = StyleSheet.create({
     height: THUMB_RADIUS * 2,
     borderRadius: THUMB_RADIUS,
     borderWidth: 2,
-    borderColor: "#7f7f7f",
+    borderColor: "#E64398",
     backgroundColor: "#ffffff",
   },
 });

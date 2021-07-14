@@ -5,6 +5,7 @@ import Home from "../screens/HomeScreen/HomeScreen";
 import Login from "../screens/LoginScreen/LoginScreen";
 import Signup from "../screens/RegistrationScreen/RegistrationScreen";
 import Signup2 from "../screens/RegistrationScreen/RegistrationScreen2";
+import Verify from "../screens/VerifyScreen/VerifyScreen";
 
 const Stack = createStackNavigator();
 
@@ -13,7 +14,7 @@ const HomeNavigator = () => (
     <Stack.Screen name="Home" component={Home} />
     <Stack.Screen name="Login" component={Login} />
     <Stack.Screen name="Registration" component={Signup} />
-    <Stack.Screen name="Registration2" component={Signup2} />
+    <Stack.Screen name="Verify" component={Verify} />
   </Stack.Navigator>
 );
 
