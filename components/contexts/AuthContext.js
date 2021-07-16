@@ -27,6 +27,7 @@ export function AuthProvider({ children }) {
     return auth.sendPasswordResetEmail(email);
   }
   function verify() {
+    console.log(currentUser);
     return currentUser.sendEmailVerification();
   }
   function reload() {

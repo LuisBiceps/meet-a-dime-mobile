@@ -9,10 +9,21 @@ import { useAuth } from "../../contexts/AuthContext";
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { currentUser, login } = useAuth();
+  const { login } = useAuth();
+
   const onFooterLinkPress = () => {
     navigation.navigate("Registration");
   };
+
+  async function handleSubmit() {
+    console.log("trying to login");
+    try {
+      await login(email, password);
+      navigation.navigate("Home");
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   // const onLoginPress = () => {
   //   auth

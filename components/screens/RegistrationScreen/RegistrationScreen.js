@@ -105,47 +105,47 @@ export default function RegistrationScreen({ navigation }) {
     // navigation.navigate("Login");
     // ******* Form validation still needed *******
     navigation.navigate("Verify");
-    // try {
-    //   var cred = await signup(email.trim(), password);
-    //   var newUser = cred.user;
-    //   var obj = {
-    //     firstName: firstName.trim(),
-    //     lastName: lastName.trim(),
-    //     email: newUser.email,
-    //     sex: sex,
-    //     sexOrientation: orientation,
-    //     birth: cleanDate.current,
-    //     phone: phone,
-    //     exitMessage: response.trim(),
-    //     userID: newUser.uid,
-    //     photo: DEFAULT_COIN_IMAGE,
-    //     displayName: newUser.displayName === null ? "" : newUser.displayName,
-    //     initializedProfile: 0,
-    //     FailMatch: [],
-    //     SuccessMatch: [],
-    //     ageRangeMin: low,
-    //     ageRangeMax: high,
-    //   };
+    try {
+      var cred = await signup(email.trim(), password);
+      var newUser = cred.user;
+      var obj = {
+        firstName: firstName.trim(),
+        lastName: lastName.trim(),
+        email: newUser.email,
+        sex: sex,
+        sexOrientation: orientation,
+        birth: cleanDate.current,
+        phone: phone,
+        exitMessage: response.trim(),
+        userID: newUser.uid,
+        photo: DEFAULT_COIN_IMAGE,
+        displayName: newUser.displayName === null ? "" : newUser.displayName,
+        initializedProfile: 0,
+        FailMatch: [],
+        SuccessMatch: [],
+        ageRangeMin: low,
+        ageRangeMax: high,
+      };
 
-    //   console.log(obj);
+      console.log(obj);
 
-    //   var config = {
-    //     method: "post",
-    //     url: "https://meetadime.herokuapp.com/api/newuser",
-    //     headers: {
-    //       "Content-Type": "application/json",
-    //     },
-    //     data: obj,
-    //   };
+      var config = {
+        method: "post",
+        url: "https://meetadime.herokuapp.com/api/newuser",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        data: obj,
+      };
 
-    //   var res = await axios(config);
-    //   // console.log(response.data);
-    //   if (res.data.error === "") {
-    //     navigation.navigate("Verify");
-    //   }
-    // } catch (error) {
-    //   console.log(error);
-    // }
+      var res = await axios(config);
+      // console.log(response.data);
+      if (res.data.error === "") {
+        navigation.navigate("Verify");
+      }
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   const onChange = (event, selectedDate) => {
