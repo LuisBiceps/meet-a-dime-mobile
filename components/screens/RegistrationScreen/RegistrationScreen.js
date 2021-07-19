@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef } from "react";
+import React, { useState, useCallback, useRef } from 'react';
 import {
   Image,
   Platform,
@@ -6,41 +6,41 @@ import {
   TextInput,
   TouchableOpacity,
   View,
-} from "react-native";
-import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import { HeaderBackButton } from "@react-navigation/stack";
-import DateTimePicker from "@react-native-community/datetimepicker";
-import { Picker } from "@react-native-picker/picker";
-import styles from "./styles";
-import moment from "moment";
+} from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { HeaderBackButton } from '@react-navigation/stack';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import { Picker } from '@react-native-picker/picker';
+import styles from './styles';
+import moment from 'moment';
 // import Slider from "@react-native-community/slider";
-import Slider from "rn-range-slider";
-import Thumb from "../../slider/Thumb";
-import Rail from "../../slider/Rail";
-import RailSelected from "../../slider/RailSelected";
-import Label from "../../slider/Label";
-import Notch from "../../slider/Notch";
+import Slider from 'rn-range-slider';
+import Thumb from '../../slider/Thumb';
+import Rail from '../../slider/Rail';
+import RailSelected from '../../slider/RailSelected';
+import Label from '../../slider/Label';
+import Notch from '../../slider/Notch';
 
-import { useAuth } from "../../contexts/AuthContext";
-import axios from "axios";
+import { useAuth } from '../../contexts/AuthContext';
+import axios from 'axios';
 const DEFAULT_COIN_IMAGE =
-  "https://firebasestorage.googleapis.com/v0/b/meet-a-dime.appspot.com/o/default_1.png?alt=media&token=23ab5b95-0214-42e3-9c54-d7811362aafc";
+  'https://firebasestorage.googleapis.com/v0/b/meet-a-dime.appspot.com/o/default_1.png?alt=media&token=23ab5b95-0214-42e3-9c54-d7811362aafc';
 
 export default function RegistrationScreen({ navigation }) {
-  const [firstName, setFirstName] = useState("");
+  const [firstName, setFirstName] = useState('');
   // const firstName = useRef();
-  const [lastName, setLastName] = useState("");
+  const [lastName, setLastName] = useState('');
   // const lastName = useRef();
 
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState('');
   // const email = useRef();
-  const [password, setPassword] = useState("");
+  const [password, setPassword] = useState('');
   // const password = useRef();
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState('');
   // const confirmPassword = useRef();
   const [value, setValue] = useState(18);
-  const [response, setResponse] = useState("");
-  const [phone, setPhone] = useState("");
+  const [response, setResponse] = useState('');
+  const [phone, setPhone] = useState('');
 
   const [rangeDisabled, setRangeDisabled] = useState(false);
   const [low, setLow] = useState(18);
@@ -74,37 +74,37 @@ export default function RegistrationScreen({ navigation }) {
   //   [floatingLabel]
   // );
   moment.suppressDeprecationWarnings = true;
-  var fromToday = moment().subtract(18, "years").add(1, "day").calendar();
-  var dob = moment(fromToday).format("YYYY-MM-DD");
+  var fromToday = moment().subtract(18, 'years').add(1, 'day').calendar();
+  var dob = moment(fromToday).format('YYYY-MM-DD');
 
-  var cleanDate = useRef("");
+  var cleanDate = useRef('');
 
   const [date, setDate] = useState(new Date(dob));
   const [show, setShow] = useState(false);
   const [sexPick, setSexPick] = useState(false);
   const [orientPick, setOrientPick] = useState(false);
-  const [birth, setBirth] = useState("Select your Date of Birth");
+  const [birth, setBirth] = useState('Select your Date of Birth');
 
-  const [sex, setSex] = useState("Choose your sex...");
+  const [sex, setSex] = useState('Choose your sex...');
   const [orientation, setOrientation] = useState(
-    "Choose your sexual orientation..."
+    'Choose your sexual orientation...'
   );
 
   var orient = {
-    1: "Heterosexual",
-    2: "Homosexual",
-    3: "Bisexual",
-    4: "Bisexual",
+    1: 'Heterosexual',
+    2: 'Homosexual',
+    3: 'Bisexual',
+    4: 'Bisexual',
   };
 
   const onFooterLinkPress = () => {
-    navigation.navigate("Login");
+    navigation.navigate('Login');
   };
 
   async function handleRegister() {
     // navigation.navigate("Login");
     // ******* Form validation still needed *******
-    navigation.navigate("Verify");
+    navigation.navigate('Verify');
     try {
       var cred = await signup(email.trim(), password);
       var newUser = cred.user;
@@ -119,7 +119,7 @@ export default function RegistrationScreen({ navigation }) {
         exitMessage: response.trim(),
         userID: newUser.uid,
         photo: DEFAULT_COIN_IMAGE,
-        displayName: newUser.displayName === null ? "" : newUser.displayName,
+        displayName: newUser.displayName === null ? '' : newUser.displayName,
         initializedProfile: 0,
         FailMatch: [],
         SuccessMatch: [],
@@ -130,18 +130,18 @@ export default function RegistrationScreen({ navigation }) {
       console.log(obj);
 
       var config = {
-        method: "post",
-        url: "https://meetadime.herokuapp.com/api/newuser",
+        method: 'post',
+        url: 'http://localhost:5000/api/newuser',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         data: obj,
       };
 
       var res = await axios(config);
       // console.log(response.data);
-      if (res.data.error === "") {
-        navigation.navigate("Verify");
+      if (res.data.error === '') {
+        navigation.navigate('Verify');
       }
     } catch (error) {
       console.log(error);
@@ -150,16 +150,16 @@ export default function RegistrationScreen({ navigation }) {
 
   const onChange = (event, selectedDate) => {
     var currentDate = selectedDate || date;
-    setShow(Platform.OS === "ios");
+    setShow(Platform.OS === 'ios');
     setDate(currentDate);
 
-    currentDate = moment(currentDate).subtract(1, "day");
+    currentDate = moment(currentDate).subtract(1, 'day');
     // Used for button text format
-    var temp = moment(currentDate).add(1, "day").format("MMMM Do YYYY");
+    var temp = moment(currentDate).add(1, 'day').format('MMMM Do YYYY');
     var realDate = currentDate.toJSON();
     realDate = JSON.stringify(realDate);
     // cleanDate used for database
-    cleanDate.current = moment(currentDate).add(1, "day").format("YYYY-MM-DD");
+    cleanDate.current = moment(currentDate).add(1, 'day').format('YYYY-MM-DD');
     setBirth(temp);
     console.log(value);
     console.log(cleanDate.current);
@@ -168,7 +168,7 @@ export default function RegistrationScreen({ navigation }) {
   function formatNumber(val) {
     if (!val) return val;
 
-    const number = val.replace(/[^\d]/g, "");
+    const number = val.replace(/[^\d]/g, '');
     if (number.length < 4) return number;
 
     if (number.length < 7) {
@@ -206,72 +206,72 @@ export default function RegistrationScreen({ navigation }) {
   return (
     <View style={styles.container}>
       <KeyboardAwareScrollView
-        style={{ flex: 1, width: "100%" }}
-        keyboardShouldPersistTaps="never"
-        scrollEnabled="false"
+        style={{ flex: 1, width: '100%' }}
+        keyboardShouldPersistTaps='never'
+        scrollEnabled='false'
       >
         <Image
           style={styles.logo}
-          source={require("../../../assets/DimeAssets/coinsignup.png")}
+          source={require('../../../assets/DimeAssets/coinsignup.png')}
         />
         <View style={styles.innerContainer}>
           <TextInput
             style={styles.firstname}
-            placeholder="First Name"
-            placeholderTextColor="#aaaaaa"
+            placeholder='First Name'
+            placeholderTextColor='#aaaaaa'
             onChangeText={(text) => setFirstName(text)}
             value={firstName}
-            underlineColorAndroid="transparent"
-            autoCapitalize="words"
+            underlineColorAndroid='transparent'
+            autoCapitalize='words'
           />
           <TextInput
             style={styles.lastname}
-            placeholder="Last Name"
-            placeholderTextColor="#aaaaaa"
+            placeholder='Last Name'
+            placeholderTextColor='#aaaaaa'
             onChangeText={(text) => setLastName(text)}
             value={lastName}
-            underlineColorAndroid="transparent"
-            autoCapitalize="words"
+            underlineColorAndroid='transparent'
+            autoCapitalize='words'
           />
         </View>
         <TextInput
           style={styles.input}
-          placeholder="E-mail"
-          placeholderTextColor="#aaaaaa"
+          placeholder='E-mail'
+          placeholderTextColor='#aaaaaa'
           onChangeText={(text) => setEmail(text)}
           value={email}
-          underlineColorAndroid="transparent"
-          autoCapitalize="none"
+          underlineColorAndroid='transparent'
+          autoCapitalize='none'
         />
         <TextInput
           style={styles.password}
-          placeholderTextColor="#aaaaaa"
+          placeholderTextColor='#aaaaaa'
           secureTextEntry
-          placeholder="Password"
+          placeholder='Password'
           onChangeText={(text) => setPassword(text)}
           value={password}
-          underlineColorAndroid="transparent"
-          autoCapitalize="none"
+          underlineColorAndroid='transparent'
+          autoCapitalize='none'
         />
         <TextInput
           style={styles.confirmPass}
-          placeholderTextColor="#aaaaaa"
+          placeholderTextColor='#aaaaaa'
           secureTextEntry
-          placeholder="Confirm Password"
+          placeholder='Confirm Password'
           onChangeText={(text) => setConfirmPassword(text)}
           value={confirmPassword}
-          underlineColorAndroid="transparent"
-          autoCapitalize="none"
+          underlineColorAndroid='transparent'
+          autoCapitalize='none'
         />
 
         <TextInput
           style={styles.input}
-          placeholder="Phone Number"
-          placeholderTextColor="#aaaaaa"
+          placeholder='Phone Number'
+          placeholderTextColor='#aaaaaa'
           onChangeText={(num) => phoneWork(num)}
           value={phone}
-          underlineColorAndroid="transparent"
-          autoCapitalize="none"
+          underlineColorAndroid='transparent'
+          autoCapitalize='none'
         />
 
         <TouchableOpacity style={styles.toggle} onPress={() => showSexPicker()}>
@@ -281,11 +281,11 @@ export default function RegistrationScreen({ navigation }) {
         {sexPick && (
           <Picker selectedValue={sex} onValueChange={(e) => setSex(e)}>
             <Picker.Item
-              label="Choose your sex..."
-              value="Choose your sex..."
+              label='Choose your sex...'
+              value='Choose your sex...'
             />
-            <Picker.Item label="Male" value="Male" />
-            <Picker.Item label="Female" value="Female" />
+            <Picker.Item label='Male' value='Male' />
+            <Picker.Item label='Female' value='Female' />
           </Picker>
         )}
 
@@ -302,13 +302,13 @@ export default function RegistrationScreen({ navigation }) {
             onValueChange={(e) => setOrientation(e)}
           >
             <Picker.Item
-              label="Choose your sexual orientation..."
-              value="Choose your sexual orientation..."
+              label='Choose your sexual orientation...'
+              value='Choose your sexual orientation...'
             />
-            <Picker.Item label="Heterosexual" value="Heterosexual" />
-            <Picker.Item label="Homosexual" value="Homosexual" />
-            <Picker.Item label="Bisexual" value="Bisexual" />
-            <Picker.Item label="Other" value="Other" />
+            <Picker.Item label='Heterosexual' value='Heterosexual' />
+            <Picker.Item label='Homosexual' value='Homosexual' />
+            <Picker.Item label='Bisexual' value='Bisexual' />
+            <Picker.Item label='Other' value='Other' />
           </Picker>
         )}
 
@@ -320,11 +320,11 @@ export default function RegistrationScreen({ navigation }) {
         </TouchableOpacity>
         {show && (
           <DateTimePicker
-            testID="dateTimePicker"
+            testID='dateTimePicker'
             value={date}
-            mode={"date"}
+            mode={'date'}
             is24Hour={false}
-            display="spinner"
+            display='spinner'
             onChange={onChange}
           />
         )}
@@ -340,7 +340,7 @@ export default function RegistrationScreen({ navigation }) {
             onValueChange={(val) => setValue(Math.floor(val))}
           /> */}
           <Text style={styles.range}>
-            {Math.floor(low) + " - " + Math.floor(high)}
+            {Math.floor(low) + ' - ' + Math.floor(high)}
           </Text>
 
           <Slider
@@ -361,12 +361,12 @@ export default function RegistrationScreen({ navigation }) {
 
         <TextInput
           style={styles.input}
-          placeholder="End of Chat Response"
-          placeholderTextColor="#aaaaaa"
+          placeholder='End of Chat Response'
+          placeholderTextColor='#aaaaaa'
           onChangeText={(text) => setResponse(text)}
           value={response}
-          underlineColorAndroid="transparent"
-          autoCapitalize="none"
+          underlineColorAndroid='transparent'
+          autoCapitalize='none'
         />
         <View style={styles.responseContainer}>
           <Text style={styles.response}>This can be changed later...</Text>

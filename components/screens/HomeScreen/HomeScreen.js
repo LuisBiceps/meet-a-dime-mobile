@@ -6,6 +6,7 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  Image,
 } from 'react-native';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -35,7 +36,7 @@ export default function HomeScreen({ navigation }, props) {
   // const [sopen, setOpenSearch] = useState(false);
 
   const transferTimeoutRef = useRef();
-  const MS_TRANSFER_TO_CHAT = 10000;
+  const MS_TRANSFER_TO_CHAT = 3000;
   const MS_BEFORE_ABANDON_SEARCH = 5000;
 
   const timeout = useRef(null);
@@ -71,96 +72,100 @@ export default function HomeScreen({ navigation }, props) {
   }
 
   useEffect(() => {
-    console.log('Current User ID: ' + `"${currentUser.uid}"`);
-    console.log(currentUser.getIdToken());
-    async function deleteItem() {
-      await AsyncStorage.removeItem('chatExpiry');
-    }
-    // document.body.style.backgroundColor = 'white';
-    deleteItem();
-    async function getIntialUserPhoto() {
-      try {
-        const token = currentUser && (await currentUser.getIdToken(true));
-        // console.log(token);
-        var config = {
-          method: 'post',
-          url: 'https://meetadime.herokuapp.com/api/getbasicuser',
-          headers: {
-            'Content-Type': 'application/json',
-            // Authorization: `Bearer ${token}`,
-          },
-          data: { uid: currentUser.uid },
-        };
-        // console.log(config.data)
-        axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-
-        var response = await axios(config);
-        // console.log(response);
-        setMyPhoto(response.data.photo);
-        if (myPhoto) console.log(myPhoto);
-        setName(response.data.firstName);
-      } catch (error) {
-        console.log(error);
-        console.log('issue in fetch data');
+    if (!currentUser) {
+      console.log('We In the use effect');
+    } else {
+      // console.log('Current User ID: ' + `"${currentUser.uid}"`);
+      // console.log(currentUser.getIdToken());
+      async function deleteItem() {
+        await AsyncStorage.removeItem('chatExpiry');
       }
-      // document.getElementById('photo').src = userInfo.photo;
-    }
-
-    async function purgeOld() {
-      // Lock the search button until these tasks are complete.
-      setLockout(true);
-      console.log('I SHOULD ONLY PRINT ONCE PER PAGE LOAD');
-      try {
-        // If I am "document host", clear the match field first.
+      // document.body.style.backgroundColor = 'white';
+      deleteItem();
+      async function getIntialUserPhoto() {
         try {
-          await firestore
-            .collection('searching')
-            .doc(currentUser.uid)
-            .update({ match: '' });
-          console.log('cleared old match before delete');
+          const token = currentUser && (await currentUser.getIdToken(true));
+          // console.log(token);
+          var config = {
+            method: 'post',
+            url: 'http://localhost:5000/api/getbasicuser',
+            headers: {
+              'Content-Type': 'application/json',
+              // Authorization: `Bearer ${token}`,
+            },
+            data: { uid: currentUser.uid },
+          };
+          // console.log(config.data)
+          axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+
+          var response = await axios(config);
+          // console.log(response);
+          setMyPhoto(response.data.photo);
+          if (myPhoto) console.log(myPhoto);
+          setName(response.data.firstName);
         } catch (error) {
-          console.log('tried to clear match before delete, but failed');
-          console.log('most of the time this is ok');
-          // this is okay because this most likely wont exist on each load.
+          console.log(error);
+          console.log('issue in fetch data');
         }
-
-        // Delete the document (if exists) if I am a "document host".
-        await firestore.collection('searching').doc(currentUser.uid).delete();
-
-        // The final mechanism for clearing. This is if I was a previous
-        // "document joiner" or "filling in" the existing doc.
-        // I will search all docs where my id is the match field, and clear it.
-        // This will signal to those listening to that field that I am
-        // no longer available.
-        firestore
-          .collection('searching')
-          .where('match', '==', currentUser.uid)
-          .get()
-          .then((querySnapshot) => {
-            querySnapshot.forEach((doc) => {
-              try {
-                firestore
-                  .collection('searching')
-                  .doc(doc.id)
-                  .update({ match: '' });
-              } catch (error) {
-                console.log('doc match clear error on start');
-              }
-            });
-          })
-          .catch((error) => {
-            console.log('Error getting documents: ', error);
-          });
-      } catch (error) {
-        console.log(error);
+        // document.getElementById('photo').src = userInfo.photo;
       }
-      // Unlock the button now that initial tasks are done.
-      setLockout(false);
-      setLoading(false);
+
+      async function purgeOld() {
+        // Lock the search button until these tasks are complete.
+        setLockout(true);
+        console.log('I SHOULD ONLY PRINT ONCE PER PAGE LOAD');
+        try {
+          // If I am "document host", clear the match field first.
+          try {
+            await firestore
+              .collection('searching')
+              .doc(currentUser.uid)
+              .update({ match: '' });
+            console.log('cleared old match before delete');
+          } catch (error) {
+            console.log('tried to clear match before delete, but failed');
+            console.log('most of the time this is ok');
+            // this is okay because this most likely wont exist on each load.
+          }
+
+          // Delete the document (if exists) if I am a "document host".
+          await firestore.collection('searching').doc(currentUser.uid).delete();
+
+          // The final mechanism for clearing. This is if I was a previous
+          // "document joiner" or "filling in" the existing doc.
+          // I will search all docs where my id is the match field, and clear it.
+          // This will signal to those listening to that field that I am
+          // no longer available.
+          firestore
+            .collection('searching')
+            .where('match', '==', currentUser.uid)
+            .get()
+            .then((querySnapshot) => {
+              querySnapshot.forEach((doc) => {
+                try {
+                  firestore
+                    .collection('searching')
+                    .doc(doc.id)
+                    .update({ match: '' });
+                } catch (error) {
+                  console.log('doc match clear error on start');
+                }
+              });
+            })
+            .catch((error) => {
+              console.log('Error getting documents: ', error);
+            });
+        } catch (error) {
+          console.log(error);
+        }
+        // Unlock the button now that initial tasks are done.
+        setLockout(false);
+        setLoading(false);
+      }
+      // call the function that was just defined here.
+      purgeOld();
+      getIntialUserPhoto();
     }
-    // call the function that was just defined here.
-    purgeOld();
-    getIntialUserPhoto();
     return () => {
       clearTimeout(timeout.current);
       clearAllTimeouts();
@@ -182,7 +187,7 @@ export default function HomeScreen({ navigation }, props) {
       const token = currentUser && (await currentUser.getIdToken());
       var config = {
         method: 'post',
-        url: 'https://meetadime.herokuapp.com/api/getuser',
+        url: 'http://localhost:5000/api/getuser',
         header: {
           'Content-Type': 'application/json',
           // Authorization: `Bearer ${token}`,
@@ -190,9 +195,9 @@ export default function HomeScreen({ navigation }, props) {
         data: { uid: currentUser.uid },
       };
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-      console.log('Here is the config data: ', config.data);
-      console.log('Bear bud: ', token);
-      console.log('Auth:', config.header.Authorization);
+      // console.log('Here is the config data: ', config.data);
+      // console.log('Bear bud: ', token);
+      // console.log('Auth:', config.header.Authorization);
       var response = await axios(config);
       // console.log(response);
 
@@ -353,7 +358,10 @@ export default function HomeScreen({ navigation }, props) {
 
           if (count >= 100) {
             clearInterval(transferTimeoutRef.current);
-            //navigation.navigate('Chat')
+            navigation.navigate('Chat', {
+              match_id: doc_id,
+              timeout: timeout.current,
+            });
           }
         }, 100);
 
@@ -552,7 +560,10 @@ export default function HomeScreen({ navigation }, props) {
                   // console.log(docSnapshot.data().match);
                   if (count >= 100) {
                     clearInterval(transferTimeoutRef.current);
-                    // navigation.navigate('Chat');
+                    navigation.navigate('Chat', {
+                      match_id: change.doc.data().match,
+                      timeout: timeout.current,
+                    });
                   }
                 }, 100);
 
@@ -658,16 +669,12 @@ export default function HomeScreen({ navigation }, props) {
 
   return (
     <View style={styles.container}>
+      <Image
+        style={styles.logo}
+        source={require('../../../assets/DimeAssets/headerlogo.png')}
+      />
+      <Text style={styles.text}>Welcome back, {name}!</Text>
       <View style={styles.formContainer}>
-        <TextInput
-          style={styles.input}
-          //   placeholder="Add new entity"
-          placeholderTextColor='#aaaaaa'
-          onChangeText={(text) => setEntityText(text)}
-          value={name}
-          underlineColorAndroid='transparent'
-          autoCapitalize='none'
-        />
         <TouchableOpacity style={styles.button} onPress={searching}>
           <Text style={styles.buttonText}>Search</Text>
         </TouchableOpacity>

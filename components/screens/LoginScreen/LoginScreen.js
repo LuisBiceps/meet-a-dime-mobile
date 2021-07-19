@@ -1,25 +1,28 @@
-import React, { useState } from "react";
-import { Image, Text, TextInput, TouchableOpacity, View } from "react-native";
-import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import styles from "./styles";
-import * as firebase from "firebase";
-import { auth } from "../../firebase/firebase";
-import { useAuth } from "../../contexts/AuthContext";
+import React, { useState } from 'react';
+import { Image, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import styles from './styles';
+import firebase from 'firebase';
+import { auth } from '../../firebase/firebase';
+import { useAuth } from '../../contexts/AuthContext';
 
 export default function LoginScreen({ navigation }) {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const { login } = useAuth();
 
   const onFooterLinkPress = () => {
-    navigation.navigate("Registration");
+    navigation.navigate('Registration');
   };
 
   async function handleSubmit() {
-    console.log("trying to login");
     try {
+      await firebase
+        .auth()
+        .setPersistence(firebase.auth.Auth.Persistence.LOCAL);
       await login(email, password);
-      navigation.navigate("Home");
+
+      navigation.navigate('Home');
     } catch (error) {
       console.log(error);
     }
@@ -78,32 +81,32 @@ export default function LoginScreen({ navigation }) {
       <KeyboardAwareScrollView
         contentContainerStyle={styles.viewContainer}
         // style={{ flexGrow: 1, width: "100%" }}
-        keyboardShouldPersistTaps="never"
+        keyboardShouldPersistTaps='never'
       >
         <View style={styles.innerContainer}>
           <Image
             style={styles.logo}
-            resizeMode="center"
-            source={require("../../../assets/DimeAssets/headerlogo.png")}
+            resizeMode='center'
+            source={require('../../../assets/DimeAssets/headerlogo.png')}
           />
           <TextInput
             style={styles.input}
-            placeholder="E-mail"
-            placeholderTextColor="#aaaaaa"
+            placeholder='E-mail'
+            placeholderTextColor='#aaaaaa'
             onChangeText={(text) => setEmail(text)}
             value={email}
-            underlineColorAndroid="transparent"
-            autoCapitalize="none"
+            underlineColorAndroid='transparent'
+            autoCapitalize='none'
           />
           <TextInput
             style={styles.input}
-            placeholderTextColor="#aaaaaa"
+            placeholderTextColor='#aaaaaa'
             secureTextEntry
-            placeholder="Password"
+            placeholder='Password'
             onChangeText={(text) => setPassword(text)}
             value={password}
-            underlineColorAndroid="transparent"
-            autoCapitalize="none"
+            underlineColorAndroid='transparent'
+            autoCapitalize='none'
           />
           <TouchableOpacity
             style={styles.button}
@@ -113,7 +116,7 @@ export default function LoginScreen({ navigation }) {
           </TouchableOpacity>
           <View style={styles.footerView}>
             <Text style={styles.footerText}>
-              Don't have an account?{" "}
+              Don't have an account?{' '}
               <Text onPress={onFooterLinkPress} style={styles.footerLink}>
                 Sign up
               </Text>

@@ -1,30 +1,34 @@
-import { Dimensions, StyleSheet } from "react-native";
-const { width, height } = Dimensions.get("window");
+import { Dimensions, StyleSheet } from 'react-native';
+const { width, height } = Dimensions.get('window');
 export default StyleSheet.create({
   container: {
     marginTop: height / 3.25,
     flex: 1,
-    justifyContent: "center",
+    justifyContent: 'center',
     height: height / 1.9,
   },
-  innerContainer: { borderStyle: "solid", borderWidth: 0 },
-  title: { justifyContent: "center" },
+  innerContainer: { borderStyle: 'solid', borderWidth: 0 },
+  title: { justifyContent: 'center' },
   logo: {
     flex: 1,
     height: 100,
     width: 350,
 
-    alignSelf: "center",
+    alignSelf: 'center',
     margin: 10,
     marginLeft: 15,
     marginRight: 15,
   },
+  text: {
+    color: 'black',
+    fontSize: 16,
+  },
   input: {
     height: 48,
     borderRadius: 5,
-    overflow: "hidden",
-    backgroundColor: "white",
-    justifyContent: "center",
+    overflow: 'hidden',
+    backgroundColor: 'white',
+    justifyContent: 'center',
 
     marginTop: 10,
     marginBottom: 10,
@@ -33,33 +37,33 @@ export default StyleSheet.create({
     paddingLeft: 16,
   },
   button: {
-    backgroundColor: "#E64398",
+    backgroundColor: '#E64398',
     marginLeft: 30,
     marginRight: 30,
     marginTop: 20,
     height: 48,
     borderRadius: 5,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   buttonTitle: {
-    color: "white",
+    color: 'white',
     fontSize: 16,
-    fontWeight: "bold",
+    fontWeight: 'bold',
   },
   footerView: {
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
     marginTop: 20,
   },
   footerText: {
     fontSize: 16,
-    color: "#2e2e2d",
+    color: '#2e2e2d',
   },
   footerLink: {
-    color: "#E64398",
-    fontWeight: "bold",
+    color: '#E64398',
+    fontWeight: 'bold',
     fontSize: 16,
   },
 });
