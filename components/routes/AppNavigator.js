@@ -4,7 +4,6 @@ import { createStackNavigator } from '@react-navigation/stack';
 import Home from '../screens/HomeScreen/HomeScreen';
 import Login from '../screens/LoginScreen/LoginScreen';
 import Signup from '../screens/RegistrationScreen/RegistrationScreen';
-import Signup2 from '../screens/RegistrationScreen/RegistrationScreen2';
 import Verify from '../screens/VerifyScreen/VerifyScreen';
 import Chat from '../screens/ChatScreen/ChatScreen';
 

@@ -8,6 +8,8 @@ import {
   View,
 } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import Reinput from 'reinput';
+
 import { HeaderBackButton } from '@react-navigation/stack';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Picker } from '@react-native-picker/picker';
@@ -161,6 +163,8 @@ export default function RegistrationScreen({ navigation }) {
     // cleanDate used for database
     cleanDate.current = moment(currentDate).add(1, 'day').format('YYYY-MM-DD');
     setBirth(temp);
+    setLow(Math.max(moment().diff(selectedDate, 'years') - 6, 18));
+    setHigh(Math.min(moment().diff(selectedDate, 'years') + 6, 72));
     console.log(value);
     console.log(cleanDate.current);
   };
@@ -214,66 +218,79 @@ export default function RegistrationScreen({ navigation }) {
           style={styles.logo}
           source={require('../../../assets/DimeAssets/coinsignup.png')}
         />
+        <View style={styles.headingContainer}>
+          <Text style={styles.heading}>Create an Account</Text>
+        </View>
         <View style={styles.innerContainer}>
-          <TextInput
+          <Reinput
             style={styles.firstname}
-            placeholder='First Name'
-            placeholderTextColor='#aaaaaa'
-            onChangeText={(text) => setFirstName(text)}
+            label='First Name'
+            labelActiveColor='#E64398'
+            activeColor='#E64398'
             value={firstName}
-            underlineColorAndroid='transparent'
+            //error={errorEmail}
+            onChangeText={(text) => setFirstName(text)}
             autoCapitalize='words'
           />
-          <TextInput
+
+          <Reinput
             style={styles.lastname}
-            placeholder='Last Name'
-            placeholderTextColor='#aaaaaa'
-            onChangeText={(text) => setLastName(text)}
+            label='Last Name'
+            labelActiveColor='#E64398'
+            activeColor='#E64398'
             value={lastName}
-            underlineColorAndroid='transparent'
+            //error={errorEmail}
+            onChangeText={(text) => setLastName(text)}
             autoCapitalize='words'
           />
         </View>
-        <TextInput
+        <Reinput
           style={styles.input}
-          placeholder='E-mail'
-          placeholderTextColor='#aaaaaa'
-          onChangeText={(text) => setEmail(text)}
+          label='E-mail'
+          labelActiveColor='#E64398'
+          activeColor='#E64398'
           value={email}
-          underlineColorAndroid='transparent'
-          autoCapitalize='none'
-        />
-        <TextInput
-          style={styles.password}
-          placeholderTextColor='#aaaaaa'
-          secureTextEntry
-          placeholder='Password'
-          onChangeText={(text) => setPassword(text)}
-          value={password}
-          underlineColorAndroid='transparent'
-          autoCapitalize='none'
-        />
-        <TextInput
-          style={styles.confirmPass}
-          placeholderTextColor='#aaaaaa'
-          secureTextEntry
-          placeholder='Confirm Password'
-          onChangeText={(text) => setConfirmPassword(text)}
-          value={confirmPassword}
-          underlineColorAndroid='transparent'
+          //error={errorEmail}
+          onChangeText={(text) => setEmail(text)}
           autoCapitalize='none'
         />
 
-        <TextInput
+        <Reinput
           style={styles.input}
-          placeholder='Phone Number'
-          placeholderTextColor='#aaaaaa'
-          onChangeText={(num) => phoneWork(num)}
-          value={phone}
-          underlineColorAndroid='transparent'
+          label='Password'
+          labelActiveColor='#E64398'
+          activeColor='#E64398'
+          value={password}
+          //error={errorEmail}
+          onChangeText={(text) => setPassword(text)}
           autoCapitalize='none'
+          secureTextEntry
+        />
+        <Reinput
+          style={styles.input}
+          label='Confirm Password'
+          labelActiveColor='#E64398'
+          activeColor='#E64398'
+          value={confirmPassword}
+          //error={errorEmail}
+          onChangeText={(text) => setConfirmPassword(text)}
+          autoCapitalize='none'
+          secureTextEntry
         />
 
+        <Reinput
+          style={styles.input}
+          label='Phone Number'
+          labelActiveColor='#E64398'
+          activeColor='#E64398'
+          value={phone}
+          //error={errorEmail}
+          onChangeText={(text) => phoneWork(text)}
+          autoCapitalize='none'
+        />
+        <View style={styles.responseContainer}>
+          <Text style={styles.response}>Press to Select</Text>
+        </View>
         <TouchableOpacity style={styles.toggle} onPress={() => showSexPicker()}>
           <Text style={styles.buttonTitle}>{sex}</Text>
         </TouchableOpacity>
@@ -305,8 +322,8 @@ export default function RegistrationScreen({ navigation }) {
               label='Choose your sexual orientation...'
               value='Choose your sexual orientation...'
             />
-            <Picker.Item label='Heterosexual' value='Heterosexual' />
-            <Picker.Item label='Homosexual' value='Homosexual' />
+            <Picker.Item label='Straight' value='Heterosexual' />
+            <Picker.Item label='Gay/Lesbian' value='Homosexual' />
             <Picker.Item label='Bisexual' value='Bisexual' />
             <Picker.Item label='Other' value='Other' />
           </Picker>
@@ -326,6 +343,7 @@ export default function RegistrationScreen({ navigation }) {
             is24Hour={false}
             display='spinner'
             onChange={onChange}
+            // style={styles.button}
           />
         )}
 
@@ -347,6 +365,8 @@ export default function RegistrationScreen({ navigation }) {
             style={styles.slider}
             min={min}
             max={max}
+            low={low}
+            high={high}
             step={1}
             disableRange={rangeDisabled}
             floatingLabel={floatingLabel}
@@ -359,13 +379,14 @@ export default function RegistrationScreen({ navigation }) {
           />
         </View>
 
-        <TextInput
+        <Reinput
           style={styles.input}
-          placeholder='End of Chat Response'
-          placeholderTextColor='#aaaaaa'
-          onChangeText={(text) => setResponse(text)}
+          label='End of Chat Response'
+          labelActiveColor='#E64398'
+          activeColor='#E64398'
           value={response}
-          underlineColorAndroid='transparent'
+          //error={errorEmail}
+          onChangeText={(text) => setResponse(text)}
           autoCapitalize='none'
         />
         <View style={styles.responseContainer}>

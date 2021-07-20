@@ -118,9 +118,16 @@ export default function ChatScreen({ route, navigation }) {
     setSocket(sock);
     socketRef.current = sock;
 
-    sock.on('message', (message, user) => {
-      var messageId = hash_str(message + new Date().toDateString());
+    sock.on('message', (message, user, messageID) => {
+      var messageId = hash_str(messageID + new Date().toDateString());
 
+      sock.emit(
+        'seen-message',
+        currentUser.uid,
+        new_room,
+        messageID,
+        function () {}
+      );
       setMessages((previousMessages) =>
         GiftedChat.append(previousMessages, {
           _id: messageId,
@@ -128,7 +135,7 @@ export default function ChatScreen({ route, navigation }) {
           createdAt: new Date(),
           user: {
             _id: 2,
-            name: user,
+            name: currentUser.uid,
             avatar: matchPhotoRef.current,
           },
         })
@@ -164,12 +171,20 @@ export default function ChatScreen({ route, navigation }) {
   const onSend = useCallback((newMessage = []) => {
     console.log(newMessage);
     console.log(matchPhotoRef.current);
+    var messageId = hash_str(
+      newMessage[0].text +
+        new Date().toDateString() +
+        Math.random(100).toString()
+    );
 
     socketRef.current.emit(
       'send-to-room',
       currentUser.uid,
       roomRef.current,
-      newMessage[0].text
+      newMessage[0].text,
+      messageId,
+      true,
+      () => {}
     );
     setMessages((previousMessages) =>
       GiftedChat.append(previousMessages, newMessage)
@@ -188,33 +203,40 @@ export default function ChatScreen({ route, navigation }) {
   //   }
 
   return (
-    <GiftedChat
-      renderBubble={(props) => {
-        return (
-          <Bubble
-            {...props}
-            textStyle={{
-              right: {
-                color: 'white',
-              },
-            }}
-            wrapperStyle={{
-              left: {
-                backgroundColor: '#e5e5ea',
-              },
-              right: {
-                backgroundColor: '#e64398',
-              },
-            }}
-          />
-        );
-      }}
-      messages={messages}
-      onSend={(messages) => onSend(messages)}
-      user={{ _id: 1 }}
-      ref={messageRef}
-      alwaysShowSend
-      scrollToBottom
-    />
+    <>
+      <View>
+        <TouchableOpacity style={styles.button}>
+          <Text>Abandon</Text>
+        </TouchableOpacity>
+      </View>
+      <GiftedChat
+        renderBubble={(props) => {
+          return (
+            <Bubble
+              {...props}
+              textStyle={{
+                right: {
+                  color: 'white',
+                },
+              }}
+              wrapperStyle={{
+                left: {
+                  backgroundColor: '#e5e5ea',
+                },
+                right: {
+                  backgroundColor: '#e64398',
+                },
+              }}
+            />
+          );
+        }}
+        messages={messages}
+        onSend={(messages) => onSend(messages)}
+        user={{ _id: 1 }}
+        ref={messageRef}
+        alwaysShowSend
+        scrollToBottom
+      />
+    </>
   );
 }

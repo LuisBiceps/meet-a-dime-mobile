@@ -2,10 +2,11 @@ import { Dimensions, StyleSheet } from 'react-native';
 const { width, height } = Dimensions.get('window');
 export default StyleSheet.create({
   container: {
-    marginTop: height / 3.25,
+    paddingTop: height / 3.25,
     flex: 1,
     justifyContent: 'center',
     height: height / 1.9,
+    backgroundColor: '#dceaff',
   },
   innerContainer: { borderStyle: 'solid', borderWidth: 0 },
   title: { justifyContent: 'center' },
@@ -24,17 +25,19 @@ export default StyleSheet.create({
     fontSize: 16,
   },
   input: {
-    height: 48,
-    borderRadius: 5,
+    height: 60,
+    // borderRadius: 5,
     overflow: 'hidden',
-    backgroundColor: 'white',
+    // backgroundColor: 'white',
     justifyContent: 'center',
 
     marginTop: 10,
     marginBottom: 10,
     marginLeft: 30,
     marginRight: 30,
-    paddingLeft: 16,
+    // paddingLeft: 10,
+    // paddingRight: 10,
+    // paddingBottom: 20,
   },
   button: {
     backgroundColor: '#E64398',
@@ -42,7 +45,7 @@ export default StyleSheet.create({
     marginRight: 30,
     marginTop: 20,
     height: 48,
-    borderRadius: 5,
+    borderRadius: 50,
     alignItems: 'center',
     justifyContent: 'center',
   },

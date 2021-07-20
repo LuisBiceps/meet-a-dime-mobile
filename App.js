@@ -82,18 +82,7 @@ export default function App() {
             <Stack.Screen
               name='Chat'
               component={ChatScreen}
-              options={({ navigation, route }) => ({
-                headerLeft: (props) => (
-                  <HeaderBackButton
-                    {...props}
-                    onPress={() => navigation.navigate('Login')}
-                  />
-                ),
-                headerBackTitle: 'Abandon',
-                headerTransparent: 'true',
-                headerTitle: '',
-                headerTintColor: '#e64398',
-              })}
+              options={{ headerShown: false }}
             />
           </>
         </Stack.Navigator>

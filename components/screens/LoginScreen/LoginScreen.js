@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Image, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import Reinput from 'reinput';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import styles from './styles';
 import firebase from 'firebase';
@@ -9,14 +10,33 @@ import { useAuth } from '../../contexts/AuthContext';
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [errorEmail, setErrorEmail] = useState('');
+  const [error, setError] = useState('');
   const { login } = useAuth();
 
   const onFooterLinkPress = () => {
     navigation.navigate('Registration');
   };
 
+  function handleError(error) {
+    if (error === 'auth/wrong-password') {
+      setError('Incorrect password.');
+    } else if (error === 'auth/user-not-found') {
+      setError('Your account does not exist.');
+      setErrorEmail('Your account does not exist.');
+    } else if (error === 'auth/too-many-requests') {
+      setError('You are submitting too many requests, wait a few minutes.');
+      setErrorEmail('Your account does not exist.');
+    } else {
+      setErrorEmail(error);
+
+      setError(error);
+    }
+  }
+
   async function handleSubmit() {
     try {
+      setError('');
       await firebase
         .auth()
         .setPersistence(firebase.auth.Auth.Persistence.LOCAL);
@@ -24,57 +44,21 @@ export default function LoginScreen({ navigation }) {
 
       navigation.navigate('Home');
     } catch (error) {
-      console.log(error);
+      handleError(error.code === undefined ? error : error.code);
     }
   }
 
-  // const onLoginPress = () => {
-  //   auth
-  //     .signInWithEmailAndPassword(email, password)
-  //     .then((response) => {
-  //       const uid = response.user.uid;
-  //       console.log(uid);
-  //       const usersRef = firebase.firestore().collection("users");
-  //       usersRef
-  //         .doc(uid)
-  //         .get()
-  //         .then((firestoreDocument) => {
-  //           if (!firestoreDocument.exists) {
-  //             alert("User does not exist anymore.");
-  //             return;
-  //           }
-  //           const user = firestoreDocument.data();
-  //           navigation.navigate("Home", { user });
-  //         })
-  //         .catch((error) => {
-  //           alert(error);
-  //         });
-  //     })
-  //     .catch((error) => {
-  //       alert(error);
-  //     });
-  // };
-
-  // async function handleSubmit() {
-  //   // e.preventDefault();
-
-  //   try {
-  //     // setError('');
-  //     // setLoading(true);
-  //     // if (!isChecked) {
-  //     //   await firebase
-  //     //     .auth()
-  //     //     .setPersistence(firebase.auth.Auth.Persistence.SESSION);
-  //     // }
-  //     await login(email, password);
-  //     // console.log(currentUser);
-  //     navigation.navigate("Home");
-  //     // window.location.reload();
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  //   // if (window.location.pathname === '/login') setLoading(false);
-  // }
+  useEffect(() => {
+    const firestore = firebase.firestore();
+    async function purgeOld() {
+      console.log('THIS SHOULD ONLY PRINT ONCE PER LOAD');
+      try {
+        try {
+          await firestore.collection('searching').doc();
+        } catch (error) {}
+      } catch (error) {}
+    }
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -82,6 +66,7 @@ export default function LoginScreen({ navigation }) {
         contentContainerStyle={styles.viewContainer}
         // style={{ flexGrow: 1, width: "100%" }}
         keyboardShouldPersistTaps='never'
+        scrollEnabled={false}
       >
         <View style={styles.innerContainer}>
           <Image
@@ -89,7 +74,7 @@ export default function LoginScreen({ navigation }) {
             resizeMode='center'
             source={require('../../../assets/DimeAssets/headerlogo.png')}
           />
-          <TextInput
+          {/* <TextInput
             style={styles.input}
             placeholder='E-mail'
             placeholderTextColor='#aaaaaa'
@@ -107,7 +92,32 @@ export default function LoginScreen({ navigation }) {
             value={password}
             underlineColorAndroid='transparent'
             autoCapitalize='none'
+          /> */}
+
+          <Reinput
+            style={styles.input}
+            label='E-mail'
+            labelActiveColor='#E64398'
+            activeColor='#E64398'
+            value={email}
+            error={errorEmail}
+            onChangeText={(text) => setEmail(text)}
+            autoCapitalize='none'
           />
+
+          <Reinput
+            style={styles.input}
+            label='Password'
+            value={password}
+            error={error}
+            labelActiveColor='#E64398'
+            activeColor='#E64398'
+            secureTextEntry
+            placeholderVisibility={true}
+            onChangeText={(text) => setPassword(text)}
+            autoCapitalize='none'
+          />
+
           <TouchableOpacity
             style={styles.button}
             onPress={() => handleSubmit()}
