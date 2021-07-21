@@ -49,7 +49,7 @@ export default function ChatScreen({ route, navigation }) {
       const token = currentUser && (await currentUser.getIdToken());
       var config = {
         method: 'post',
-        url: 'http://localhost:5000/api/getbasicuser',
+        url: 'https://meetadime.herokuapp.com/api/getbasicuser',
         header: {
           'Content-Type': 'application/json',
           //   Authorization: `Bearer ${token}`,
@@ -90,7 +90,7 @@ export default function ChatScreen({ route, navigation }) {
   useEffect(() => {
     fetchMatchInfo();
     var roomInUseEffect = '';
-    const sock = io('http://localhost:5000/');
+    const sock = io('https://meetadime.herokuapp.com/');
     sock.auth = { id };
     sock.connect();
     sock.on('connect', () => {
@@ -164,6 +164,7 @@ export default function ChatScreen({ route, navigation }) {
         sock.emit('leave-room', currentUser.uid, room);
         // Clear timeouts
         console.log('LEAVING ROOM');
+        navigation.navigate('Home');
       }, 0);
     });
   }, []);
@@ -191,6 +192,23 @@ export default function ChatScreen({ route, navigation }) {
     );
   }, []);
 
+  async function handleAbandon() {
+    socketRef.current.emit('leave-room', currentUser.uid, roomRef.current);
+    await firestore
+      .collection('users')
+      .doc(currentUser.uid)
+      .update({
+        FailMatch: firebase.firestore.FieldValue.arrayUnion(match_id),
+      });
+    await firestore
+      .collection('users')
+      .doc(match_id)
+      .update({
+        FailMatch: firebase.firestore.FieldValue.arrayUnion(currentUser.uid),
+      });
+
+    navigation.navigate('Home');
+  }
   //   function handleSubmit() {
   //     console.log('Made it to submit');
   //     setSentMessage(true);
@@ -205,7 +223,7 @@ export default function ChatScreen({ route, navigation }) {
   return (
     <>
       <View>
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity style={styles.button} onPress={handleAbandon}>
           <Text>Abandon</Text>
         </TouchableOpacity>
       </View>

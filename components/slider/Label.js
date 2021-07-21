@@ -1,5 +1,5 @@
-import React, { memo } from "react";
-import { View, Text, StyleSheet } from "react-native";
+import React, { memo } from 'react';
+import { View, Text, StyleSheet } from 'react-native';
 
 const Label = ({ text, ...restProps }) => {
   return (
@@ -11,14 +11,14 @@ const Label = ({ text, ...restProps }) => {
 
 const styles = StyleSheet.create({
   root: {
-    alignItems: "center",
-    padding: 10,
-    backgroundColor: "#b39bc8",
+    alignItems: 'center',
+    padding: 5,
+    backgroundColor: '#b39bc8',
     borderRadius: 4,
   },
   text: {
     fontSize: 24,
-    color: "#fff",
+    color: '#fff',
   },
 });
 

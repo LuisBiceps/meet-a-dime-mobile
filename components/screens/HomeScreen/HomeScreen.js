@@ -16,7 +16,7 @@ import 'firebase/auth';
 import 'firebase/firestore';
 import { useAuth } from '../../contexts/AuthContext';
 import axios from 'axios';
-import moment from 'moment';
+import moment, { relativeTimeThreshold } from 'moment';
 import { useRoute } from '@react-navigation/core';
 
 export default function HomeScreen({ navigation }, props) {
@@ -72,6 +72,7 @@ export default function HomeScreen({ navigation }, props) {
   }
 
   useEffect(() => {
+    setLockout(true);
     if (!currentUser) {
       console.log('We In the use effect');
     } else {
@@ -88,7 +89,7 @@ export default function HomeScreen({ navigation }, props) {
           // console.log(token);
           var config = {
             method: 'post',
-            url: 'http://localhost:5000/api/getbasicuser',
+            url: 'https://meetadime.herokuapp.com/api/getbasicuser',
             headers: {
               'Content-Type': 'application/json',
               // Authorization: `Bearer ${token}`,
@@ -99,7 +100,7 @@ export default function HomeScreen({ navigation }, props) {
           axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 
           var response = await axios(config);
-          // console.log(response);
+          console.log(response.data);
           setMyPhoto(response.data.photo);
           if (myPhoto) console.log(myPhoto);
           setName(response.data.firstName);
@@ -167,6 +168,8 @@ export default function HomeScreen({ navigation }, props) {
       getIntialUserPhoto();
     }
     return () => {
+      setMatch('Not searching');
+      setId('none');
       clearTimeout(timeout.current);
       clearAllTimeouts();
       console.log('LEAVING!');
@@ -187,7 +190,7 @@ export default function HomeScreen({ navigation }, props) {
       const token = currentUser && (await currentUser.getIdToken());
       var config = {
         method: 'post',
-        url: 'http://localhost:5000/api/getuser',
+        url: 'https://meetadime.herokuapp.com/api/getuser',
         header: {
           'Content-Type': 'application/json',
           // Authorization: `Bearer ${token}`,
@@ -662,9 +665,11 @@ export default function HomeScreen({ navigation }, props) {
   async function handleLogout() {
     try {
       await logout();
-      // await AsyncStorage.removeItem('user_data');
+      await AsyncStorage.removeItem('user_data');
       navigation.navigate('Login');
-    } catch (error) {}
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   return (
@@ -675,7 +680,11 @@ export default function HomeScreen({ navigation }, props) {
       />
       <Text style={styles.text}>Welcome back, {name}!</Text>
       <View style={styles.formContainer}>
-        <TouchableOpacity style={styles.button} onPress={searching}>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={searching}
+          disabled={lockout}
+        >
           <Text style={styles.buttonText}>Search</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.button} onPress={killSearch}>

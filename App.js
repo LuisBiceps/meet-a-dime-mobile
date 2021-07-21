@@ -32,7 +32,6 @@ export default function App() {
   const [user, setUser] = useState(null);
 
   return (
-    // <AppNavigator />
     <NavigationContainer>
       <AuthProvider>
         <Stack.Navigator initialRouteName='Login'>

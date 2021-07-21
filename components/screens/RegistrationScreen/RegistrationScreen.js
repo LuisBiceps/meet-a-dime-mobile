@@ -9,6 +9,8 @@ import {
 } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import Reinput from 'reinput';
+import { Formik } from 'formik';
+import * as yup from 'yup';
 
 import { HeaderBackButton } from '@react-navigation/stack';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -30,16 +32,15 @@ const DEFAULT_COIN_IMAGE =
 
 export default function RegistrationScreen({ navigation }) {
   const [firstName, setFirstName] = useState('');
-  // const firstName = useRef();
+
   const [lastName, setLastName] = useState('');
-  // const lastName = useRef();
 
   const [email, setEmail] = useState('');
-  // const email = useRef();
+
   const [password, setPassword] = useState('');
-  // const password = useRef();
+
   const [confirmPassword, setConfirmPassword] = useState('');
-  // const confirmPassword = useRef();
+
   const [value, setValue] = useState(18);
   const [response, setResponse] = useState('');
   const [phone, setPhone] = useState('');
@@ -63,18 +64,6 @@ export default function RegistrationScreen({ navigation }) {
     setHigh(high);
   }, []);
 
-  // const toggleRangeEnabled = useCallback(
-  //   () => setRangeDisabled(!rangeDisabled),
-  //   [rangeDisabled]
-  // );
-  // const setMinTo50 = useCallback(() => setMin(50), []);
-  // const setMinTo0 = useCallback(() => setMin(0), []);
-  // const setMaxTo100 = useCallback(() => setMax(100), []);
-  // const setMaxTo500 = useCallback(() => setMax(500), []);
-  // const toggleFloatingLabel = useCallback(
-  //   () => setFloatingLabel(!floatingLabel),
-  //   [floatingLabel]
-  // );
   moment.suppressDeprecationWarnings = true;
   var fromToday = moment().subtract(18, 'years').add(1, 'day').calendar();
   var dob = moment(fromToday).format('YYYY-MM-DD');
@@ -83,14 +72,36 @@ export default function RegistrationScreen({ navigation }) {
 
   const [date, setDate] = useState(new Date(dob));
   const [show, setShow] = useState(false);
+  const [dateToggle, setDateToggle] = useState(' (open)');
   const [sexPick, setSexPick] = useState(false);
   const [orientPick, setOrientPick] = useState(false);
   const [birth, setBirth] = useState('Select your Date of Birth');
 
   const [sex, setSex] = useState('Choose your sex...');
-  const [orientation, setOrientation] = useState(
+  const [sexLabel, setSexLabel] = useState('Choose your sex...');
+  const [sexToggle, setSexToggle] = useState(' (open)');
+  const [orientation, setOrientation] = useState('');
+  const [orientLabel, setOrientLabel] = useState(
     'Choose your sexual orientation...'
   );
+  const [orientToggle, setOrientToggle] = useState(' (open)');
+
+  const [rangePick, setRangePick] = useState(false);
+  const [rangeToggle, setRangeToggle] = useState(' (open)');
+
+  const [confirmError, setConfirmError] = useState('');
+  const [passError, setPassError] = useState('');
+
+  const [accountError, setAccountError] = useState('');
+
+  const [phoneError, setPhoneError] = useState('');
+  const [firstNameError, setFirstNameError] = useState('');
+  const [lastNameError, setLastNameError] = useState('');
+  const [emailError, setEmailError] = useState('');
+
+  const [hasGeneralError, setHasGeneralError] = useState(false);
+  const [generalError, setGeneralError] = useState('');
+  const [scroll, setScroll] = useState(true);
 
   var orient = {
     1: 'Heterosexual',
@@ -103,10 +114,106 @@ export default function RegistrationScreen({ navigation }) {
     navigation.navigate('Login');
   };
 
+  function isLegal(date, minimum_age = 18) {
+    const [year, month, day] = date.split('-');
+    const [y, m, d] = moment()
+      .subtract(18, 'years')
+      .format('yyyy-MM-DD')
+      .split('-');
+
+    var d1 = new Date(y, m, d);
+    var d2 = new Date(year, month, day);
+    // console.log(d2 <= d1 ? true : false);
+    return d2 <= d1 ? true : false;
+  }
+
+  function handleError(error) {
+    if (error === 'auth/email-already-in-use') {
+      setEmailError('This email is already in use.');
+    } else if (error === 'auth/invalid-email') {
+      setEmailError('Please enter a valid email address.');
+    } else {
+      setErrorEmail('There was an error making your account');
+
+      setAccountError('There was an error making your account');
+    }
+  }
+
   async function handleRegister() {
     // navigation.navigate("Login");
     // ******* Form validation still needed *******
-    navigation.navigate('Verify');
+    var hasError = false;
+
+    setConfirmError('');
+    setPassError('');
+    setHasGeneralError(false);
+    setGeneralError('');
+    setPhoneError('');
+    setFirstNameError('');
+    setLastNameError('');
+    setEmailError('');
+
+    if (password !== confirmPassword) {
+      setConfirmError('Passwords do not match.');
+      hasError = true;
+    }
+
+    if (password.length <= 6) {
+      setPassError('Password should be more than six characters.');
+      setConfirmError('Password should be more than six characters.');
+      hasError = true;
+    }
+
+    if (sex === 'Choose your sex...') {
+      setHasGeneralError(true);
+      setGeneralError('Please choose your sex.');
+      hasError = true;
+    }
+
+    if (orientLabel === 'Choose your sexual orientation...') {
+      setHasGeneralError(true);
+      setGeneralError('Please choose your sexual orientation.');
+      hasError = true;
+    }
+
+    if (phone.trim().length < 14) {
+      setPhoneError('Please enter a valid phone number.');
+      hasError = true;
+    }
+
+    if (birth === 'Select your Date of Birth') {
+      setHasGeneralError(true);
+      setGeneralError('Please enter a valid date of birth.');
+      hasError = true;
+    }
+
+    if (birth !== 'Select your Date of Birth') {
+      if (!isLegal(cleanDate.current)) {
+        setHasGeneralError(true);
+        setGeneralError('You must be 18 years or older to sign up.');
+        hasError = true;
+      }
+    }
+
+    if (firstName === '') {
+      setFirstNameError('Please enter your first name.');
+      hasError = true;
+    }
+
+    if (lastName === '') {
+      setLastNameError('Please enter your last name.');
+      hasError = true;
+    }
+
+    if (email === '') {
+      setEmailError('Please enter a valid email address');
+      hasError = true;
+    }
+
+    if (hasError) {
+      return;
+    }
+
     try {
       var cred = await signup(email.trim(), password);
       var newUser = cred.user;
@@ -133,7 +240,7 @@ export default function RegistrationScreen({ navigation }) {
 
       var config = {
         method: 'post',
-        url: 'http://localhost:5000/api/newuser',
+        url: 'https://meetadime.herokuapp.com/api/newuser',
         headers: {
           'Content-Type': 'application/json',
         },
@@ -147,6 +254,8 @@ export default function RegistrationScreen({ navigation }) {
       }
     } catch (error) {
       console.log(error);
+      handleError(error.code === undefined ? error : error.code);
+      hasError = true;
     }
   }
 
@@ -193,18 +302,56 @@ export default function RegistrationScreen({ navigation }) {
   const showDatePicker = () => {
     if (show) {
       setShow(false);
-    } else setShow(true);
+      setDateToggle(' (open)');
+    } else {
+      setShow(true);
+      setDateToggle(' (close)');
+    }
+  };
+
+  const showRangePicker = () => {
+    if (rangePick) {
+      setRangePick(false);
+      setScroll(true);
+      setRangeToggle(' (open)');
+    } else {
+      setScroll(false);
+      setRangePick(true);
+      setRangeToggle(' (close)');
+    }
+  };
+  const handleOrientation = (preference) => {
+    if (preference === 'Straight') {
+      setOrientation('Heterosexual');
+      setOrientLabel(preference);
+    } else if (preference === 'Gay/Lesbian') {
+      setOrientation('Homosexual');
+      setOrientLabel(preference);
+    } else if (preference === 'Bisexual' || preference === 'Other') {
+      setOrientation('Bisexual');
+      setOrientLabel(preference);
+    } else {
+      setOrientLabel(preference);
+    }
   };
 
   const showSexPicker = () => {
     if (sexPick) {
       setSexPick(false);
-    } else setSexPick(true);
+      setSexToggle(' (open)');
+    } else {
+      setSexPick(true);
+      setSexToggle(' (close)');
+    }
   };
   const showOrientPicker = () => {
     if (orientPick) {
       setOrientPick(false);
-    } else setOrientPick(true);
+      setOrientToggle(' (open)');
+    } else {
+      setOrientPick(true);
+      setOrientToggle(' (close)');
+    }
   };
 
   return (
@@ -212,7 +359,7 @@ export default function RegistrationScreen({ navigation }) {
       <KeyboardAwareScrollView
         style={{ flex: 1, width: '100%' }}
         keyboardShouldPersistTaps='never'
-        scrollEnabled='false'
+        scrollEnabled={scroll}
       >
         <Image
           style={styles.logo}
@@ -221,14 +368,18 @@ export default function RegistrationScreen({ navigation }) {
         <View style={styles.headingContainer}>
           <Text style={styles.heading}>Create an Account</Text>
         </View>
+        <Text style={styles.generalError}>{accountError}</Text>
         <View style={styles.innerContainer}>
           <Reinput
             style={styles.firstname}
             label='First Name'
             labelActiveColor='#E64398'
+            labelColor='#000000'
+            placeholderColor='#000000'
+            underlineColor='#000000'
             activeColor='#E64398'
             value={firstName}
-            //error={errorEmail}
+            error={firstNameError}
             onChangeText={(text) => setFirstName(text)}
             autoCapitalize='words'
           />
@@ -237,9 +388,12 @@ export default function RegistrationScreen({ navigation }) {
             style={styles.lastname}
             label='Last Name'
             labelActiveColor='#E64398'
+            labelColor='#000000'
+            placeholderColor='#000000'
+            underlineColor='#000000'
             activeColor='#E64398'
             value={lastName}
-            //error={errorEmail}
+            error={lastNameError}
             onChangeText={(text) => setLastName(text)}
             autoCapitalize='words'
           />
@@ -248,9 +402,12 @@ export default function RegistrationScreen({ navigation }) {
           style={styles.input}
           label='E-mail'
           labelActiveColor='#E64398'
+          labelColor='#000000'
+          placeholderColor='#000000'
+          underlineColor='#000000'
           activeColor='#E64398'
           value={email}
-          //error={errorEmail}
+          error={emailError}
           onChangeText={(text) => setEmail(text)}
           autoCapitalize='none'
         />
@@ -259,9 +416,12 @@ export default function RegistrationScreen({ navigation }) {
           style={styles.input}
           label='Password'
           labelActiveColor='#E64398'
+          labelColor='#000000'
+          placeholderColor='#000000'
+          underlineColor='#000000'
           activeColor='#E64398'
           value={password}
-          //error={errorEmail}
+          error={passError}
           onChangeText={(text) => setPassword(text)}
           autoCapitalize='none'
           secureTextEntry
@@ -270,9 +430,12 @@ export default function RegistrationScreen({ navigation }) {
           style={styles.input}
           label='Confirm Password'
           labelActiveColor='#E64398'
+          labelColor='#000000'
+          placeholderColor='#000000'
+          underlineColor='#000000'
           activeColor='#E64398'
           value={confirmPassword}
-          //error={errorEmail}
+          error={confirmError}
           onChangeText={(text) => setConfirmPassword(text)}
           autoCapitalize='none'
           secureTextEntry
@@ -282,107 +445,118 @@ export default function RegistrationScreen({ navigation }) {
           style={styles.input}
           label='Phone Number'
           labelActiveColor='#E64398'
+          labelColor='#000000'
+          placeholderColor='#000000'
+          underlineColor='#000000'
           activeColor='#E64398'
           value={phone}
-          //error={errorEmail}
+          error={phoneError}
           onChangeText={(text) => phoneWork(text)}
           autoCapitalize='none'
         />
-        <View style={styles.responseContainer}>
-          <Text style={styles.response}>Press to Select</Text>
-        </View>
-        <TouchableOpacity style={styles.toggle} onPress={() => showSexPicker()}>
-          <Text style={styles.buttonTitle}>{sex}</Text>
-        </TouchableOpacity>
 
-        {sexPick && (
-          <Picker selectedValue={sex} onValueChange={(e) => setSex(e)}>
-            <Picker.Item
-              label='Choose your sex...'
-              value='Choose your sex...'
-            />
-            <Picker.Item label='Male' value='Male' />
-            <Picker.Item label='Female' value='Female' />
-          </Picker>
+        {hasGeneralError && (
+          <Text style={styles.generalError}>{generalError}</Text>
         )}
-
-        <TouchableOpacity
-          style={styles.toggle}
-          onPress={() => showOrientPicker()}
-        >
-          <Text style={styles.buttonTitle}>{orientation}</Text>
-        </TouchableOpacity>
-
-        {orientPick && (
-          <Picker
-            selectedValue={orientation}
-            onValueChange={(e) => setOrientation(e)}
+        <View style={styles.buttonGroup}>
+          <TouchableOpacity
+            style={styles.toggle}
+            onPress={() => showSexPicker()}
           >
-            <Picker.Item
-              label='Choose your sexual orientation...'
-              value='Choose your sexual orientation...'
+            <Text style={styles.buttonTitle}>{sex + sexToggle}</Text>
+          </TouchableOpacity>
+
+          {sexPick && (
+            <Picker selectedValue={sex} onValueChange={(e) => setSex(e)}>
+              <Picker.Item
+                label='Choose your sex...'
+                value='Choose your sex...'
+              />
+              <Picker.Item label='Male' value='Male' />
+              <Picker.Item label='Female' value='Female' />
+            </Picker>
+          )}
+
+          <TouchableOpacity
+            style={styles.toggle}
+            onPress={() => showOrientPicker()}
+          >
+            <Text style={styles.buttonTitle}>{orientLabel + orientToggle}</Text>
+          </TouchableOpacity>
+
+          {orientPick && (
+            <Picker
+              selectedValue={orientLabel}
+              onValueChange={(e) => handleOrientation(e)}
+            >
+              <Picker.Item
+                label='Choose your sexual orientation...'
+                value='Choose your sexual orientation...'
+              />
+              <Picker.Item label='Straight' value='Straight' />
+              <Picker.Item label='Gay/Lesbian' value='Gay/Lesbian' />
+              <Picker.Item label='Bisexual' value='Bisexual' />
+              <Picker.Item label='Other' value='Other' />
+            </Picker>
+          )}
+
+          <TouchableOpacity
+            style={styles.toggle}
+            onPress={() => showDatePicker()}
+          >
+            <Text style={styles.buttonTitle}>{birth + dateToggle}</Text>
+          </TouchableOpacity>
+          {show && (
+            <DateTimePicker
+              testID='dateTimePicker'
+              value={date}
+              mode={'date'}
+              is24Hour={false}
+              display='spinner'
+              onChange={onChange}
+              // style={styles.button}
             />
-            <Picker.Item label='Straight' value='Heterosexual' />
-            <Picker.Item label='Gay/Lesbian' value='Homosexual' />
-            <Picker.Item label='Bisexual' value='Bisexual' />
-            <Picker.Item label='Other' value='Other' />
-          </Picker>
-        )}
-
-        <TouchableOpacity
-          style={styles.toggle}
-          onPress={() => showDatePicker()}
-        >
-          <Text style={styles.buttonTitle}>{birth}</Text>
-        </TouchableOpacity>
-        {show && (
-          <DateTimePicker
-            testID='dateTimePicker'
-            value={date}
-            mode={'date'}
-            is24Hour={false}
-            display='spinner'
-            onChange={onChange}
-            // style={styles.button}
-          />
-        )}
-
-        <View style={styles.rangeContainer}>
-          <Text style={styles.range}>Select an age range</Text>
-          {/* <Slider
-            style={{ width: 200, height: 40 }}
-            minimumValue={18}
-            maximumValue={72}
-            minimumTrackTintColor="#FFFFFF"
-            maximumTrackTintColor="red"
-            onValueChange={(val) => setValue(Math.floor(val))}
-          /> */}
-          <Text style={styles.range}>
-            {Math.floor(low) + ' - ' + Math.floor(high)}
-          </Text>
-
-          <Slider
-            style={styles.slider}
-            min={min}
-            max={max}
-            low={low}
-            high={high}
-            step={1}
-            disableRange={rangeDisabled}
-            floatingLabel={floatingLabel}
-            renderThumb={renderThumb}
-            renderRail={renderRail}
-            renderRailSelected={renderRailSelected}
-            renderLabel={renderLabel}
-            renderNotch={renderNotch}
-            onValueChanged={handleValueChange}
-          />
+          )}
+          <TouchableOpacity
+            style={styles.toggle}
+            onPress={() => showRangePicker()}
+          >
+            <Text style={styles.buttonTitle}>
+              {'Select an age range' + rangeToggle}
+            </Text>
+            <Text style={styles.buttonTitle}>
+              {Math.floor(low) + ' - ' + Math.floor(high)}
+            </Text>
+          </TouchableOpacity>
+          {rangePick && (
+            <View style={styles.rangeContainer}>
+              <Slider
+                style={styles.slider}
+                min={min}
+                max={max}
+                low={low}
+                high={high}
+                step={1}
+                disableRange={rangeDisabled}
+                floatingLabel={true}
+                renderThumb={renderThumb}
+                renderRail={renderRail}
+                renderRailSelected={renderRailSelected}
+                renderLabel={renderLabel}
+                renderNotch={renderNotch}
+                onValueChanged={handleValueChange}
+              />
+            </View>
+          )}
         </View>
 
         <Reinput
           style={styles.input}
           label='End of Chat Response'
           labelActiveColor='#E64398'
+          labelColor='#000000'
+          placeholderColor='#000000'
+          underlineColor='#000000'
           activeColor='#E64398'
           value={response}
           //error={errorEmail}
@@ -393,7 +567,7 @@ export default function RegistrationScreen({ navigation }) {
           <Text style={styles.response}>This can be changed later...</Text>
         </View>
         <TouchableOpacity
-          style={styles.toggle}
+          style={styles.register}
           onPress={() => handleRegister()}
         >
           <Text style={styles.buttonTitle}>Register</Text>

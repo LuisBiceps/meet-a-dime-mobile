@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Image, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import Reinput from 'reinput';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import styles from './styles';
@@ -26,11 +27,33 @@ export default function LoginScreen({ navigation }) {
       setErrorEmail('Your account does not exist.');
     } else if (error === 'auth/too-many-requests') {
       setError('You are submitting too many requests, wait a few minutes.');
-      setErrorEmail('Your account does not exist.');
+      setErrorEmail(
+        'You are submitting too many requests, wait a few minutes.'
+      );
     } else {
       setErrorEmail(error);
 
       setError(error);
+    }
+  }
+
+  async function storeToken(user) {
+    try {
+      await AsyncStorage.setItem('user_data', JSON.stringify(user));
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async function getToken(user) {
+    try {
+      let user_data = await AsyncStorage.getItem('user_data');
+      if (user_data == null) {
+        return false;
+      }
+      return true;
+    } catch (error) {
+      console.log(error);
     }
   }
 
@@ -40,7 +63,10 @@ export default function LoginScreen({ navigation }) {
       await firebase
         .auth()
         .setPersistence(firebase.auth.Auth.Persistence.LOCAL);
-      await login(email, password);
+      var res = await login(email, password);
+      storeToken(JSON.stringify(res.user));
+      setEmail('');
+      setPassword('');
 
       navigation.navigate('Home');
     } catch (error) {
@@ -50,6 +76,13 @@ export default function LoginScreen({ navigation }) {
 
   useEffect(() => {
     const firestore = firebase.firestore();
+
+    getToken().then((res) => {
+      if (res) {
+        navigation.navigate('Home');
+      }
+    });
+
     async function purgeOld() {
       console.log('THIS SHOULD ONLY PRINT ONCE PER LOAD');
       try {
