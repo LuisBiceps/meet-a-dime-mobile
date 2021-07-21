@@ -9,6 +9,8 @@ import HomeScreen from './components/screens/HomeScreen/HomeScreen';
 import RegistrationScreen from './components/screens/RegistrationScreen/RegistrationScreen';
 import VerifyScreen from './components/screens/VerifyScreen/VerifyScreen';
 import ChatScreen from './components/screens/ChatScreen/ChatScreen';
+import EditProfileScreen from './components/screens/EditProfileScreen/EditProfileScreen';
+import ProfileScreen from './components/screens/ProfileScreen/ProfileScreen';
 
 import { decode, encode } from 'base-64';
 import firebase from 'firebase/app';
@@ -73,6 +75,38 @@ export default function App() {
                   />
                 ),
                 headerBackTitle: 'Login',
+                headerTransparent: 'true',
+                headerTitle: '',
+                headerTintColor: '#e64398',
+              })}
+            />
+            <Stack.Screen
+              name='Edit'
+              component={EditProfileScreen}
+              options={({ navigation, route }) => ({
+                headerLeft: (props) => (
+                  <HeaderBackButton
+                    headerTitle=''
+                    {...props}
+                    onPress={() => navigation.navigate('Profile')}
+                  />
+                ),
+                headerTransparent: 'true',
+                headerTitle: '',
+                headerTintColor: '#e64398',
+              })}
+            />
+            <Stack.Screen
+              name='Profile'
+              component={ProfileScreen}
+              options={({ navigation, route }) => ({
+                headerLeft: (props) => (
+                  <HeaderBackButton
+                    headerTitle=''
+                    {...props}
+                    onPress={() => navigation.navigate('Home')}
+                  />
+                ),
                 headerTransparent: 'true',
                 headerTitle: '',
                 headerTintColor: '#e64398',

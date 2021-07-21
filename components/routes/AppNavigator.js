@@ -6,6 +6,8 @@ import Login from '../screens/LoginScreen/LoginScreen';
 import Signup from '../screens/RegistrationScreen/RegistrationScreen';
 import Verify from '../screens/VerifyScreen/VerifyScreen';
 import Chat from '../screens/ChatScreen/ChatScreen';
+import Edit from '../screens/EditProfileScreen/EditProfileScreen';
+import Profile from '../screens/ProfileScreen/ProfileScreen';
 
 const Stack = createStackNavigator();
 
@@ -16,6 +18,8 @@ const HomeNavigator = () => (
     <Stack.Screen name='Registration' component={Signup} />
     <Stack.Screen name='Verify' component={Verify} />
     <Stack.Screen name='Chat' component={Chat} />
+    <Stack.Screen name='Edit' component={Edit} />
+    <Stack.Screen name='Profile' component={Profile} />
   </Stack.Navigator>
 );
 

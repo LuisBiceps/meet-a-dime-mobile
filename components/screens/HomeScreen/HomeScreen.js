@@ -672,6 +672,10 @@ export default function HomeScreen({ navigation }, props) {
     }
   }
 
+  function navProfile() {
+    navigation.navigate('Profile');
+  }
+
   return (
     <View style={styles.container}>
       <Image
@@ -680,6 +684,9 @@ export default function HomeScreen({ navigation }, props) {
       />
       <Text style={styles.text}>Welcome back, {name}!</Text>
       <View style={styles.formContainer}>
+        <TouchableOpacity style={styles.button} onPress={navProfile}>
+          <Text style={styles.buttonText}>Profile</Text>
+        </TouchableOpacity>
         <TouchableOpacity
           style={styles.button}
           onPress={searching}
