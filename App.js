@@ -47,7 +47,7 @@ export default function App() {
             <Stack.Screen
               name='Login'
               component={LoginScreen}
-              options={{ headerShown: false }}
+              options={{ headerShown: false, gestureEnabled: false }}
             />
             <Stack.Screen
               name='Registration'
@@ -115,11 +115,13 @@ export default function App() {
             <Stack.Screen
               name='Chat'
               component={ChatScreen}
+
               options={{ headerShown: false , gestureEnabled: false}}
             />
             <Stack.Screen
               name='After'
               component={AfterScreen}
+
               options={{ headerShown: false, gestureEnabled: false }}
             />
           </>

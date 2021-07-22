@@ -7,13 +7,20 @@ import styles from './styles';
 import firebase from 'firebase';
 import { auth } from '../../firebase/firebase';
 import { useAuth } from '../../contexts/AuthContext';
+import { roundToNearestPixel } from 'react-native/Libraries/Utilities/PixelRatio';
 
-export default function LoginScreen({ navigation }) {
+export default function LoginScreen({ route, navigation }, props) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errorEmail, setErrorEmail] = useState('');
   const [error, setError] = useState('');
+  const [propState, setPropState] = useState(false);
+  const [fresh, setFresh] = useState(false);
   const { login } = useAuth();
+  var state = false;
+  if (route && route.params && route.params.state) {
+    state = route.params.state;
+  }
 
   const onFooterLinkPress = () => {
     navigation.navigate('Registration');
@@ -30,10 +37,8 @@ export default function LoginScreen({ navigation }) {
       setErrorEmail(
         'You are submitting too many requests, wait a few minutes.'
       );
-    } else {
-      setErrorEmail(error);
-
-      setError(error);
+    } else if (error == 'auth/invalid-email') {
+      setErrorEmail('Please enter a valid email.');
     }
   }
 
@@ -45,7 +50,7 @@ export default function LoginScreen({ navigation }) {
     }
   }
 
-  async function getToken(user) {
+  async function getToken() {
     try {
       let user_data = await AsyncStorage.getItem('user_data');
       if (user_data == null) {
@@ -60,13 +65,16 @@ export default function LoginScreen({ navigation }) {
   async function handleSubmit() {
     try {
       setError('');
+      setErrorEmail('');
       await firebase
         .auth()
         .setPersistence(firebase.auth.Auth.Persistence.LOCAL);
       var res = await login(email, password);
       storeToken(JSON.stringify(res.user));
+      console.log(res.user);
       setEmail('');
       setPassword('');
+      setPropState(false);
 
       navigation.navigate('Home');
     } catch (error) {
@@ -75,10 +83,16 @@ export default function LoginScreen({ navigation }) {
   }
 
   useEffect(() => {
+    // setFresh(props);
+    // console.log(route.params.state);
     const firestore = firebase.firestore();
+    if (state == true && state != undefined && state != null) {
+      setPropState(true);
+    }
 
     getToken().then((res) => {
       if (res) {
+        console.log(res);
         navigation.navigate('Home');
       }
     });
@@ -107,25 +121,12 @@ export default function LoginScreen({ navigation }) {
             resizeMode='center'
             source={require('../../../assets/DimeAssets/headerlogo.png')}
           />
-          {/* <TextInput
-            style={styles.input}
-            placeholder='E-mail'
-            placeholderTextColor='#aaaaaa'
-            onChangeText={(text) => setEmail(text)}
-            value={email}
-            underlineColorAndroid='transparent'
-            autoCapitalize='none'
-          />
-          <TextInput
-            style={styles.input}
-            placeholderTextColor='#aaaaaa'
-            secureTextEntry
-            placeholder='Password'
-            onChangeText={(text) => setPassword(text)}
-            value={password}
-            underlineColorAndroid='transparent'
-            autoCapitalize='none'
-          /> */}
+
+          {state && (
+            <Text style={styles.generalError}>
+              Extra verification is required for changing password
+            </Text>
+          )}
 
           <Reinput
             style={styles.input}

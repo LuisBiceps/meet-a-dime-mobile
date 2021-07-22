@@ -89,10 +89,11 @@ export default StyleSheet.create({
     paddingLeft: 0,
   },
   button: {
-    // backgroundColor: '#e64398',
+    backgroundColor: '#e64398',
     marginLeft: 30,
     marginRight: 30,
-    marginTop: 20,
+    marginTop: 5,
+    marginBottom: 10,
     height: 48,
     borderRadius: 50,
     alignItems: 'center',

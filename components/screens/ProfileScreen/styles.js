@@ -34,11 +34,12 @@ export default StyleSheet.create({
   response: {
     fontSize: 11,
   },
-  headingContainer: { flex: 1, alignItems: 'center' },
+  headingContainer: { flex: 1, alignItems: 'center', marginBottom: 10 },
   heading: {
     fontSize: 26,
     color: '#E64398',
   },
+  success: { fontSize: 16, color: '#E64398' },
   slider: {
     width: width / 1.5,
     height: 1 / 2,

@@ -10,6 +10,8 @@ import {
   Platform,
 } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import * as Progress from 'react-native-progress';
+import { useIsFocused } from '@react-navigation/native';
 
 // import ImagePicker from 'react-native-image-picker';
 import * as ImagePicker from 'expo-image-picker';
@@ -23,6 +25,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import styles from './styles';
 
 export default function ProfileScreen({ navigation }) {
+  const isFocused = useIsFocused();
   const [myPhoto, setMyPhoto] = useState('');
   const [isUploading, setIsUploading] = useState('');
   const [selectedFile, setSelectedFile] = useState('');
@@ -33,7 +36,10 @@ export default function ProfileScreen({ navigation }) {
   const [lastName, setLastName] = useState('');
   const [phone, setPhone] = useState('');
   const [showPicUploader, setShowPicUploader] = useState('');
+  const [progress, setProgress] = useState('');
+  const [showProgress, setShowProgress] = useState(false);
   const [scroll, setScroll] = useState(true);
+  const [photoStatus, setPhotoStatus] = useState('');
 
   const [source, setSource] = useState({});
 
@@ -100,18 +106,24 @@ export default function ProfileScreen({ navigation }) {
     });
   }
 
+  async function getData() {
+    await fetchUserData();
+  }
   useEffect(() => {
-    fetchUserData();
-    async () => {
-      if (Platform.OS !== 'web') {
-        const { status } =
-          await ImagePicker.requestMediaLibraryPermissionsAsync();
-        if (status !== 'granted') {
-          alert('Sorry, we need camera roll permissions for this to work!');
+    if (isFocused) {
+      console.log('=====REACHED THE PROFILE SCREEN======');
+      getData();
+      async () => {
+        if (Platform.OS !== 'web') {
+          const { status } =
+            await ImagePicker.requestMediaLibraryPermissionsAsync();
+          if (status !== 'granted') {
+            alert('Sorry, we need camera roll permissions for this to work!');
+          }
         }
-      }
-    };
-  }, []);
+      };
+    }
+  }, [isFocused]);
 
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -140,7 +152,8 @@ export default function ProfileScreen({ navigation }) {
             var progress_ = Math.round(
               (snapshot.bytesTransferred / snapshot.totalBytes) * 100
             );
-            // setProgress(progress_);
+            setShowProgress(true);
+            setProgress(progress_);
             console.log('Upload is ' + progress_ + '% done');
             switch (snapshot.state) {
               case firebase.storage.TaskState.PAUSED: // or 'paused'
@@ -169,18 +182,20 @@ export default function ProfileScreen({ navigation }) {
                 .doc(currentUser.uid)
                 .update({ photo: downloadURL })
                 .then(() => {
+                  setShowProgress(false);
                   console.log('photo set to user in database!');
-                  // setPhotoStatus('Done!');
+                  setPhotoStatus('Done!');
+
                   setMyPhoto(downloadURL);
                   setSource({ uri: downloadURL });
                   setSelectedFile('');
                   setIsUploading('Done');
                   //   setSuccess(true);
                   setIsUploading(false);
-                  //   setTimeout(() => {
-                  //     setPhotoStatus(false);
-                  //     setSuccess(false);
-                  //   }, 5000);
+                  setTimeout(() => {
+                    setPhotoStatus(false);
+                    //   setSuccess(false);
+                  }, 5000);
                 })
                 .catch((error) => {
                   console.log(error);
@@ -196,11 +211,6 @@ export default function ProfileScreen({ navigation }) {
     }
   };
 
-  function goHome() {
-    setSwitching(true);
-    navigation.navigate('Home');
-  }
-
   function goEdit() {
     setSwitching(true);
     navigation.navigate('Edit');
@@ -214,6 +224,7 @@ export default function ProfileScreen({ navigation }) {
         scrollEnabled={scroll}
       >
         <Image style={styles.logo} source={source} />
+
         <View style={styles.headingContainer}>
           {/* <Text stype={styles.heading}>{myPhoto.toString()}</Text> */}
 
@@ -221,6 +232,17 @@ export default function ProfileScreen({ navigation }) {
           <Text style={styles.heading}>{phone}</Text>
         </View>
 
+        {showProgress && (
+          <View style={styles.responseContainer}>
+            <Progress.Bar progress={progress / 100} color='#E64398' />
+          </View>
+        )}
+
+        {photoStatus === 'Done!' && (
+          <View style={styles.responseContainer}>
+            <Text style={styles.success}>Photo uploaded successfully!</Text>
+          </View>
+        )}
         <TouchableOpacity style={styles.button} onPress={pickImage}>
           <Text style={styles.buttonTitle}>Change Profile Picture</Text>
         </TouchableOpacity>

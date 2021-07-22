@@ -7,21 +7,23 @@ import {
   TouchableOpacity,
   View,
   Image,
-} from "react-native";
 
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import styles from "./styles";
-import firebase from "firebase/app";
-import "firebase/auth";
-import "firebase/firestore";
-import { useAuth } from "../../contexts/AuthContext";
-import axios from "axios";
-import moment, { relativeTimeThreshold } from "moment";
-import { useRoute } from "@react-navigation/core";
+} from 'react-native';
+
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import styles from './styles';
+import firebase from 'firebase/app';
+import 'firebase/auth';
+import 'firebase/firestore';
+import { useAuth } from '../../contexts/AuthContext';
+import axios from 'axios';
+import moment, { relativeTimeThreshold } from 'moment';
+import { useRoute } from '@react-navigation/core';
+import { useIsFocused } from '@react-navigation/native';
 
 export default function HomeScreen({ navigation }, props) {
   const route = useRoute();
-
+  const isFocused = useIsFocused();
   const { currentUser, logout } = useAuth();
   const [match, setMatch] = useState("Not searching");
   const [name, setName] = useState("None");
@@ -72,6 +74,8 @@ export default function HomeScreen({ navigation }, props) {
   }
 
   useEffect(() => {
+    if(isFocused){
+    
     setLockout(true);
     if (!currentUser) {
       console.log("We In the use effect");
@@ -107,20 +111,33 @@ export default function HomeScreen({ navigation }, props) {
         } catch (error) {
           console.log(error);
           console.log("issue in fetch data");
+
         }
-        // document.getElementById('photo').src = userInfo.photo;
       }
 
-      async function purgeOld() {
-        // Lock the search button until these tasks are complete.
-        setLockout(true);
-        console.log("I SHOULD ONLY PRINT ONCE PER PAGE LOAD");
-        try {
-          // If I am "document host", clear the match field first.
+        async function purgeOld() {
+          // Lock the search button until these tasks are complete.
+          setLockout(true);
+          console.log('I SHOULD ONLY PRINT ONCE PER PAGE LOAD');
           try {
+            // If I am "document host", clear the match field first.
+            try {
+              await firestore
+                .collection('searching')
+                .doc(currentUser.uid)
+                .update({ match: '' });
+              console.log('cleared old match before delete');
+            } catch (error) {
+              console.log('tried to clear match before delete, but failed');
+              console.log('most of the time this is ok');
+              // this is okay because this most likely wont exist on each load.
+            }
+
+            // Delete the document (if exists) if I am a "document host".
             await firestore
               .collection("searching")
               .doc(currentUser.uid)
+
               .update({ match: "" });
             console.log("cleared old match before delete");
           } catch (error) {
@@ -158,15 +175,26 @@ export default function HomeScreen({ navigation }, props) {
             });
         } catch (error) {
           console.log(error);
+
         }
-        // Unlock the button now that initial tasks are done.
-        setLockout(false);
-        setLoading(false);
+        // call the function that was just defined here.
+        purgeOld();
+        getIntialUserPhoto();
       }
-      // call the function that was just defined here.
-      purgeOld();
-      getIntialUserPhoto();
+      return () => {
+        setMatch('Not searching');
+        setId('none');
+        clearTimeout(timeout.current);
+        clearAllTimeouts();
+        console.log('LEAVING!');
+        if (observer.current !== null) {
+          observer.current();
+        } else {
+          console.log('could not clear observer');
+        }
+      };
     }
+
     return () => {
       setMatch("Not searching");
       setId("none");
@@ -180,7 +208,8 @@ export default function HomeScreen({ navigation }, props) {
         console.log("could not clear observer");
       }
     };
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [isFocused]); // eslint-disable-line react-hooks/exhaustive-deps
+
 
   if (currentUser && !currentUser.emailVerified) {
     navigation.navigate("Verify");
@@ -736,7 +765,7 @@ export default function HomeScreen({ navigation }, props) {
           onPress={searching}
           disabled={lockout}
         >
-          <Text style={styles.buttonText}>Search</Text>
+          <Text style={styles.buttonText}>New Chat</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.button} onPress={killSearch}>
           <Text style={styles.buttonText}>Stop Search</Text>
