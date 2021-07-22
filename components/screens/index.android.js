@@ -4,3 +4,4 @@ export { default as RegistrationScreen } from './RegistrationScreen/Registration
 export { default as ChatScreen } from './ChatScreen/ChatScreen';
 export { default as EditProfileScreen } from './EditProfileScreen/EditProfileScreen';
 export { default as ProfileScreen } from './ChatScreen/ChatScreen';
+export {default as AfterScreen } from './AfterScreen/AfterScreen'
