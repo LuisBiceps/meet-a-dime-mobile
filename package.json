@@ -39,7 +39,8 @@
     "reinput": "^3.7.2",
     "rn-range-slider": "^2.0.4",
     "socket.io-client": "4.1.2",
-    "yup": "^0.32.9"
+    "yup": "^0.32.9",
+    "react-native-svg": "12.1.1"
   },
   "devDependencies": {
     "@babel/core": "^7.9.0"
