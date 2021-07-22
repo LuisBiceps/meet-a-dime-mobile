@@ -10,6 +10,7 @@ import {
   Modal,
   Pressable,
 } from "react-native";
+import { useIsFocused } from "@react-navigation/native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { GiftedChat, Bubble } from "react-native-gifted-chat";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -31,21 +32,25 @@ export default function ChatScreen({ route, navigation }) {
   const myPhotoRef = useRef("");
   const [error, setError] = useState("");
   const [messages, setMessages] = useState([]);
-  const timeoutRef1 = useRef();
+  const timeoutRef1 = useRef(null);
   const [sentMessage, setSentMessage] = useState(false);
   const [room, setRoom] = useState("");
   const roomRef = useRef("");
   const [socket, setSocket] = useState("");
   const { currentUser, logout } = useAuth();
-  const EXPIRE_IN_MINUTES = 0.4; // 10 minutes
+  const EXPIRE_IN_MINUTES = 1; // 10 minutes
 
-  const modalExpire = 10000; // 30 seconds in MS
+  const modalExpire = 30000; // 30 seconds in MS
 
   const [match_age, setMatchAge] = useState("");
+  const isFocused = useIsFocused();
   const [match_name, setMatchName] = useState("user");
   const [match_sex, setMatchSex] = useState("");
   const [match_photo, setMatchPhoto] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
+  const [observerState, setObserverState] = useState(null);
+  const [timeoutState, setTimeoutState] = useState(null);
+  const [extendedTimeoutState, setExtendedTimeoutState] = useState(null);
   const { match_id, timeout } = route.params;
   const observer = useRef(null);
   const extendedTimeoutRef = useRef();
@@ -94,7 +99,7 @@ export default function ChatScreen({ route, navigation }) {
   }
 
   function noMatch() {
-    if (timeoutRef1.current !== undefined) clearTimeout(timeoutRef1.current);
+    if (timeoutRef1.current !== null) clearTimeout(timeoutRef1.current);
     setTimeout(async () => {
       await firestore
         .collection("users")
@@ -111,14 +116,19 @@ export default function ChatScreen({ route, navigation }) {
       socketRef.current.emit("leave-room", currentUser.uid, room);
       console.log("LEFT MY ROOM TOO");
       setModalVisible(false);
+      if (observer.current !== null) observer.current();
+      if (observerState !== null) observerState();
+      setObserverState(null);
+      observer.current = null;
 
+      if (timeoutRef1.current !== null) clearTimeout(timeoutRef1.current);
       navigation.navigate("After", {
         match_id: match_id,
         type: "user_didnt_go_well",
       });
     }, 0);
   }
-  async function noMatchTimeout() {
+  async function out() {
     var seeker = "none";
     var match = "none";
 
@@ -151,14 +161,43 @@ export default function ChatScreen({ route, navigation }) {
     }
 
     socketRef.current.emit("leave-room-silently", currentUser.uid, room);
+    if (observer.current !== null) observer.current();
+    if (observerState !== null) observerState();
+    setObserverState(null);
+    observer.current = null;
 
+    if (timeoutRef1.current !== null) clearTimeout(timeoutRef1.current);
     navigation.navigate("After", { match_id: match_id, type: "timeout" });
 
     console.log("Left room silently");
   }
 
+  async function setIsChatting() {
+    // console.log('Checking searching doc');
+    try {
+      var myDoc = await firestore
+        .collection("searching")
+        .doc(currentUser.uid)
+        .get();
+      if (myDoc.exists) {
+        await firestore
+          .collection("searching")
+          .doc(currentUser.uid)
+          .update({ isChatting: 1 });
+      } else {
+        await firestore
+          .collection("searching")
+          .doc(match_id)
+          .update({ isChatting: 1 });
+      }
+      console.log("Set is chatting.");
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   async function pendingMatch() {
-    if (timeoutRef1.current !== undefined) clearTimeout(timeoutRef1.current);
+    if (timeoutRef1.current !== null) clearTimeout(timeoutRef1.current);
     // This disconnects then sends to the /after page with a state.
     function leavePageWith(stateString) {
       socketRef.current.emit(
@@ -168,6 +207,15 @@ export default function ChatScreen({ route, navigation }) {
       );
       setModalVisible(false);
       console.log("going to after page1");
+      if (observer.current !== null) observer.current();
+
+      if (observerState !== null) observerState();
+      setObserverState(null);
+      observer.current = null;
+      clearTimeout(extended_timeout);
+      clearTimeout(extendedTimeoutRef.current);
+      clearTimeout(extendedTimeoutState);
+      if (timeoutRef1.current !== null) clearTimeout(timeoutRef1.current);
       navigation.navigate("After", { match_id: match_id, type: stateString });
       console.log("going to after page2");
     }
@@ -196,9 +244,16 @@ export default function ChatScreen({ route, navigation }) {
         currentUser.uid,
         roomRef.current
       );
+      setExtendedTimeoutState(extended_timeout);
+      extendedTimeoutRef.current = extended_timeout;
 
-      if (observer.current !== null) observer.current();
       setModalVisible(false);
+      if (observer.current !== null) observer.current();
+
+      if (observerState !== null) observerState();
+      setObserverState(null);
+      observer.current = null;
+      if (timeoutRef1.current !== null) clearTimeout(timeoutRef1.current);
       navigation.navigate("After", {
         match_id: match_id,
         type: "extended_timeout",
@@ -239,11 +294,15 @@ export default function ChatScreen({ route, navigation }) {
         setSuccessMatches();
         console.log("match said yes!!");
         clearTimeout(extended_timeout);
+        clearTimeout(extendedTimeoutRef.current);
+        clearTimeout(extendedTimeoutState);
+        clearTimeout(extendedTimeoutRef.current);
+        clearTimeout(extendedTimeoutState);
 
         leavePageWith("match_made");
       } else {
         // Nothing yet, lets wait for a change to the matchTail.
-        observer.current = firestore
+        var localObserver = (observer.current = firestore
           .collection("searching")
           .doc(currentUser.uid)
           .onSnapshot((docSnapshot) => {
@@ -256,7 +315,15 @@ export default function ChatScreen({ route, navigation }) {
               setSuccessMatches();
               console.log("other person (the match) said yes after");
               if (observer.current !== null) observer.current();
+              if (observerState !== null) observerState();
+              setObserverState(null);
+              observer.current = null;
+              if (observerState !== null) observerState();
+              setObserverState(null);
+              observer.current = null;
               clearTimeout(extended_timeout);
+              clearTimeout(extendedTimeoutRef.current);
+              clearTimeout(extendedTimeoutState);
 
               leavePageWith("match_made");
             }
@@ -268,11 +335,20 @@ export default function ChatScreen({ route, navigation }) {
               // The other person timed out..
               console.log("other person (the match) timed out");
               if (observer.current !== null) observer.current();
+              if (observerState !== null) observerState();
+              setObserverState(null);
+              observer.current = null;
+              if (observerState !== null) observerState();
+              setObserverState(null);
+              observer.current = null;
               clearTimeout(extended_timeout);
+              clearTimeout(extendedTimeoutRef.current);
+              clearTimeout(extendedTimeoutState);
 
               leavePageWith("match_timedout");
             }
-          });
+          }));
+        setObserverState(localObserver);
       }
     }
 
@@ -289,11 +365,13 @@ export default function ChatScreen({ route, navigation }) {
         setSuccessMatches();
         console.log("seeker said yes!!");
         clearTimeout(extended_timeout);
+        clearTimeout(extendedTimeoutRef.current);
+        clearTimeout(extendedTimeoutState);
 
         leavePageWith("match_made");
       } else {
         // I need to passively listen for a document change.
-        observer.current = firestore
+        var localObserver = (observer.current = firestore
           .collection("searching")
           .doc(match_id)
           .onSnapshot((docSnapshot) => {
@@ -306,7 +384,15 @@ export default function ChatScreen({ route, navigation }) {
               setSuccessMatches();
               console.log("other person (the seeker) said yes after");
               if (observer.current !== null) observer.current();
+              if (observerState !== null) observerState();
+              setObserverState(null);
+              observer.current = null;
+              if (observerState !== null) observerState();
+              setObserverState(null);
+              observer.current = null;
               clearTimeout(extended_timeout);
+              clearTimeout(extendedTimeoutRef.current);
+              clearTimeout(extendedTimeoutState);
 
               leavePageWith("match_made");
             }
@@ -318,109 +404,140 @@ export default function ChatScreen({ route, navigation }) {
               // The other person timed out..
               console.log("other person (the seeker) timed out");
               if (observer.current !== null) observer.current();
+              if (observerState !== null) observerState();
+              setObserverState(null);
+              observer.current = null;
+              if (observerState !== null) observerState();
+              setObserverState(null);
+              observer.current = null;
               clearTimeout(extended_timeout);
+              clearTimeout(extendedTimeoutRef.current);
+              clearTimeout(extendedTimeoutState);
 
               leavePageWith("match_timedout");
             }
-          });
+          }));
+        setObserverState(localObserver);
       }
     }
   }
 
   const id = currentUser.uid;
   useEffect(() => {
-    fetchMatchInfo();
-    var roomInUseEffect = "";
-    const sock = io("https://meetadime.herokuapp.com/");
-    sock.auth = { id };
-    sock.connect();
-    sock.on("connect", () => {
-      console.log(
-        `Email: "${currentUser.email}" \n With User ID: "${currentUser.uid}" connected with socket id: "${sock.id}"`
-      );
-    });
+    if (isFocused) {
+      fetchMatchInfo();
+      setIsChatting();
+      var roomInUseEffect = "";
+      if (timeout !== null) clearTimeout(timeout);
+      const sock = io("https://meetadime.herokuapp.com/");
+      sock.auth = { id };
+      sock.connect();
+      sock.on("connect", () => {
+        console.log(
+          `Email: "${currentUser.email}" \n With User ID: "${currentUser.uid}" connected with socket id: "${sock.id}"`
+        );
+      });
 
-    const ids = [currentUser.uid, match_id];
-    ids.sort();
-    const new_room = ids[0] + ids[1];
-    roomRef.current = new_room;
-    sock.emit(
-      "join-room",
-      currentUser.uid.toString(),
-      new_room.toString(),
-      function (message) {
-        if (message === "joined") {
-          setRoom(new_room);
-          roomInUseEffect = new_room;
-        }
-      }
-    );
-
-    setSocket(sock);
-    socketRef.current = sock;
-
-    sock.on("message", (message, user, messageID) => {
-      var messageId = hash_str(messageID + new Date().toDateString());
-
+      const ids = [currentUser.uid, match_id];
+      ids.sort();
+      const new_room = ids[0] + ids[1];
+      roomRef.current = new_room;
       sock.emit(
-        "seen-message",
-        currentUser.uid,
-        new_room,
-        messageID,
-        function () {}
+        "join-room",
+        currentUser.uid.toString(),
+        new_room.toString(),
+        function (message) {
+          if (message === "joined") {
+            setRoom(new_room);
+            roomInUseEffect = new_room;
+          }
+        }
       );
-      setMessages((previousMessages) =>
-        GiftedChat.append(previousMessages, {
-          _id: messageId,
-          text: message,
-          createdAt: new Date(),
-          user: {
-            _id: 2,
-            name: currentUser.uid,
-            avatar: matchPhotoRef.current,
-          },
-        })
-      );
-    });
 
-    sock.on("abandoned", (message) => {
-      //Somehow show the user their match left
+      setSocket(sock);
+      socketRef.current = sock;
 
-      setTimeout(async () => {
-        await firestore
-          .collection("users")
-          .doc(currentUser.uid)
-          .update({
-            FailMatch: firebase.firestore.FieldValue.arrayUnion(match_id),
+      sock.on("message", (message, user, messageID) => {
+        var messageId = hash_str(messageID + new Date().toDateString());
+
+        sock.emit(
+          "seen-message",
+          currentUser.uid,
+          new_room,
+          messageID,
+          function () {}
+        );
+        setMessages((previousMessages) =>
+          GiftedChat.append(previousMessages, {
+            _id: messageId,
+            text: message,
+            createdAt: new Date(),
+            user: {
+              _id: 2,
+              name: currentUser.uid,
+              avatar: matchPhotoRef.current,
+            },
+          })
+        );
+      });
+
+      sock.on("abandoned", (message) => {
+        //Somehow show the user their match left
+
+        setTimeout(async () => {
+          await firestore
+            .collection("users")
+            .doc(currentUser.uid)
+            .update({
+              FailMatch: firebase.firestore.FieldValue.arrayUnion(match_id),
+            });
+          await firestore
+            .collection("users")
+            .doc(match_id)
+            .update({
+              FailMatch: firebase.firestore.FieldValue.arrayUnion(
+                currentUser.uid
+              ),
+            });
+
+          sock.emit("leave-room", currentUser.uid, room);
+          // Clear timeouts
+          console.log("LEAVING ROOM");
+          if (timeoutRef1.current !== null) clearTimeout(timeoutRef1.current);
+          if (observer.current !== null) observer.current();
+          if (observerState !== null) observerState();
+          setObserverState(null);
+          observer.current = null;
+          if (observerState !== null) observerState();
+
+          observer.current = null;
+          navigation.navigate("After", {
+            match_id: match_id,
+            type: "match_abandoned",
           });
-        await firestore
-          .collection("users")
-          .doc(match_id)
-          .update({
-            FailMatch: firebase.firestore.FieldValue.arrayUnion(
-              currentUser.uid
-            ),
-          });
+        }, 0);
+      });
 
-        sock.emit("leave-room", currentUser.uid, room);
-        // Clear timeouts
-        console.log("LEAVING ROOM");
-        navigation.navigate("After", {
-          match_id: match_id,
-          type: "match_abandoned",
-        });
-      }, 0);
-    });
-
-    setTimeout(() => {
-      setModalVisible(true);
+      setTimeout(() => {
+        setModalVisible(true);
+      }, EXPIRE_IN_MINUTES * 60000);
       timeoutRef1.current = setTimeout(() => {
         console.log("calling no match timeout");
         setModalVisible(false);
         noMatchTimeout();
-      }, modalExpire);
-    }, EXPIRE_IN_MINUTES * 60000);
-  }, []);
+      }, EXPIRE_IN_MINUTES * 60000 + modalExpire);
+    }
+    return () => {
+      console.log("left chat, cleaned up.");
+      if (observer.current !== null) observer.current();
+      if (observerState !== null) observerState();
+      setObserverState(null);
+      observer.current = null;
+
+      if (timeoutRef1.current !== null) clearTimeout(timeoutRef1.current);
+      if (timeoutState !== null) clearTimeout(timeoutState);
+    };
+  }, [isFocused]);
 
   const onSend = useCallback((newMessage = []) => {
     console.log(newMessage);
@@ -459,6 +576,11 @@ export default function ChatScreen({ route, navigation }) {
       .update({
         FailMatch: firebase.firestore.FieldValue.arrayUnion(currentUser.uid),
       });
+    if (timeoutRef1.current !== null) clearTimeout(timeoutRef1.current);
+    if (observer.current !== null) observer.current();
+    if (observerState !== null) observerState();
+    setObserverState(null);
+    observer.current = null;
 
     navigation.navigate("After", {
       match_id: match_id,
