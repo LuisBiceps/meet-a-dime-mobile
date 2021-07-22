@@ -7,19 +7,18 @@ import {
   TouchableOpacity,
   View,
   Image,
+} from "react-native";
 
-} from 'react-native';
-
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import styles from './styles';
-import firebase from 'firebase/app';
-import 'firebase/auth';
-import 'firebase/firestore';
-import { useAuth } from '../../contexts/AuthContext';
-import axios from 'axios';
-import moment, { relativeTimeThreshold } from 'moment';
-import { useRoute } from '@react-navigation/core';
-import { useIsFocused } from '@react-navigation/native';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import styles from "./styles";
+import firebase from "firebase/app";
+import "firebase/auth";
+import "firebase/firestore";
+import { useAuth } from "../../contexts/AuthContext";
+import axios from "axios";
+import moment, { relativeTimeThreshold } from "moment";
+import { useRoute } from "@react-navigation/core";
+import { useIsFocused } from "@react-navigation/native";
 
 export default function HomeScreen({ navigation }, props) {
   const route = useRoute();
@@ -74,62 +73,60 @@ export default function HomeScreen({ navigation }, props) {
   }
 
   useEffect(() => {
-    if(isFocused){
-    
-    setLockout(true);
-    if (!currentUser) {
-      console.log("We In the use effect");
-    } else {
-      // console.log('Current User ID: ' + `"${currentUser.uid}"`);
-      // console.log(currentUser.getIdToken());
-      async function deleteItem() {
-        await AsyncStorage.removeItem("chatExpiry");
-      }
-      // document.body.style.backgroundColor = 'white';
-      deleteItem();
-      async function getIntialUserPhoto() {
-        try {
-          const token = currentUser && (await currentUser.getIdToken(true));
-          // console.log(token);
-          var config = {
-            method: "post",
-            url: "https://meetadime.herokuapp.com/api/getbasicuser",
-            headers: {
-              "Content-Type": "application/json",
-              // Authorization: `Bearer ${token}`,
-            },
-            data: { uid: currentUser.uid },
-          };
-          // console.log(config.data)
-          axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-
-          var response = await axios(config);
-          console.log(response.data);
-          setMyPhoto(response.data.photo);
-          if (myPhoto) console.log(myPhoto);
-          setName(response.data.firstName);
-        } catch (error) {
-          console.log(error);
-          console.log("issue in fetch data");
-
+    if (isFocused) {
+      setLockout(true);
+      if (!currentUser) {
+        console.log("We In the use effect");
+      } else {
+        // console.log('Current User ID: ' + `"${currentUser.uid}"`);
+        // console.log(currentUser.getIdToken());
+        async function deleteItem() {
+          await AsyncStorage.removeItem("chatExpiry");
         }
-      }
+        // document.body.style.backgroundColor = 'white';
+        deleteItem();
+        async function getIntialUserPhoto() {
+          try {
+            const token = currentUser && (await currentUser.getIdToken(true));
+            // console.log(token);
+            var config = {
+              method: "post",
+              url: "https://meetadime.herokuapp.com/api/getbasicuser",
+              headers: {
+                "Content-Type": "application/json",
+                // Authorization: `Bearer ${token}`,
+              },
+              data: { uid: currentUser.uid },
+            };
+            // console.log(config.data)
+            axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+
+            var response = await axios(config);
+            console.log(response.data);
+            setMyPhoto(response.data.photo);
+            if (myPhoto) console.log(myPhoto);
+            setName(response.data.firstName);
+          } catch (error) {
+            console.log(error);
+            console.log("issue in fetch data");
+          }
+        }
 
         async function purgeOld() {
           // Lock the search button until these tasks are complete.
           setLockout(true);
-          console.log('I SHOULD ONLY PRINT ONCE PER PAGE LOAD');
+          console.log("I SHOULD ONLY PRINT ONCE PER PAGE LOAD");
           try {
             // If I am "document host", clear the match field first.
             try {
               await firestore
-                .collection('searching')
+                .collection("searching")
                 .doc(currentUser.uid)
-                .update({ match: '' });
-              console.log('cleared old match before delete');
+                .update({ match: "" });
+              console.log("cleared old match before delete");
             } catch (error) {
-              console.log('tried to clear match before delete, but failed');
-              console.log('most of the time this is ok');
+              console.log("tried to clear match before delete, but failed");
+              console.log("most of the time this is ok");
               // this is okay because this most likely wont exist on each load.
             }
 
@@ -137,79 +134,56 @@ export default function HomeScreen({ navigation }, props) {
             await firestore
               .collection("searching")
               .doc(currentUser.uid)
+              .delete();
 
-              .update({ match: "" });
-            console.log("cleared old match before delete");
-          } catch (error) {
-            console.log("tried to clear match before delete, but failed");
-            console.log("most of the time this is ok");
-            // this is okay because this most likely wont exist on each load.
-          }
-
-          // Delete the document (if exists) if I am a "document host".
-          await firestore.collection("searching").doc(currentUser.uid).delete();
-
-          // The final mechanism for clearing. This is if I was a previous
-          // "document joiner" or "filling in" the existing doc.
-          // I will search all docs where my id is the match field, and clear it.
-          // This will signal to those listening to that field that I am
-          // no longer available.
-          firestore
-            .collection("searching")
-            .where("match", "==", currentUser.uid)
-            .get()
-            .then((querySnapshot) => {
-              querySnapshot.forEach((doc) => {
-                try {
-                  firestore
-                    .collection("searching")
-                    .doc(doc.id)
-                    .update({ match: "" });
-                } catch (error) {
-                  console.log("doc match clear error on start");
-                }
+            // The final mechanism for clearing. This is if I was a previous
+            // "document joiner" or "filling in" the existing doc.
+            // I will search all docs where my id is the match field, and clear it.
+            // This will signal to those listening to that field that I am
+            // no longer available.
+            firestore
+              .collection("searching")
+              .where("match", "==", currentUser.uid)
+              .get()
+              .then((querySnapshot) => {
+                querySnapshot.forEach((doc) => {
+                  try {
+                    firestore
+                      .collection("searching")
+                      .doc(doc.id)
+                      .update({ match: "" });
+                  } catch (error) {
+                    console.log("doc match clear error on start");
+                  }
+                });
+              })
+              .catch((error) => {
+                console.log("Error getting documents: ", error);
               });
-            })
-            .catch((error) => {
-              console.log("Error getting documents: ", error);
-            });
-        } catch (error) {
-          console.log(error);
-
+          } catch (error) {
+            console.log(error);
+          }
+          // call the function that was just defined here.
+          purgeOld();
+          getIntialUserPhoto();
         }
-        // call the function that was just defined here.
-        purgeOld();
-        getIntialUserPhoto();
       }
+
       return () => {
-        setMatch('Not searching');
-        setId('none');
+        setMatch("Not searching");
+        setId("none");
         clearTimeout(timeout.current);
         clearAllTimeouts();
-        console.log('LEAVING!');
+        console.log("LEAVING!");
+        setLockout(false);
         if (observer.current !== null) {
           observer.current();
         } else {
-          console.log('could not clear observer');
+          console.log("could not clear observer");
         }
       };
     }
-
-    return () => {
-      setMatch("Not searching");
-      setId("none");
-      clearTimeout(timeout.current);
-      clearAllTimeouts();
-      console.log("LEAVING!");
-      setLockout(false);
-      if (observer.current !== null) {
-        observer.current();
-      } else {
-        console.log("could not clear observer");
-      }
-    };
   }, [isFocused]); // eslint-disable-line react-hooks/exhaustive-deps
-
 
   if (currentUser && !currentUser.emailVerified) {
     navigation.navigate("Verify");
