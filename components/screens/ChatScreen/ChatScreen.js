@@ -128,7 +128,32 @@ export default function ChatScreen({ route, navigation }) {
       });
     }, 0);
   }
-  async function out() {
+
+  async function setIsChatting() {
+    // console.log('Checking searching doc');
+    try {
+      var myDoc = await firestore
+        .collection("searching")
+        .doc(currentUser.uid)
+        .get();
+      if (myDoc.exists) {
+        await firestore
+          .collection("searching")
+          .doc(currentUser.uid)
+          .update({ isChatting: 1 });
+      } else {
+        await firestore
+          .collection("searching")
+          .doc(match_id)
+          .update({ isChatting: 1 });
+      }
+      console.log("Set is chatting.");
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async function noMatchTimeout() {
     var seeker = "none";
     var match = "none";
 
@@ -170,30 +195,6 @@ export default function ChatScreen({ route, navigation }) {
     navigation.navigate("After", { match_id: match_id, type: "timeout" });
 
     console.log("Left room silently");
-  }
-
-  async function setIsChatting() {
-    // console.log('Checking searching doc');
-    try {
-      var myDoc = await firestore
-        .collection("searching")
-        .doc(currentUser.uid)
-        .get();
-      if (myDoc.exists) {
-        await firestore
-          .collection("searching")
-          .doc(currentUser.uid)
-          .update({ isChatting: 1 });
-      } else {
-        await firestore
-          .collection("searching")
-          .doc(match_id)
-          .update({ isChatting: 1 });
-      }
-      console.log("Set is chatting.");
-    } catch (error) {
-      console.log(error);
-    }
   }
 
   async function pendingMatch() {
