@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef } from 'react';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
 import {
   Image,
   Platform,
@@ -6,13 +6,13 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  Alert,
 } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import Reinput from 'reinput';
-import { Formik } from 'formik';
-import * as yup from 'yup';
+import { useIsFocused } from '@react-navigation/native';
 
-import { HeaderBackButton } from '@react-navigation/stack';
+import Reinput from 'reinput';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Picker } from '@react-native-picker/picker';
 import styles from './styles';
@@ -27,10 +27,15 @@ import Notch from '../../slider/Notch';
 
 import { useAuth } from '../../contexts/AuthContext';
 import axios from 'axios';
+import firebase from 'firebase/app';
+import 'firebase/auth';
+import 'firebase/firestore';
+import 'firebase/storage';
 const DEFAULT_COIN_IMAGE =
   'https://firebasestorage.googleapis.com/v0/b/meet-a-dime.appspot.com/o/default_1.png?alt=media&token=23ab5b95-0214-42e3-9c54-d7811362aafc';
 
-export default function EditProfileScreen({ navigation }) {
+export default function EditProfileScreen({ route, navigation }, props) {
+  const isFocused = useIsFocused();
   const [firstName, setFirstName] = useState('');
 
   const [lastName, setLastName] = useState('');
@@ -40,6 +45,7 @@ export default function EditProfileScreen({ navigation }) {
   const [password, setPassword] = useState('');
 
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [passChange, setPassChange] = useState();
 
   const [value, setValue] = useState(18);
   const [response, setResponse] = useState('');
@@ -52,7 +58,8 @@ export default function EditProfileScreen({ navigation }) {
   const [max, setMax] = useState(72);
   const [floatingLabel, setFloatingLabel] = useState(true);
 
-  const { signup, logout } = useAuth();
+  const { currentUser, updatePassword, updateEmail, deleteUser, logout } =
+    useAuth();
 
   const renderThumb = useCallback(() => <Thumb />, []);
   const renderRail = useCallback(() => <Rail />, []);
@@ -78,9 +85,13 @@ export default function EditProfileScreen({ navigation }) {
   const [birth, setBirth] = useState('Select your Date of Birth');
 
   const [sex, setSex] = useState('Choose your sex...');
+  const [optionsState, setOptionsState] = useState('0');
+  const [orientationState, setOrientationState] = useState('0');
   const [sexLabel, setSexLabel] = useState('Choose your sex...');
   const [sexToggle, setSexToggle] = useState(' (open)');
-  const [orientation, setOrientation] = useState('');
+  const [orientation, setOrientation] = useState(
+    'Choose your sexual orientation...'
+  );
   const [orientLabel, setOrientLabel] = useState(
     'Choose your sexual orientation...'
   );
@@ -102,6 +113,8 @@ export default function EditProfileScreen({ navigation }) {
   const [hasGeneralError, setHasGeneralError] = useState(false);
   const [generalError, setGeneralError] = useState('');
   const [scroll, setScroll] = useState(true);
+
+  const firestore = firebase.firestore();
 
   var orient = {
     1: 'Heterosexual',
@@ -139,30 +152,128 @@ export default function EditProfileScreen({ navigation }) {
     }
   }
 
-  async function handleRegister() {
-    // navigation.navigate("Login");
-    // ******* Form validation still needed *******
-    var hasError = false;
+  async function fetchUserData() {
+    // console.log('ran');
+    var snapshot = await firestore.collection('users').get();
+    snapshot.forEach((doc) => {
+      if (doc.data().userID === currentUser.uid) {
+        var temp = moment(doc.data().birth).format('MMMM Do YYYY');
 
+        setBirth(temp);
+        setFirstName(doc.data().firstName);
+        setLastName(doc.data().lastName);
+        if (email === '') {
+          setEmail(currentUser.email);
+        }
+        setPhone(doc.data().phone);
+        setResponse(doc.data().exitMessage);
+        setOptionsState(doc.data().sex === 'Male' ? '1' : '2');
+        setSex(doc.data().sex);
+        if (isNaN(doc.data().ageRangeMin)) {
+          console.log('NAN FOR NOW');
+
+          setLow(Math.max(moment().diff(doc.data().birth, 'years') - 6, 18));
+          setHigh(Math.min(moment().diff(doc.data().birth, 'years') + 6, 72));
+        } else {
+          setLow(doc.data().ageRangeMin);
+          setHigh(doc.data().ageRangeMax);
+        }
+        const userOrientation = doc.data().sexOrientation;
+        setOrientLabel(
+          userOrientation === 'Heterosexual'
+            ? 'Straight'
+            : userOrientation === 'Homosexual'
+            ? 'Gay/Lesbian'
+            : 'Bisexual'
+        );
+        setOrientationState(
+          userOrientation === 'Heterosexual'
+            ? '1'
+            : userOrientation === 'Homosexual'
+            ? '2'
+            : '3'
+        );
+      }
+    });
+  }
+  async function getData() {
+    await fetchUserData();
+  }
+
+  async function handleLogout() {
+    try {
+      await logout();
+      await AsyncStorage.removeItem('user_data');
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  useEffect(() => {
+    if (isFocused) {
+      getData();
+      handleSex(optionsState);
+      handleOrientation(orientationState);
+    }
+  }, [isFocused]);
+
+  async function handlePasswordUpdate() {
+    var hasError = false;
     setConfirmError('');
     setPassError('');
-    setHasGeneralError(false);
-    setGeneralError('');
-    setPhoneError('');
-    setFirstNameError('');
-    setLastNameError('');
-    setEmailError('');
-
     if (password !== confirmPassword) {
       setConfirmError('Passwords do not match.');
+      setPassChange('');
       hasError = true;
     }
 
     if (password.length <= 6) {
       setPassError('Password should be more than six characters.');
       setConfirmError('Password should be more than six characters.');
+      setPassChange('');
       hasError = true;
     }
+
+    if (hasError) {
+      return;
+    }
+
+    if (password) {
+      try {
+        await updatePassword(password);
+        setPassChange('Password Successfully Changed!');
+      } catch (error) {
+        // console.log(error);
+        if (error.code === 'auth/requires-recent-login') {
+          console.log(error);
+
+          Alert.alert(
+            'This action requires you to log in again.',
+            'You will be redirected to login',
+            [
+              {
+                text: 'OK',
+                onPress: () => {
+                  handleLogout(), navigation.navigate('Login', { state: true });
+                },
+              },
+            ]
+          );
+        }
+      }
+    }
+  }
+
+  async function handleSubmit() {
+    var hasError = false;
+
+    var path = 'Profile';
+    setHasGeneralError(false);
+    setGeneralError('');
+    setPhoneError('');
+    setFirstNameError('');
+    setLastNameError('');
+    setEmailError('');
 
     if (sex === 'Choose your sex...') {
       setHasGeneralError(true);
@@ -179,20 +290,6 @@ export default function EditProfileScreen({ navigation }) {
     if (phone.trim().length < 14) {
       setPhoneError('Please enter a valid phone number.');
       hasError = true;
-    }
-
-    if (birth === 'Select your Date of Birth') {
-      setHasGeneralError(true);
-      setGeneralError('Please enter a valid date of birth.');
-      hasError = true;
-    }
-
-    if (birth !== 'Select your Date of Birth') {
-      if (!isLegal(cleanDate.current)) {
-        setHasGeneralError(true);
-        setGeneralError('You must be 18 years or older to sign up.');
-        hasError = true;
-      }
     }
 
     if (firstName === '') {
@@ -215,47 +312,52 @@ export default function EditProfileScreen({ navigation }) {
     }
 
     try {
-      var cred = await signup(email.trim(), password);
-      var newUser = cred.user;
-      var obj = {
-        firstName: firstName.trim(),
-        lastName: lastName.trim(),
-        email: newUser.email,
-        sex: sex,
-        sexOrientation: orientation,
-        birth: cleanDate.current,
-        phone: phone,
-        exitMessage: response.trim(),
-        userID: newUser.uid,
-        photo: DEFAULT_COIN_IMAGE,
-        displayName: newUser.displayName === null ? '' : newUser.displayName,
-        initializedProfile: 0,
-        FailMatch: [],
-        SuccessMatch: [],
-        ageRangeMin: low,
-        ageRangeMax: high,
-      };
-
-      console.log(obj);
-
-      var config = {
-        method: 'post',
-        url: 'https://meetadime.herokuapp.com/api/newuser',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        data: obj,
-      };
-
-      var res = await axios(config);
-      // console.log(response.data);
-      if (res.data.error === '') {
-        navigation.navigate('Verify');
+      if (email !== currentUser.email) {
+        path = 'Login';
+        updateEmail(email);
       }
+
+      await firestore
+        .collection('users')
+        .doc(currentUser.uid)
+        .update({ firstName: firstName.trim() });
+      await firestore
+        .collection('users')
+        .doc(currentUser.uid)
+        .update({ lastName: lastName.trim() });
+      await firestore
+        .collection('users')
+        .doc(currentUser.uid)
+        .update({ email: email });
+      await firestore
+        .collection('users')
+        .doc(currentUser.uid)
+        .update({ sex: sex });
+      await firestore
+        .collection('users')
+        .doc(currentUser.uid)
+        .update({ sexOrientation: orientation });
+      await firestore
+        .collection('users')
+        .doc(currentUser.uid)
+        .update({ phone: phone });
+      await firestore
+        .collection('users')
+        .doc(currentUser.uid)
+        .update({ exitMessage: response.trim() });
+      await firestore
+        .collection('users')
+        .doc(currentUser.uid)
+        .update({ ageRangeMin: low });
+      await firestore
+        .collection('users')
+        .doc(currentUser.uid)
+        .update({ ageRangeMax: high });
     } catch (error) {
-      console.log(error);
-      handleError(error.code === undefined ? error : error.code);
-      hasError = true;
+      generalError(true);
+      setGeneralError(error);
+    } finally {
+      navigation.navigate(path);
     }
   }
 
@@ -320,20 +422,27 @@ export default function EditProfileScreen({ navigation }) {
       setRangeToggle(' (close)');
     }
   };
-  const handleOrientation = (preference) => {
-    if (preference === 'Straight') {
+
+  function handleOrientation(preference) {
+    if (preference === '0') {
+      setOrientation('Choose your sexual orientation...');
+      setOrientLabel('Choose your sexual orientation...');
+    } else if (preference === '1') {
       setOrientation('Heterosexual');
-      setOrientLabel(preference);
-    } else if (preference === 'Gay/Lesbian') {
+      setOrientLabel('Straight');
+    } else if (preference === '2') {
       setOrientation('Homosexual');
-      setOrientLabel(preference);
-    } else if (preference === 'Bisexual' || preference === 'Other') {
+
+      setOrientLabel('Gay/Lesbian');
+    } else if (preference === '3') {
       setOrientation('Bisexual');
-      setOrientLabel(preference);
-    } else {
-      setOrientLabel(preference);
+
+      setOrientLabel('Bisexual');
+    } else if (preference === '4') {
+      setOrientation('Bisexual');
+      setOrientLabel('Other');
     }
-  };
+  }
 
   const showSexPicker = () => {
     if (sexPick) {
@@ -353,6 +462,15 @@ export default function EditProfileScreen({ navigation }) {
       setOrientToggle(' (close)');
     }
   };
+  function handleSex(state) {
+    if (state === '0') {
+      setSex('Choose your sex...');
+    } else if (state === '1') {
+      setSex('Male');
+    } else if (state === '2') {
+      setSex('Female');
+    }
+  }
 
   return (
     <View style={styles.container}>
@@ -366,7 +484,7 @@ export default function EditProfileScreen({ navigation }) {
           source={require('../../../assets/DimeAssets/coinsignup.png')}
         />
         <View style={styles.headingContainer}>
-          <Text style={styles.heading}>Create an Account</Text>
+          <Text style={styles.heading}>Update Profile</Text>
         </View>
         <Text style={styles.generalError}>{accountError}</Text>
         <View style={styles.innerContainer}>
@@ -415,9 +533,11 @@ export default function EditProfileScreen({ navigation }) {
         <Reinput
           style={styles.input}
           label='Password'
+          placeholder='Leave blank to keep the same password'
+          placeholderVisibility={true}
           labelActiveColor='#E64398'
           labelColor='#000000'
-          placeholderColor='#000000'
+          placeholderColor='#757575'
           underlineColor='#000000'
           activeColor='#E64398'
           value={password}
@@ -431,7 +551,9 @@ export default function EditProfileScreen({ navigation }) {
           label='Confirm Password'
           labelActiveColor='#E64398'
           labelColor='#000000'
-          placeholderColor='#000000'
+          placeholder='Leave blank to keep the same password'
+          placeholderVisibility={true}
+          placeholderColor='#757575'
           underlineColor='#000000'
           activeColor='#E64398'
           value={confirmPassword}
@@ -440,6 +562,13 @@ export default function EditProfileScreen({ navigation }) {
           autoCapitalize='none'
           secureTextEntry
         />
+        {passChange !== '' && <Text style={styles.heading}>{passChange}</Text>}
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => handlePasswordUpdate()}
+        >
+          <Text style={styles.buttonTitle}>Change Password</Text>
+        </TouchableOpacity>
 
         <Reinput
           style={styles.input}
@@ -467,13 +596,20 @@ export default function EditProfileScreen({ navigation }) {
           </TouchableOpacity>
 
           {sexPick && (
-            <Picker selectedValue={sex} onValueChange={(e) => setSex(e)}>
-              <Picker.Item
-                label='Choose your sex...'
-                value='Choose your sex...'
-              />
-              <Picker.Item label='Male' value='Male' />
-              <Picker.Item label='Female' value='Female' />
+            <Picker
+              selectedValue={optionsState}
+              onValueChange={(e) => {
+                setOptionsState(e);
+                handleSex(e);
+              }}
+            >
+              <Picker.Item label='Choose your sex...' value='0' />
+              <Picker.Item label='Male' value='1'>
+                <Text>Male</Text>
+              </Picker.Item>
+              <Picker.Item label='Female' value='2'>
+                <Text>Female</Text>
+              </Picker.Item>
             </Picker>
           )}
 
@@ -486,25 +622,29 @@ export default function EditProfileScreen({ navigation }) {
 
           {orientPick && (
             <Picker
-              selectedValue={orientLabel}
-              onValueChange={(e) => handleOrientation(e)}
+              selectedValue={orientationState}
+              onValueChange={(e) => {
+                setOrientationState(e);
+                handleOrientation(e);
+                console.log(orientation);
+              }}
             >
               <Picker.Item
                 label='Choose your sexual orientation...'
-                value='Choose your sexual orientation...'
+                value='0'
               />
-              <Picker.Item label='Straight' value='Straight' />
-              <Picker.Item label='Gay/Lesbian' value='Gay/Lesbian' />
-              <Picker.Item label='Bisexual' value='Bisexual' />
-              <Picker.Item label='Other' value='Other' />
+              <Picker.Item label='Straight' value='1' />
+              <Picker.Item label='Gay/Lesbian' value='2' />
+              <Picker.Item label='Bisexual' value='3' />
             </Picker>
           )}
 
           <TouchableOpacity
             style={styles.toggle}
             onPress={() => showDatePicker()}
+            disabled={true}
           >
-            <Text style={styles.buttonTitle}>{birth + dateToggle}</Text>
+            <Text style={styles.buttonTitle}>{birth}</Text>
           </TouchableOpacity>
           {show && (
             <DateTimePicker
@@ -568,9 +708,15 @@ export default function EditProfileScreen({ navigation }) {
         </View>
         <TouchableOpacity
           style={styles.register}
+          onPress={() => handleSubmit()}
+        >
+          <Text style={styles.buttonTitle}>Save Changes</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.register}
           onPress={() => handleRegister()}
         >
-          <Text style={styles.buttonTitle}>Register</Text>
+          <Text style={styles.buttonTitle}>Delete Account</Text>
         </TouchableOpacity>
       </KeyboardAwareScrollView>
     </View>

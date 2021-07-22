@@ -69,4 +69,11 @@ export default StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 16,
   },
+  generalError: {
+    fontSize: 11,
+    paddingBottom: 8 / 2,
+    paddingTop: 8 / 2,
+    textAlign: 'center',
+    color: '#fc1f4a',
+  },
 });

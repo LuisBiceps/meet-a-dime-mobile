@@ -78,9 +78,13 @@ export default function RegistrationScreen({ navigation }) {
   const [birth, setBirth] = useState('Select your Date of Birth');
 
   const [sex, setSex] = useState('Choose your sex...');
+  const [optionsState, setOptionsState] = useState('0');
+  const [orientationState, setOrientationState] = useState('0');
   const [sexLabel, setSexLabel] = useState('Choose your sex...');
   const [sexToggle, setSexToggle] = useState(' (open)');
-  const [orientation, setOrientation] = useState('');
+  const [orientation, setOrientation] = useState(
+    'Choose your sexual orientation...'
+  );
   const [orientLabel, setOrientLabel] = useState(
     'Choose your sexual orientation...'
   );
@@ -321,17 +325,20 @@ export default function RegistrationScreen({ navigation }) {
     }
   };
   const handleOrientation = (preference) => {
-    if (preference === 'Straight') {
+    if (preference === '0') {
+      setOrientation('Choose your sexual orientation...');
+      setOrientLabel('Choose your sexual orientation...');
+    } else if (preference === '1') {
       setOrientation('Heterosexual');
-      setOrientLabel(preference);
-    } else if (preference === 'Gay/Lesbian') {
+      setOrientLabel('Straight');
+    } else if (preference === '2') {
       setOrientation('Homosexual');
-      setOrientLabel(preference);
-    } else if (preference === 'Bisexual' || preference === 'Other') {
+
+      setOrientLabel('Gay/Lesbian');
+    } else if (preference === '3') {
       setOrientation('Bisexual');
-      setOrientLabel(preference);
-    } else {
-      setOrientLabel(preference);
+
+      setOrientLabel('Bisexual');
     }
   };
 
@@ -353,6 +360,16 @@ export default function RegistrationScreen({ navigation }) {
       setOrientToggle(' (close)');
     }
   };
+
+  function handleSex(state) {
+    if (state === '0') {
+      setSex('Choose your sex...');
+    } else if (state === '1') {
+      setSex('Male');
+    } else if (state === '2') {
+      setSex('Female');
+    }
+  }
 
   return (
     <View style={styles.container}>
@@ -467,13 +484,20 @@ export default function RegistrationScreen({ navigation }) {
           </TouchableOpacity>
 
           {sexPick && (
-            <Picker selectedValue={sex} onValueChange={(e) => setSex(e)}>
-              <Picker.Item
-                label='Choose your sex...'
-                value='Choose your sex...'
-              />
-              <Picker.Item label='Male' value='Male' />
-              <Picker.Item label='Female' value='Female' />
+            <Picker
+              selectedValue={optionsState}
+              onValueChange={(e) => {
+                setOptionsState(e);
+                handleSex(e);
+              }}
+            >
+              <Picker.Item label='Choose your sex...' value='0' />
+              <Picker.Item label='Male' value='1'>
+                <Text>Male</Text>
+              </Picker.Item>
+              <Picker.Item label='Female' value='2'>
+                <Text>Female</Text>
+              </Picker.Item>
             </Picker>
           )}
 
@@ -486,17 +510,21 @@ export default function RegistrationScreen({ navigation }) {
 
           {orientPick && (
             <Picker
-              selectedValue={orientLabel}
-              onValueChange={(e) => handleOrientation(e)}
+              selectedValue={orientationState}
+              onValueChange={(e) => {
+                setOrientationState(e);
+                handleOrientation(e);
+                console.log(orientation);
+              }}
             >
               <Picker.Item
                 label='Choose your sexual orientation...'
-                value='Choose your sexual orientation...'
+                value='0'
               />
-              <Picker.Item label='Straight' value='Straight' />
-              <Picker.Item label='Gay/Lesbian' value='Gay/Lesbian' />
-              <Picker.Item label='Bisexual' value='Bisexual' />
-              <Picker.Item label='Other' value='Other' />
+              <Picker.Item label='Straight' value='1' />
+              <Picker.Item label='Gay/Lesbian' value='2' />
+              <Picker.Item label='Bisexual' value='3' />
+              <Picker.Item label='Other' value='4' />
             </Picker>
           )}
 

@@ -40,14 +40,14 @@ export default function App() {
           <Stack.Screen
             name='Home'
             component={HomeScreen}
-            options={{ headerShown: false }}
+            options={{ headerShown: false, gestureEnabled: false }}
           />
 
           <>
             <Stack.Screen
               name='Login'
               component={LoginScreen}
-              options={{ headerShown: false }}
+              options={{ headerShown: false, gestureEnabled: false }}
             />
             <Stack.Screen
               name='Registration'
@@ -115,7 +115,7 @@ export default function App() {
             <Stack.Screen
               name='Chat'
               component={ChatScreen}
-              options={{ headerShown: false }}
+              options={{ headerShown: false, gestureEnabled: false }}
             />
           </>
         </Stack.Navigator>
