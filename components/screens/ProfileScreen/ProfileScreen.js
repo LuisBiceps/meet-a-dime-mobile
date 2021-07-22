@@ -243,15 +243,17 @@ export default function ProfileScreen({ navigation }) {
             <Text style={styles.success}>Photo uploaded successfully!</Text>
           </View>
         )}
-        <TouchableOpacity style={styles.button} onPress={pickImage}>
-          <Text style={styles.buttonTitle}>Change Profile Picture</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={goEdit}>
-          <Text style={styles.buttonTitle}>Update Profile</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={handleLogout}>
-          <Text style={styles.buttonTitle}>Conversation Starters</Text>
-        </TouchableOpacity>
+        <View style={styles.headingContainer}>
+          <TouchableOpacity style={styles.button} onPress={pickImage}>
+            <Text style={styles.buttonTitle}>Change Profile Picture</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.button} onPress={goEdit}>
+            <Text style={styles.buttonTitle}>Update Profile</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.button} onPress={handleLogout}>
+            <Text style={styles.buttonTitle}>Conversation Starters</Text>
+          </TouchableOpacity>
+        </View>
       </KeyboardAwareScrollView>
     </View>
   );

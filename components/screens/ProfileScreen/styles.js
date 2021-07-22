@@ -18,7 +18,7 @@ export default StyleSheet.create({
     borderRadius: 150 / 2,
     overflow: 'hidden',
     borderWidth: 3,
-    borderColor: 'blue',
+    borderColor: '#E64398',
     alignSelf: 'center',
     margin: 10,
     marginTop: 35,
@@ -109,11 +109,12 @@ export default StyleSheet.create({
     backgroundColor: '#e64398',
     marginLeft: 30,
     marginRight: 30,
-    marginTop: 5,
+    marginTop: 15,
     height: 48,
     borderRadius: 50,
     alignItems: 'center',
     justifyContent: 'center',
+    width: width / 2.5,
   },
   generalError: {
     fontSize: 11,
@@ -135,7 +136,7 @@ export default StyleSheet.create({
   },
   buttonTitle: {
     color: 'white',
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: 'bold',
   },
   footerView: {
