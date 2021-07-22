@@ -11,7 +11,7 @@ import VerifyScreen from './components/screens/VerifyScreen/VerifyScreen';
 import ChatScreen from './components/screens/ChatScreen/ChatScreen';
 import EditProfileScreen from './components/screens/EditProfileScreen/EditProfileScreen';
 import ProfileScreen from './components/screens/ProfileScreen/ProfileScreen';
-
+import AfterScreen from './components/screens/AfterScreen/AfterScreen'
 import { decode, encode } from 'base-64';
 import firebase from 'firebase/app';
 import 'firebase/auth';
@@ -40,7 +40,7 @@ export default function App() {
           <Stack.Screen
             name='Home'
             component={HomeScreen}
-            options={{ headerShown: false }}
+            options={{ headerShown: false, gestureEnabled: false }}
           />
 
           <>
@@ -115,7 +115,12 @@ export default function App() {
             <Stack.Screen
               name='Chat'
               component={ChatScreen}
-              options={{ headerShown: false }}
+              options={{ headerShown: false , gestureEnabled: false}}
+            />
+            <Stack.Screen
+              name='After'
+              component={AfterScreen}
+              options={{ headerShown: false, gestureEnabled: false }}
             />
           </>
         </Stack.Navigator>
