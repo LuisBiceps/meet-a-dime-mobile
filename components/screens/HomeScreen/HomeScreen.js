@@ -166,6 +166,7 @@ export default function HomeScreen({ navigation }, props) {
           } catch (error) {
             console.log(error);
           }
+          setLockout(false);
         }
         // call the function that was just defined here.
 
@@ -380,6 +381,7 @@ export default function HomeScreen({ navigation }, props) {
             } else {
               console.log('could not clear observer');
             }
+            setLockout(false);
             navigation.navigate('Chat', {
               match_id: doc_id,
               timeout: timeout.current,
@@ -443,6 +445,7 @@ export default function HomeScreen({ navigation }, props) {
                   // must have refreshed their session.
                   matchFound = false;
                   setId('none');
+                  setIsSearching(true);
                   setMatch('Not searching.');
                   setError('');
                   // setOpenSearch(false);
@@ -545,7 +548,7 @@ export default function HomeScreen({ navigation }, props) {
                       }
                     }
                     deleteOldRecordAfterAbandon();
-
+                    setIsSearching(true);
                     setMatch('Not searching.');
                     setError('');
                     if (observer.current !== null) {
@@ -593,6 +596,7 @@ export default function HomeScreen({ navigation }, props) {
                     } else {
                       console.log('could not clear observer');
                     }
+
                     navigation.navigate('Chat', {
                       match_id: change.doc.data().match,
                       timeout: timeout.current,
@@ -663,6 +667,7 @@ export default function HomeScreen({ navigation }, props) {
                     deleteOldRecordAfterAbandon();
 
                     setMatch('Not searching.');
+                    setIsSearching(true);
                     setError('');
                     if (observer.current !== null) {
                       observer.current();
@@ -745,7 +750,7 @@ export default function HomeScreen({ navigation }, props) {
             searching();
             setIsSearching(false);
           }}
-          disabled={false}
+          disabled={lockout}
         >
           <Text style={styles.buttonText}>New Chat</Text>
         </TouchableOpacity>
