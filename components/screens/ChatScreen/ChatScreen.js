@@ -529,6 +529,7 @@ export default function ChatScreen({ route, navigation }) {
     }
     return () => {
       console.log("left chat, cleaned up.");
+      setModalVisible(false);
       if (observer.current !== null) observer.current();
       if (observerState !== null) observerState();
       setObserverState(null);
