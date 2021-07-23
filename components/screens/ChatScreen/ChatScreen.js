@@ -24,7 +24,8 @@ import axios from "axios";
 import moment from "moment";
 import { useRoute } from "@react-navigation/core";
 import { io } from "socket.io-client";
-
+import * as ImagePicker from "expo-image-picker";
+import * as ImageManipulator from "expo-image-manipulator";
 export default function ChatScreen({ route, navigation }) {
   const firestore = firebase.firestore();
   const messageRef = useRef("");
@@ -416,6 +417,15 @@ export default function ChatScreen({ route, navigation }) {
   useEffect(() => {
     LogBox.ignoreLogs(["Animated: `useNativeDriver`"]);
     LogBox.ignoreLogs(["Animated.event now requires"]);
+    async () => {
+      if (Platform.OS !== "web") {
+        const { status } =
+          await ImagePicker.requestMediaLibraryPermissionsAsync();
+        if (status !== "granted") {
+          alert("Sorry, we need camera roll permissions for this to work!");
+        }
+      }
+    };
     if (isFocused) {
       fetchMatchInfo();
       setIsChatting();
@@ -465,8 +475,8 @@ export default function ChatScreen({ route, navigation }) {
             text: message,
             createdAt: new Date(),
             user: {
-              _id: 2,
-              name: currentUser.uid,
+              _id: user,
+              name: match_name,
               avatar: matchPhotoRef.current,
             },
           })
@@ -494,8 +504,8 @@ export default function ChatScreen({ route, navigation }) {
               image: message,
               createdAt: new Date(),
               user: {
-                _id: 2,
-                name: currentUser.uid,
+                _id: user,
+                name: match_name,
                 avatar: matchPhotoRef.current,
               },
             })
@@ -586,6 +596,65 @@ export default function ChatScreen({ route, navigation }) {
     );
   }, []);
 
+  async function handleReport() {
+    var chat_history = [];
+
+    messages.forEach((element) => {
+      if (element.image === undefined) chat_history.push(element);
+    });
+    console.log(chat_history);
+
+    try {
+      var result = await firestore
+        .collection("reports")
+        .doc(currentUser.uid)
+        .get();
+      if (result.exists) {
+        const obj = {};
+        obj[match_id] = chat_history;
+        await firestore.collection("reports").doc(currentUser.uid).update(obj);
+      } else {
+        const obj = {};
+        obj[match_id] = chat_history;
+        await firestore.collection("reports").doc(currentUser.uid).set(obj);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+
+    socketRef.current.emit("leave-room", currentUser.uid, roomRef.current);
+    console.log("REPORTED OTHER USER.");
+
+    try {
+      await firestore
+        .collection("users")
+        .doc(currentUser.uid)
+        .update({
+          FailMatch: firebase.firestore.FieldValue.arrayUnion(match_id),
+        });
+      await firestore
+        .collection("users")
+        .doc(match_id)
+        .update({
+          FailMatch: firebase.firestore.FieldValue.arrayUnion(currentUser.uid),
+        });
+    } catch (error) {
+      console.log(error);
+    }
+    if (timeoutRef1.current !== null) clearTimeout(timeoutRef1.current);
+    if (observer.current !== null) observer.current();
+    if (observerState !== null) observerState();
+    setObserverState(null);
+    observer.current = null;
+
+    navigation.navigate("After", {
+      match_id: match_id,
+      type: "user_reported",
+    });
+
+    return;
+  }
+
   async function handleAbandon() {
     socketRef.current.emit("leave-room", currentUser.uid, roomRef.current);
     await firestore
@@ -622,12 +691,70 @@ export default function ChatScreen({ route, navigation }) {
   //     });
   //   }
 
+  async function sendImage() {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      base64: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    let compressed = await ImageManipulator.manipulateAsync(result.uri, [], {
+      format: ImageManipulator.SaveFormat.JPEG,
+      compress: 0,
+      base64: true,
+    });
+
+    var the_image = compressed.base64;
+    // console.log(compressed.base64);
+    var image_id = Date().toString();
+    socket.emit(
+      "send-image-to-room",
+      currentUser.uid,
+      roomRef.current,
+      "data:image/jpeg;base64," + the_image,
+      image_id
+      // function () {
+      //   console.log('recieved on server side.');
+      // }
+    );
+
+    var messageId = hash_str(image_id + new Date().toDateString());
+
+    setMessages((previousMessages) =>
+      GiftedChat.append(previousMessages, {
+        _id: messageId,
+        text: "",
+        image: result.uri,
+        createdAt: new Date(),
+        user: {
+          _id: currentUser.uid,
+        },
+      })
+    );
+  }
   return (
     <>
       <View>
-        <TouchableOpacity style={styles.button} onPress={handleAbandon}>
-          <Text>Abandon</Text>
-        </TouchableOpacity>
+        <View
+          style={{
+            flexDirection: "row",
+            flexWrap: "wrap",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <TouchableOpacity style={styles.button} onPress={sendImage}>
+            <Text>Select Image</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.button} onPress={handleAbandon}>
+            <Text>Abandon</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.button} onPress={handleReport}>
+            <Text>Report</Text>
+          </TouchableOpacity>
+        </View>
         <Modal
           animationType="slide"
           transparent={true}
@@ -686,7 +813,7 @@ export default function ChatScreen({ route, navigation }) {
         }}
         messages={messages}
         onSend={(messages) => onSend(messages)}
-        user={{ _id: 1 }}
+        user={{ _id: currentUser.uid }}
         ref={messageRef}
         alwaysShowSend
         scrollToBottom
