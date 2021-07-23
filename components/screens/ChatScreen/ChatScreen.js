@@ -9,6 +9,7 @@ import {
   Image,
   Modal,
   Pressable,
+  LogBox,
 } from "react-native";
 import { useIsFocused } from "@react-navigation/native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
@@ -32,6 +33,7 @@ export default function ChatScreen({ route, navigation }) {
   const myPhotoRef = useRef("");
   const [error, setError] = useState("");
   const [messages, setMessages] = useState([]);
+  const [images, setImages] = useState([]);
   const timeoutRef1 = useRef(null);
   const [sentMessage, setSentMessage] = useState(false);
   const [room, setRoom] = useState("");
@@ -410,7 +412,10 @@ export default function ChatScreen({ route, navigation }) {
   }
 
   const id = currentUser.uid;
+
   useEffect(() => {
+    LogBox.ignoreLogs(["Animated: `useNativeDriver`"]);
+    LogBox.ignoreLogs(["Animated.event now requires"]);
     if (isFocused) {
       fetchMatchInfo();
       setIsChatting();
@@ -467,6 +472,37 @@ export default function ChatScreen({ route, navigation }) {
           })
         );
       });
+
+      sock.on(
+        "image",
+        (message, user, message_ID) => {
+          var messageId = hash_str(message_ID + new Date().toDateString());
+          console.log("new image recieved!");
+          sock.emit(
+            "seen-message",
+            currentUser.uid,
+            new_room,
+            message_ID,
+            function () {
+              // console.log('I sent to the room that I saw that message.');
+            }
+          );
+          setMessages((previousMessages) =>
+            GiftedChat.append(previousMessages, {
+              _id: messageId,
+              text: "",
+              image: message,
+              createdAt: new Date(),
+              user: {
+                _id: 2,
+                name: currentUser.uid,
+                avatar: matchPhotoRef.current,
+              },
+            })
+          );
+        }
+        // console.log(user);
+      );
 
       sock.on("abandoned", (message) => {
         //Somehow show the user their match left
