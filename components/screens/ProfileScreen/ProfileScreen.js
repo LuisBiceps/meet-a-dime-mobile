@@ -240,13 +240,13 @@ export default function ProfileScreen({ navigation }) {
         )}
         <View style={styles.headingContainer}>
           <TouchableOpacity style={styles.button} onPress={pickImage}>
-            <Text style={styles.buttonTitle}>Change Profile Picture</Text>
+            <Text style={styles.buttonTitle}>📷 Change Profile Picture</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.button} onPress={goEdit}>
-            <Text style={styles.buttonTitle}>Update Profile</Text>
+            <Text style={styles.buttonTitle}>Update Profile ✏️</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.button} onPress={goConversation}>
-            <Text style={styles.buttonTitle}>Conversation Starters</Text>
+            <Text style={styles.buttonTitle}>💬 Conversation Starters</Text>
           </TouchableOpacity>
         </View>
       </KeyboardAwareScrollView>

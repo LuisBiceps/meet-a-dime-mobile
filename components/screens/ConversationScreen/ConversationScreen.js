@@ -258,7 +258,6 @@ export default function ConversationScreen({ route, navigation }, props) {
               underlineColor='#000000'
               activeColor='#E64398'
               value={response1}
-              returnKeyType='Next'
               //error={errorEmail}
               onChangeText={(text) => setResponse1(text)}
               onSubmitEditing={() => {
