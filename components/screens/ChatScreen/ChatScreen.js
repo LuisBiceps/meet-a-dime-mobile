@@ -13,8 +13,9 @@ import {
 } from "react-native";
 import { useIsFocused } from "@react-navigation/native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import { GiftedChat, Bubble } from "react-native-gifted-chat";
+import { GiftedChat, Bubble, Actions } from "react-native-gifted-chat";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { AntDesign } from "@expo/vector-icons";
 import styles from "./styles";
 import firebase from "firebase/app";
 import "firebase/auth";
@@ -438,6 +439,20 @@ export default function ChatScreen({ route, navigation }) {
         console.log(
           `Email: "${currentUser.email}" \n With User ID: "${currentUser.uid}" connected with socket id: "${sock.id}"`
         );
+
+        setMessages((previousMessages) => {
+          var joinmsg = "sfdg";
+          const emojis = ["❤️", "🥰", "😇"];
+          var random_emoji = emojis[Math.floor(Math.random() * 3)];
+          joinmsg = "Joined the room. Good luck! " + random_emoji;
+          GiftedChat.append(previousMessages, {
+            _id: currentUser.uid,
+            text: joinmsg,
+            createdAt: new Date(),
+            system: true,
+            // Any additional custom parameters are passed through
+          });
+        });
       });
 
       const ids = [currentUser.uid, match_id];
@@ -745,9 +760,6 @@ export default function ChatScreen({ route, navigation }) {
             justifyContent: "center",
           }}
         >
-          <TouchableOpacity style={styles.button} onPress={sendImage}>
-            <Text>Select Image</Text>
-          </TouchableOpacity>
           <TouchableOpacity style={styles.button} onPress={handleAbandon}>
             <Text>Abandon</Text>
           </TouchableOpacity>
@@ -815,6 +827,40 @@ export default function ChatScreen({ route, navigation }) {
         onSend={(messages) => onSend(messages)}
         user={{ _id: currentUser.uid }}
         ref={messageRef}
+        // renderActions={(props) => {
+        //   <TouchableOpacity style={styles.button} onPress={sendImage}>
+        //     <Text>Select Image</Text>
+        //   </TouchableOpacity>;
+        // }}
+        renderActions={(props) => {
+          return (
+            <Actions
+              {...props}
+              containerStyle={{
+                width: 44,
+                height: 44,
+                alignItems: "center",
+                justifyContent: "center",
+                marginLeft: 4,
+                marginRight: 4,
+                marginBottom: 0,
+              }}
+              icon={() => (
+                <AntDesign name="pluscircle" size={24} color="black" />
+              )}
+              options={{
+                "Choose From Library": () => {
+                  console.log("Choose From Library");
+                  sendImage();
+                },
+                Cancel: () => {
+                  console.log("Cancel");
+                },
+              }}
+              optionTintColor="#222B45"
+            />
+          );
+        }}
         alwaysShowSend
         scrollToBottom
       />
