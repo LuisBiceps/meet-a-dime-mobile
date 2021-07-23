@@ -43,22 +43,12 @@ export default function ProfileScreen({ navigation }) {
 
   const [source, setSource] = useState({});
 
-  if (!currentUser.emailVerified) {
+  if (currentUser && !currentUser.emailVerified) {
     navigation.navigate('Verify');
   }
 
-  async function handleLogout() {
-    try {
-      await logout();
-      AsyncStorage.removeItem('user_data');
-      navigation.navigate('Login');
-    } catch (error) {
-      console.log('Failed to log out');
-    }
-  }
-
   async function fetchUserData() {
-    console.log('ran');
+    // console.log('ran');
     var snapshot = await firestore.collection('users').get();
     snapshot.forEach((doc) => {
       if (doc.data().userID === currentUser.uid) {
@@ -111,7 +101,7 @@ export default function ProfileScreen({ navigation }) {
   }
   useEffect(() => {
     if (isFocused) {
-      console.log('=====REACHED THE PROFILE SCREEN======');
+      // console.log('=====REACHED THE PROFILE SCREEN======');
       getData();
       async () => {
         if (Platform.OS !== 'web') {
@@ -216,6 +206,11 @@ export default function ProfileScreen({ navigation }) {
     navigation.navigate('Edit');
   }
 
+  function goConversation() {
+    setSwitching(true);
+    navigation.navigate('Conversation');
+  }
+
   return (
     <View style={styles.container}>
       <KeyboardAwareScrollView
@@ -250,7 +245,7 @@ export default function ProfileScreen({ navigation }) {
           <TouchableOpacity style={styles.button} onPress={goEdit}>
             <Text style={styles.buttonTitle}>Update Profile</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.button} onPress={handleLogout}>
+          <TouchableOpacity style={styles.button} onPress={goConversation}>
             <Text style={styles.buttonTitle}>Conversation Starters</Text>
           </TouchableOpacity>
         </View>

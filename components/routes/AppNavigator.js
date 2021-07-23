@@ -10,6 +10,7 @@ import Edit from '../screens/EditProfileScreen/EditProfileScreen';
 import Profile from '../screens/ProfileScreen/ProfileScreen';
 import After from '../screens/AfterScreen/AfterScreen';
 import Forgot from '../screens/ForgotScreen/ForgotScreen';
+import Conversation from '../screens/ConversationScreen/ConversationScreen';
 
 const Stack = createStackNavigator();
 
@@ -24,6 +25,7 @@ const HomeNavigator = () => (
     <Stack.Screen name='Profile' component={Profile} />
     <Stack.Screen name='After' component={After} />
     <Stack.Screen name='Forgot' component={Forgot} />
+    <Stack.Screen name='Conversation' component={Conversation} />
   </Stack.Navigator>
 );
 

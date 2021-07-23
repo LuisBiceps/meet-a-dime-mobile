@@ -13,6 +13,7 @@ import EditProfileScreen from './components/screens/EditProfileScreen/EditProfil
 import ProfileScreen from './components/screens/ProfileScreen/ProfileScreen';
 import AfterScreen from './components/screens/AfterScreen/AfterScreen';
 import ForgotScreen from './components/screens/ForgotScreen/ForgotScreen';
+import ConversationScreen from './components/screens/ConversationScreen/ConversationScreen';
 import { decode, encode } from 'base-64';
 import firebase from 'firebase/app';
 import 'firebase/auth';
@@ -31,9 +32,6 @@ if (!global.atob) {
 const Stack = createStackNavigator();
 
 export default function App() {
-  const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState(null);
-
   return (
     <NavigationContainer>
       <AuthProvider>
@@ -129,6 +127,11 @@ export default function App() {
               name='Forgot'
               component={ForgotScreen}
               options={{ headerShown: false, gestureEnabled: false }}
+            />
+            <Stack.Screen
+              name='Conversation'
+              component={ConversationScreen}
+              options={{ headerShown: false, gestureEnabled: true }}
             />
           </>
         </Stack.Navigator>

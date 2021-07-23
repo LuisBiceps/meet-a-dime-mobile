@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef } from 'react';
 import {
   FlatList,
   Keyboard,
@@ -7,31 +7,31 @@ import {
   TouchableOpacity,
   View,
   Image,
-} from "react-native";
+} from 'react-native';
 
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import styles from "./styles";
-import firebase from "firebase/app";
-import "firebase/auth";
-import "firebase/firestore";
-import { useAuth } from "../../contexts/AuthContext";
-import axios from "axios";
-import moment, { relativeTimeThreshold } from "moment";
-import { useRoute } from "@react-navigation/core";
-import { useIsFocused } from "@react-navigation/native";
-import { set } from "react-native-reanimated";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import styles from './styles';
+import firebase from 'firebase/app';
+import 'firebase/auth';
+import 'firebase/firestore';
+import { useAuth } from '../../contexts/AuthContext';
+import axios from 'axios';
+import moment, { relativeTimeThreshold } from 'moment';
+import { useRoute } from '@react-navigation/core';
+import { useIsFocused } from '@react-navigation/native';
+import { set } from 'react-native-reanimated';
 
 export default function HomeScreen({ navigation }, props) {
   const route = useRoute();
   const isFocused = useIsFocused();
   const { currentUser, logout } = useAuth();
-  const [match, setMatch] = useState("Not searching");
-  const [name, setName] = useState("None");
-  const [myPhoto, setMyPhoto] = useState("");
-  const [id_of_match, setId] = useState("none");
+  const [match, setMatch] = useState('Not searching');
+  const [name, setName] = useState('None');
+  const [myPhoto, setMyPhoto] = useState('');
+  const [id_of_match, setId] = useState('none');
   const firestore = firebase.firestore();
   const observer = useRef(null);
-  const [error, setError] = useState("");
+  const [error, setError] = useState('');
   const [lockout, setLockout] = useState(false);
   const [loading, setLoading] = useState(true);
   const [isSearching, setIsSearching] = useState(true);
@@ -45,21 +45,21 @@ export default function HomeScreen({ navigation }, props) {
   const timeout = useRef(null);
 
   const userInfoState = useRef({
-    birth: "",
-    exitMessage: "",
-    firstName: "",
-    sex: "",
-    sexOrientation: "",
-    photo: "",
-    ageRangeMin: "",
-    ageRangeMax: "",
+    birth: '',
+    exitMessage: '',
+    firstName: '',
+    sex: '',
+    sexOrientation: '',
+    photo: '',
+    ageRangeMin: '',
+    ageRangeMax: '',
   });
 
   async function getName() {
     try {
       var doc = await firebase
         .firestore()
-        .collection("users")
+        .collection('users')
         .doc(currentUser.uid)
         .get();
       var firstName = doc.data().firstName;
@@ -75,16 +75,19 @@ export default function HomeScreen({ navigation }, props) {
   }
 
   useEffect(() => {
+    if (!currentUser) {
+      navigation.navigate('Login');
+    }
     if (isFocused) {
       console.log(currentUser.uid);
       setLockout(true);
       if (!currentUser) {
-        console.log("We In the use effect");
+        console.log('We In the use effect');
       } else {
         // console.log('Current User ID: ' + `"${currentUser.uid}"`);
         // console.log(currentUser.getIdToken());
         async function deleteItem() {
-          await AsyncStorage.removeItem("chatExpiry");
+          await AsyncStorage.removeItem('chatExpiry');
         }
         // document.body.style.backgroundColor = 'white';
         deleteItem();
@@ -93,16 +96,16 @@ export default function HomeScreen({ navigation }, props) {
             const token = currentUser && (await currentUser.getIdToken(true));
             // console.log(token);
             var config = {
-              method: "post",
-              url: "https://meetadime.herokuapp.com/api/getbasicuser",
+              method: 'post',
+              url: 'https://meetadime.herokuapp.com/api/getbasicuser',
               headers: {
-                "Content-Type": "application/json",
+                'Content-Type': 'application/json',
                 // Authorization: `Bearer ${token}`,
               },
               data: { uid: currentUser.uid },
             };
             // console.log(config.data)
-            axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+            axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 
             var response = await axios(config);
             console.log(response.data);
@@ -111,31 +114,31 @@ export default function HomeScreen({ navigation }, props) {
             setName(response.data.firstName);
           } catch (error) {
             console.log(error);
-            console.log("issue in fetch data");
+            console.log('issue in fetch data');
           }
         }
 
         async function purgeOld() {
           // Lock the search button until these tasks are complete.
           setLockout(true);
-          console.log("I SHOULD ONLY PRINT ONCE PER PAGE LOAD");
+          console.log('I SHOULD ONLY PRINT ONCE PER PAGE LOAD');
           try {
             // If I am "document host", clear the match field first.
             try {
               await firestore
-                .collection("searching")
+                .collection('searching')
                 .doc(currentUser.uid)
-                .update({ match: "" });
-              console.log("cleared old match before delete");
+                .update({ match: '' });
+              console.log('cleared old match before delete');
             } catch (error) {
-              console.log("tried to clear match before delete, but failed");
-              console.log("most of the time this is ok");
+              console.log('tried to clear match before delete, but failed');
+              console.log('most of the time this is ok');
               // this is okay because this most likely wont exist on each load.
             }
 
             // Delete the document (if exists) if I am a "document host".
             await firestore
-              .collection("searching")
+              .collection('searching')
               .doc(currentUser.uid)
               .delete();
 
@@ -145,23 +148,23 @@ export default function HomeScreen({ navigation }, props) {
             // This will signal to those listening to that field that I am
             // no longer available.
             firestore
-              .collection("searching")
-              .where("match", "==", currentUser.uid)
+              .collection('searching')
+              .where('match', '==', currentUser.uid)
               .get()
               .then((querySnapshot) => {
                 querySnapshot.forEach((doc) => {
                   try {
                     firestore
-                      .collection("searching")
+                      .collection('searching')
                       .doc(doc.id)
-                      .update({ match: "" });
+                      .update({ match: '' });
                   } catch (error) {
-                    console.log("doc match clear error on start");
+                    console.log('doc match clear error on start');
                   }
                 });
               })
               .catch((error) => {
-                console.log("Error getting documents: ", error);
+                console.log('Error getting documents: ', error);
               });
           } catch (error) {
             console.log(error);
@@ -175,38 +178,38 @@ export default function HomeScreen({ navigation }, props) {
       }
 
       return () => {
-        setMatch("Not searching");
-        setId("none");
+        setMatch('Not searching');
+        setId('none');
         clearTimeout(timeout.current);
         clearAllTimeouts();
-        console.log("LEAVING! cleanup");
+        console.log('LEAVING! cleanup');
         setLockout(false);
         if (observer.current !== null) {
           observer.current();
         } else {
-          console.log("could not clear observer");
+          console.log('could not clear observer');
         }
       };
     }
   }, [isFocused]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (currentUser && !currentUser.emailVerified) {
-    navigation.navigate("Verify");
+    navigation.navigate('Verify');
   }
 
   async function fetchData() {
     try {
       const token = currentUser && (await currentUser.getIdToken());
       var config = {
-        method: "post",
-        url: "https://meetadime.herokuapp.com/api/getuser",
+        method: 'post',
+        url: 'https://meetadime.herokuapp.com/api/getuser',
         header: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
           // Authorization: `Bearer ${token}`,
         },
         data: { uid: currentUser.uid },
       };
-      axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
       // console.log('Here is the config data: ', config.data);
       // console.log('Bear bud: ', token);
       // console.log('Auth:', config.header.Authorization);
@@ -229,13 +232,13 @@ export default function HomeScreen({ navigation }, props) {
   }
 
   function redirectToProfile() {
-    navigation.navigate("Profile");
+    navigation.navigate('Profile');
   }
 
   async function killSearch() {
-    setId("none");
-    setMatch("Not searching");
-    setError("");
+    setId('none');
+    setMatch('Not searching');
+    setError('');
     setIsSearching(true);
     clearAllTimeouts();
     if (transferTimeoutRef.current !== undefined)
@@ -245,20 +248,20 @@ export default function HomeScreen({ navigation }, props) {
     // Lock the search button until these tasks are complete.
     setLockout(true);
     setLoading(true);
-    console.log("Clicking out of modal");
+    console.log('Clicking out of modal');
     if (observer.current !== null) observer.current();
     try {
       // If I am "document host", clear the match field first.
       try {
         await firestore
-          .collection("searching")
+          .collection('searching')
           .doc(currentUser.uid)
-          .update({ match: "" });
+          .update({ match: '' });
 
         // Delete the document (if exists) if I am a "document host".
-        await firestore.collection("searching").doc(currentUser.uid).delete();
+        await firestore.collection('searching').doc(currentUser.uid).delete();
       } catch (error) {
-        console.log("Threw error of type", error.code);
+        console.log('Threw error of type', error.code);
         // this is okay because this most likely wont exist on each load.
       }
 
@@ -268,23 +271,23 @@ export default function HomeScreen({ navigation }, props) {
       // This will signal to those listening to that field that I am
       // no longer available.
       firestore
-        .collection("searching")
-        .where("match", "==", currentUser.uid)
+        .collection('searching')
+        .where('match', '==', currentUser.uid)
         .get()
         .then((querySnapshot) => {
           querySnapshot.forEach((doc) => {
             try {
               firestore
-                .collection("searching")
+                .collection('searching')
                 .doc(doc.id)
-                .update({ match: "" });
+                .update({ match: '' });
             } catch (error) {
               console.log(error);
             }
           });
         })
         .catch((error) => {
-          console.log("Error getting documents: ", error);
+          console.log('Error getting documents: ', error);
         });
     } catch (error) {
       console.log(error);
@@ -295,9 +298,9 @@ export default function HomeScreen({ navigation }, props) {
   }
 
   async function searching() {
-    setMatch("Searching");
+    setMatch('Searching');
     await fetchData();
-    console.log("USER DATA:", userInfoState.current);
+    console.log('USER DATA:', userInfoState.current);
     // if ((await AsyncStorage.getItem('user_data')) === null) {
     //   console.log('1');
     //   await fetchData();
@@ -332,25 +335,25 @@ export default function HomeScreen({ navigation }, props) {
     setLockout(true);
 
     var matchFound = false;
-    var matchInternal = "";
+    var matchInternal = '';
 
     function getSearchingSex() {
-      var searchingSex = "";
+      var searchingSex = '';
 
-      if (userInfoState.current.sexOrientation === "Heterosexual") {
-        if (userInfoState.current.sex === "Male") {
-          searchingSex = ["Female"];
+      if (userInfoState.current.sexOrientation === 'Heterosexual') {
+        if (userInfoState.current.sex === 'Male') {
+          searchingSex = ['Female'];
         } else {
-          searchingSex = ["Male"];
+          searchingSex = ['Male'];
         }
-      } else if (userInfoState.current.sexOrientation === "Homosexual") {
-        if (userInfoState.current.sex === "Female") {
-          searchingSex = ["Female"];
+      } else if (userInfoState.current.sexOrientation === 'Homosexual') {
+        if (userInfoState.current.sex === 'Female') {
+          searchingSex = ['Female'];
         } else {
-          searchingSex = ["Male"];
+          searchingSex = ['Male'];
         }
-      } else if (userInfoState.current.sexOrientation === "Bisexual") {
-        searchingSex = ["Male", "Female"];
+      } else if (userInfoState.current.sexOrientation === 'Bisexual') {
+        searchingSex = ['Male', 'Female'];
       }
       return searchingSex;
     }
@@ -358,7 +361,7 @@ export default function HomeScreen({ navigation }, props) {
     function fillMatch(doc_id) {
       try {
         firestore
-          .collection("searching")
+          .collection('searching')
           .doc(doc_id)
           .update({ match: currentUser.uid });
         matchFound = true;
@@ -371,20 +374,20 @@ export default function HomeScreen({ navigation }, props) {
 
           if (count >= 100) {
             clearInterval(transferTimeoutRef.current);
-            setMatch("Not searching");
-            setId("none");
+            setMatch('Not searching');
+            setId('none');
             clearTimeout(timeout.current);
             clearInterval(localInterval);
             clearAllTimeouts();
-            console.log("LEAVING! A");
+            console.log('LEAVING! A');
             count = 0;
             if (observer.current !== null) {
               observer.current();
             } else {
-              console.log("could not clear observer");
+              console.log('could not clear observer');
             }
             setLockout(false);
-            navigation.navigate("Chat", {
+            navigation.navigate('Chat', {
               match_id: doc_id,
               timeout: timeout.current,
             });
@@ -392,13 +395,13 @@ export default function HomeScreen({ navigation }, props) {
         }, 100));
 
         setId(doc_id);
-        setMatch("Found match!" + doc_id);
+        setMatch('Found match!' + doc_id);
 
         clearAllTimeouts();
 
         matchInternal = doc_id;
       } catch (error) {
-        console.log("324");
+        console.log('324');
       }
     }
     try {
@@ -406,12 +409,12 @@ export default function HomeScreen({ navigation }, props) {
       var searchingSex = getSearchingSex();
 
       // The database query. Check all docs for possible matches.
-      var snapshot = await firestore.collection("searching").get();
+      var snapshot = await firestore.collection('searching').get();
       snapshot.forEach((doc) => {
-        var myAge = moment().diff(userInfoState.current.birth, "years");
+        var myAge = moment().diff(userInfoState.current.birth, 'years');
 
         if (
-          doc.data().match === "" &&
+          doc.data().match === '' &&
           searchingSex.includes(doc.data().sex) &&
           doc.data().search_sex.includes(userInfoState.current.sex) &&
           myAge <= doc.data().search_age_end &&
@@ -435,22 +438,22 @@ export default function HomeScreen({ navigation }, props) {
         // This works only to see if fields changed, not if doc deleted.
         // The workaround is: before deleting, set the match to "" first.
         observer.current = firestore
-          .collection("searching")
-          .where(firebase.firestore.FieldPath.documentId(), "==", matchInternal)
+          .collection('searching')
+          .where(firebase.firestore.FieldPath.documentId(), '==', matchInternal)
           .onSnapshot((snapshot) => {
             // console.log(snapshot);
             snapshot.docChanges().forEach((change) => {
-              if (change.type === "modified") {
+              if (change.type === 'modified') {
                 // So if the doc filler loses the match, then we need to reset.
                 // console.log(`new match info ${change.doc.data().match}`);
-                if (change.doc.data().match === "") {
+                if (change.doc.data().match === '') {
                   // Uh oh. The doc match was just set empty. The doc owner
                   // must have refreshed their session.
                   matchFound = false;
-                  setId("none");
+                  setId('none');
                   setIsSearching(true);
-                  setMatch("Not searching");
-                  setError("");
+                  setMatch('Not searching');
+                  setError('');
                   // setOpenSearch(false);
                   // clearTimeout(timeOut);
                   // These two clear all timeouts.
@@ -483,42 +486,42 @@ export default function HomeScreen({ navigation }, props) {
         // are just there for now, so hopefully we can implement
         // that within the searches.
         await firestore
-          .collection("searching")
+          .collection('searching')
           .doc(currentUser.uid)
           .set({
-            match: "",
-            age: moment().diff(userInfoState.current.birth, "years"),
+            match: '',
+            age: moment().diff(userInfoState.current.birth, 'years'),
             sex: userInfoState.current.sex,
             search_age_start: userInfoState.current.ageRangeMin,
             search_age_end: userInfoState.current.ageRangeMax,
             search_sex: searchingSex,
             seeker: currentUser.uid,
-            host_socket_id: "",
-            join_socket_id: "",
-            seekerTail: "false",
-            matchTail: "false",
+            host_socket_id: '',
+            join_socket_id: '',
+            seekerTail: 'false',
+            matchTail: 'false',
             isChatting: 0,
           });
         // Just posted the new doc to the 'searching' collection.
-        console.log("DOC CREATED");
+        console.log('DOC CREATED');
         // Hang on to the observer now. This is the listener on my new
         // document. I am waiting for the match field to be filled,
         // but it can also get un-filled. Account for both.
         observer.current = firestore
-          .collection("searching")
+          .collection('searching')
           .where(
             firebase.firestore.FieldPath.documentId(),
-            "==",
+            '==',
             currentUser.uid
           )
           .onSnapshot((docSnapshot) => {
             docSnapshot.docChanges().forEach((change) => {
-              if (change.type === "added") {
-                console.log("added a doc");
+              if (change.type === 'added') {
+                console.log('added a doc');
                 timeout.current = setTimeout(() => {
-                  console.log("trying to run timeout 5 in ADD");
-                  if (route.name === "Home" && id_of_match === "none") {
-                    console.log("TIMEOUT DOC HOST");
+                  console.log('trying to run timeout 5 in ADD');
+                  if (route.name === 'Home' && id_of_match === 'none') {
+                    console.log('TIMEOUT DOC HOST');
                     setLockout(true);
                     setLoading(true);
                     // setOpenSearch(false);
@@ -527,56 +530,56 @@ export default function HomeScreen({ navigation }, props) {
                     async function deleteOldRecordAfterAbandon() {
                       try {
                         await firestore
-                          .collection("searching")
+                          .collection('searching')
                           .doc(currentUser.uid)
-                          .update({ match: "" });
-                        console.log("cleared old match before delete");
+                          .update({ match: '' });
+                        console.log('cleared old match before delete');
                       } catch (error) {
                         console.log(
-                          "tried to clear match before delete, but failed"
+                          'tried to clear match before delete, but failed'
                         );
-                        console.log("most of the time this is ok");
+                        console.log('most of the time this is ok');
                         // this is okay because this most likely wont exist on each load.
                       }
 
                       // Delete the document (if exists) if I am a "document host".
                       try {
                         await firestore
-                          .collection("searching")
+                          .collection('searching')
                           .doc(currentUser.uid)
                           .delete();
-                        console.log("deleted my doc");
+                        console.log('deleted my doc');
                       } catch (error) {
-                        console.log("error:");
+                        console.log('error:');
                         console.log(error);
                       }
                     }
                     deleteOldRecordAfterAbandon();
                     setIsSearching(true);
-                    setMatch("Not searching");
-                    setError("");
+                    setMatch('Not searching');
+                    setError('');
                     if (observer.current !== null) {
                       observer.current();
                     } else {
-                      console.log("could not clear observer in dochost");
+                      console.log('could not clear observer in dochost');
                     }
                     setLockout(false);
                     setLoading(false);
                   } else {
-                    console.log("timeout 5 tried to run, but was ignored.");
+                    console.log('timeout 5 tried to run, but was ignored.');
                   }
                 }, MS_BEFORE_ABANDON_SEARCH);
                 return;
               }
 
-              console.log("some edit change.");
+              console.log('some edit change.');
               clearAllTimeouts();
               // console.log(change.doc.data());
               if (
                 change &&
                 change.doc &&
                 change.doc.data() &&
-                change.doc.data().match !== ""
+                change.doc.data().match !== ''
               ) {
                 matchFound = true;
                 // Transfer the user to the chat in 4 seconds.
@@ -590,21 +593,21 @@ export default function HomeScreen({ navigation }, props) {
                     // console.log(docSnapshot.data().match);
                     if (count >= 100) {
                       clearInterval(transferTimeoutRef.current);
-                      setMatch("Not searching");
+                      setMatch('Not searching');
                       clearInterval(localInterval);
-                      setId("none");
+                      setId('none');
                       clearTimeout(timeout.current);
                       clearAllTimeouts();
-                      console.log("LEAVING! E");
+                      console.log('LEAVING! E');
                       count = 0;
                       setLockout(false);
                       if (observer.current !== null) {
                         observer.current();
                       } else {
-                        console.log("could not clear observer");
+                        console.log('could not clear observer');
                       }
 
-                      navigation.navigate("Chat", {
+                      navigation.navigate('Chat', {
                         match_id: change.doc.data().match,
                         timeout: timeout.current,
                       });
@@ -615,21 +618,21 @@ export default function HomeScreen({ navigation }, props) {
 
                 // setId(docSnapshot.data().match);
                 setId(change.doc.data().match);
-                setMatch("Found match! " + change.doc.data().match);
+                setMatch('Found match! ' + change.doc.data().match);
                 // clearTimeout(timeOut);
                 clearAllTimeouts();
               } else if (
                 change &&
                 change.doc &&
                 change.doc.data() &&
-                change.doc.data().match === ""
+                change.doc.data().match === ''
               ) {
                 // Match left..
 
                 matchFound = false;
-                setId("none");
-                setMatch("Searching");
-                setError("");
+                setId('none');
+                setMatch('Searching');
+                setError('');
                 // setOpenSearch(false);
                 // clearTimeout(timeOut);
                 // Clear timeouts, to prevent the match abandon refresh.
@@ -638,9 +641,9 @@ export default function HomeScreen({ navigation }, props) {
                   clearInterval(transferTimeoutRef.current);
                 setProgress(-1);
                 timeout.current = setTimeout(() => {
-                  console.log("trying to run timeout 5");
-                  if (route.name === "Home" && id_of_match === "none") {
-                    console.log("TIMEOUT DOC HOST");
+                  console.log('trying to run timeout 5');
+                  if (route.name === 'Home' && id_of_match === 'none') {
+                    console.log('TIMEOUT DOC HOST');
                     setLockout(true);
                     setLoading(true);
                     // setOpenSearch(false);
@@ -649,44 +652,44 @@ export default function HomeScreen({ navigation }, props) {
                     async function deleteOldRecordAfterAbandon() {
                       try {
                         await firestore
-                          .collection("searching")
+                          .collection('searching')
                           .doc(currentUser.uid)
-                          .update({ match: "" });
-                        console.log("cleared old match before delete");
+                          .update({ match: '' });
+                        console.log('cleared old match before delete');
                       } catch (error) {
                         console.log(
-                          "tried to clear match before delete, but failed"
+                          'tried to clear match before delete, but failed'
                         );
-                        console.log("most of the time this is ok");
+                        console.log('most of the time this is ok');
                         // this is okay because this most likely wont exist on each load.
                       }
 
                       // Delete the document (if exists) if I am a "document host".
                       try {
                         await firestore
-                          .collection("searching")
+                          .collection('searching')
                           .doc(currentUser.uid)
                           .delete();
-                        console.log("deleted my doc");
+                        console.log('deleted my doc');
                       } catch (error) {
-                        console.log("error:");
+                        console.log('error:');
                         console.log(error);
                       }
                     }
                     deleteOldRecordAfterAbandon();
 
-                    setMatch("Not searching");
+                    setMatch('Not searching');
                     setIsSearching(true);
-                    setError("");
+                    setError('');
                     if (observer.current !== null) {
                       observer.current();
                     } else {
-                      console.log("could not clear observer in dochost");
+                      console.log('could not clear observer in dochost');
                     }
                     setLockout(false);
                     setLoading(false);
                   } else {
-                    console.log("timeout 5 tried to run, but was ignored.");
+                    console.log('timeout 5 tried to run, but was ignored.');
                   }
                 }, MS_BEFORE_ABANDON_SEARCH);
               }
@@ -709,51 +712,51 @@ export default function HomeScreen({ navigation }, props) {
   async function handleLogout() {
     try {
       await logout();
-      await AsyncStorage.removeItem("user_data");
-      setMatch("Not searching");
-      setId("none");
+      await AsyncStorage.removeItem('user_data');
+      setMatch('Not searching');
+      setId('none');
       clearTimeout(timeout.current);
       clearAllTimeouts();
-      console.log("LEAVING! logout");
+      console.log('LEAVING! logout');
       setLockout(false);
       if (observer.current !== null) {
         observer.current();
       } else {
-        console.log("could not clear observer");
+        console.log('could not clear observer');
       }
-      navigation.navigate("Login");
+      navigation.navigate('Login');
     } catch (error) {
       console.log(error);
     }
   }
 
   function navProfile() {
-    setMatch("Not searching");
-    setId("none");
+    setMatch('Not searching');
+    setId('none');
     clearTimeout(timeout.current);
     clearAllTimeouts();
-    console.log("LEAVING! profile");
+    console.log('LEAVING! profile');
     setLockout(false);
     if (observer.current !== null) {
       observer.current();
     } else {
-      console.log("could not clear observer");
+      console.log('could not clear observer');
     }
-    navigation.navigate("Profile");
+    navigation.navigate('Profile');
   }
 
   return (
     <View style={styles.container}>
       <Image
         style={styles.logo}
-        source={require("../../../assets/DimeAssets/headerlogo.png")}
+        source={require('../../../assets/DimeAssets/headerlogo.png')}
       />
       <Text style={styles.text}>Welcome back, {name}!</Text>
       <View style={styles.formContainer}>
         <TouchableOpacity style={styles.button} onPress={navProfile}>
           <Text style={styles.buttonText}>Profile</Text>
         </TouchableOpacity>
-        {match && match !== "Searching" && !match.startsWith("Found match!") && (
+        {match && match !== 'Searching' && !match.startsWith('Found match!') && (
           <TouchableOpacity
             style={styles.button}
             onPress={() => {
@@ -765,7 +768,7 @@ export default function HomeScreen({ navigation }, props) {
             <Text style={styles.buttonText}>New Chat</Text>
           </TouchableOpacity>
         )}
-        {match && match === "Searching" && (
+        {match && match === 'Searching' && (
           <TouchableOpacity
             style={styles.button}
             onPress={killSearch}
@@ -776,15 +779,15 @@ export default function HomeScreen({ navigation }, props) {
         )}
         {/* {match && match === "Not searching" && <Text>{match}</Text>} */}
 
-        {match && (match === "Searching" || match.startsWith("Found match!")) && (
+        {match && (match === 'Searching' || match.startsWith('Found match!')) && (
           <View>
             <Image
               style={styles.searchImage}
-              source={require("../../../assets/DimeAssets/searchcoin.gif")}
+              source={require('../../../assets/DimeAssets/searchcoin.gif')}
             ></Image>
           </View>
         )}
-        {match && match.startsWith("Found match!") && <Text>{match}</Text>}
+        {match && match.startsWith('Found match!') && <Text>{match}</Text>}
       </View>
       <TouchableOpacity style={styles.logout} onPress={handleLogout}>
         <Text style={styles.buttonText}>Logout</Text>

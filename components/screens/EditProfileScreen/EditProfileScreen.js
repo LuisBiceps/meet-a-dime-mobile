@@ -36,6 +36,8 @@ const DEFAULT_COIN_IMAGE =
 
 export default function EditProfileScreen({ route, navigation }, props) {
   const isFocused = useIsFocused();
+  const [del, setDel] = useState(false);
+
   const [firstName, setFirstName] = useState('');
 
   const [lastName, setLastName] = useState('');
@@ -50,6 +52,14 @@ export default function EditProfileScreen({ route, navigation }, props) {
   const [value, setValue] = useState(18);
   const [response, setResponse] = useState('');
   const [phone, setPhone] = useState('');
+
+  const firstNameRef = useRef();
+  const lastNameRef = useRef();
+  const emailRef = useRef();
+  const passRef = useRef();
+  const confirmRef = useRef();
+  const phoneRef = useRef();
+  const responseRef = useRef();
 
   const [rangeDisabled, setRangeDisabled] = useState(false);
   const [low, setLow] = useState(18);
@@ -116,42 +126,6 @@ export default function EditProfileScreen({ route, navigation }, props) {
 
   const firestore = firebase.firestore();
 
-  var orient = {
-    1: 'Heterosexual',
-    2: 'Homosexual',
-    3: 'Bisexual',
-    4: 'Bisexual',
-  };
-
-  const onFooterLinkPress = () => {
-    navigation.navigate('Login');
-  };
-
-  function isLegal(date, minimum_age = 18) {
-    const [year, month, day] = date.split('-');
-    const [y, m, d] = moment()
-      .subtract(18, 'years')
-      .format('yyyy-MM-DD')
-      .split('-');
-
-    var d1 = new Date(y, m, d);
-    var d2 = new Date(year, month, day);
-    // console.log(d2 <= d1 ? true : false);
-    return d2 <= d1 ? true : false;
-  }
-
-  function handleError(error) {
-    if (error === 'auth/email-already-in-use') {
-      setEmailError('This email is already in use.');
-    } else if (error === 'auth/invalid-email') {
-      setEmailError('Please enter a valid email address.');
-    } else {
-      setErrorEmail('There was an error making your account');
-
-      setAccountError('There was an error making your account');
-    }
-  }
-
   async function fetchUserData() {
     // console.log('ran');
     var snapshot = await firestore.collection('users').get();
@@ -196,6 +170,20 @@ export default function EditProfileScreen({ route, navigation }, props) {
       }
     });
   }
+
+  async function handleDelete() {
+    try {
+      await firestore.collection('users').doc(currentUser.uid).delete();
+      await deleteUser();
+      await AsyncStorage.removeItem('user_data');
+      console.log('Account deleted');
+    } catch (error) {
+      console.log(error);
+      return setAccountError(error);
+    }
+    navigation.navigate('Login');
+  }
+
   async function getData() {
     await fetchUserData();
   }
@@ -498,7 +486,11 @@ export default function EditProfileScreen({ route, navigation }, props) {
             activeColor='#E64398'
             value={firstName}
             error={firstNameError}
+            ref={firstNameRef}
             onChangeText={(text) => setFirstName(text)}
+            onSubmitEditing={() => {
+              lastNameRef.current.focus();
+            }}
             autoCapitalize='words'
           />
 
@@ -512,7 +504,11 @@ export default function EditProfileScreen({ route, navigation }, props) {
             activeColor='#E64398'
             value={lastName}
             error={lastNameError}
+            ref={lastNameRef}
             onChangeText={(text) => setLastName(text)}
+            onSubmitEditing={() => {
+              emailRef.current.focus();
+            }}
             autoCapitalize='words'
           />
         </View>
@@ -526,7 +522,11 @@ export default function EditProfileScreen({ route, navigation }, props) {
           activeColor='#E64398'
           value={email}
           error={emailError}
+          ref={emailRef}
           onChangeText={(text) => setEmail(text)}
+          onSubmitEditing={() => {
+            passRef.current.focus();
+          }}
           autoCapitalize='none'
         />
 
@@ -542,7 +542,11 @@ export default function EditProfileScreen({ route, navigation }, props) {
           activeColor='#E64398'
           value={password}
           error={passError}
+          ref={passRef}
           onChangeText={(text) => setPassword(text)}
+          onSubmitEditing={() => {
+            confirmRef.current.focus();
+          }}
           autoCapitalize='none'
           secureTextEntry
         />
@@ -558,7 +562,11 @@ export default function EditProfileScreen({ route, navigation }, props) {
           activeColor='#E64398'
           value={confirmPassword}
           error={confirmError}
+          ref={confirmRef}
           onChangeText={(text) => setConfirmPassword(text)}
+          onSubmitEditing={() => {
+            phoneRef.current.focus();
+          }}
           autoCapitalize='none'
           secureTextEntry
         />
@@ -580,7 +588,11 @@ export default function EditProfileScreen({ route, navigation }, props) {
           activeColor='#E64398'
           value={phone}
           error={phoneError}
+          ref={phoneRef}
           onChangeText={(text) => phoneWork(text)}
+          onSubmitEditing={() => {
+            responseRef.current.focus();
+          }}
           autoCapitalize='none'
         />
 
@@ -699,13 +711,11 @@ export default function EditProfileScreen({ route, navigation }, props) {
           underlineColor='#000000'
           activeColor='#E64398'
           value={response}
+          ref={responseRef}
           //error={errorEmail}
           onChangeText={(text) => setResponse(text)}
           autoCapitalize='none'
         />
-        <View style={styles.responseContainer}>
-          <Text style={styles.response}>This can be changed later...</Text>
-        </View>
         <TouchableOpacity
           style={styles.register}
           onPress={() => handleSubmit()}
@@ -713,8 +723,27 @@ export default function EditProfileScreen({ route, navigation }, props) {
           <Text style={styles.buttonTitle}>Save Changes</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={styles.register}
-          onPress={() => handleRegister()}
+          style={styles.delete}
+          onPress={() => {
+            Alert.alert(
+              'Are you sure you want to delete your account?',
+              'This action is permanent and cannot be undone...',
+              [
+                {
+                  text: 'OK',
+                  onPress: () => {
+                    handleDelete();
+                  },
+                },
+                {
+                  text: 'Cancel',
+                  onPress: () => {
+                    console.log('Cancel pressed');
+                  },
+                },
+              ]
+            );
+          }}
         >
           <Text style={styles.buttonTitle}>Delete Account</Text>
         </TouchableOpacity>

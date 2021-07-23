@@ -27,6 +27,7 @@ import Notch from '../../slider/Notch';
 
 import { useAuth } from '../../contexts/AuthContext';
 import axios from 'axios';
+import { EMaskUnits } from 'react-native-svg';
 const DEFAULT_COIN_IMAGE =
   'https://firebasestorage.googleapis.com/v0/b/meet-a-dime.appspot.com/o/default_1.png?alt=media&token=23ab5b95-0214-42e3-9c54-d7811362aafc';
 
@@ -44,6 +45,14 @@ export default function RegistrationScreen({ navigation }) {
   const [value, setValue] = useState(18);
   const [response, setResponse] = useState('');
   const [phone, setPhone] = useState('');
+
+  const firstNameRef = useRef();
+  const lastNameRef = useRef();
+  const emailRef = useRef();
+  const passRef = useRef();
+  const confirmRef = useRef();
+  const phoneRef = useRef();
+  const responseRef = useRef();
 
   const [rangeDisabled, setRangeDisabled] = useState(false);
   const [low, setLow] = useState(18);
@@ -396,8 +405,12 @@ export default function RegistrationScreen({ navigation }) {
             underlineColor='#000000'
             activeColor='#E64398'
             value={firstName}
+            ref={firstNameRef}
             error={firstNameError}
             onChangeText={(text) => setFirstName(text)}
+            onSubmitEditing={() => {
+              lastNameRef.current.focus();
+            }}
             autoCapitalize='words'
           />
 
@@ -410,8 +423,12 @@ export default function RegistrationScreen({ navigation }) {
             underlineColor='#000000'
             activeColor='#E64398'
             value={lastName}
+            ref={lastNameRef}
             error={lastNameError}
             onChangeText={(text) => setLastName(text)}
+            onSubmitEditing={() => {
+              emailRef.current.focus();
+            }}
             autoCapitalize='words'
           />
         </View>
@@ -425,7 +442,11 @@ export default function RegistrationScreen({ navigation }) {
           activeColor='#E64398'
           value={email}
           error={emailError}
+          ref={emailRef}
           onChangeText={(text) => setEmail(text)}
+          onSubmitEditing={() => {
+            passRef.current.focus();
+          }}
           autoCapitalize='none'
         />
 
@@ -439,7 +460,11 @@ export default function RegistrationScreen({ navigation }) {
           activeColor='#E64398'
           value={password}
           error={passError}
+          ref={passRef}
           onChangeText={(text) => setPassword(text)}
+          onSubmitEditing={() => {
+            confirmRef.current.focus();
+          }}
           autoCapitalize='none'
           secureTextEntry
         />
@@ -453,7 +478,11 @@ export default function RegistrationScreen({ navigation }) {
           activeColor='#E64398'
           value={confirmPassword}
           error={confirmError}
+          ref={confirmRef}
           onChangeText={(text) => setConfirmPassword(text)}
+          onSubmitEditing={() => {
+            phoneRef.current.focus();
+          }}
           autoCapitalize='none'
           secureTextEntry
         />
@@ -468,7 +497,11 @@ export default function RegistrationScreen({ navigation }) {
           activeColor='#E64398'
           value={phone}
           error={phoneError}
+          ref={phoneRef}
           onChangeText={(text) => phoneWork(text)}
+          onSubmitEditing={() => {
+            responseRef.current.focus();
+          }}
           autoCapitalize='none'
         />
 
@@ -588,6 +621,7 @@ export default function RegistrationScreen({ navigation }) {
           activeColor='#E64398'
           value={response}
           //error={errorEmail}
+          ref={responseRef}
           onChangeText={(text) => setResponse(text)}
           autoCapitalize='none'
         />

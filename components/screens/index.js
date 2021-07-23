@@ -6,3 +6,4 @@ export { default as EditProfileScreen } from './EditProfileScreen/EditProfileScr
 export { default as ProfileScreen } from './ProfileScreen/ProfileScreen';
 export { default as AfterScreen } from './AfterScreen/AfterScreen';
 export { default as ForgotScreen } from './ForgotScreen/ForgotScreen';
+export { default as ConversationScreen } from './ConversationScreen/ConversationScreen';

@@ -1,19 +1,23 @@
-import React, { useEffect, useState } from "react";
-import { Image, Text, TextInput, TouchableOpacity, View } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import Reinput from "reinput";
-import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import styles from "./styles";
-import firebase from "firebase";
-import { auth } from "../../firebase/firebase";
-import { useAuth } from "../../contexts/AuthContext";
-import { roundToNearestPixel } from "react-native/Libraries/Utilities/PixelRatio";
+import React, { useEffect, useState, useRef } from 'react';
+import { Image, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import Reinput from 'reinput';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import styles from './styles';
+import firebase from 'firebase';
+import { auth } from '../../firebase/firebase';
+import { useAuth } from '../../contexts/AuthContext';
+import { roundToNearestPixel } from 'react-native/Libraries/Utilities/PixelRatio';
 
 export default function LoginScreen({ route, navigation }, props) {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [errorEmail, setErrorEmail] = useState("");
-  const [error, setError] = useState("");
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const emailRef = useRef();
+  const passRef = useRef();
+
+  const [errorEmail, setErrorEmail] = useState('');
+  const [error, setError] = useState('');
   const [propState, setPropState] = useState(false);
   const [fresh, setFresh] = useState(false);
   const { login } = useAuth();
@@ -23,32 +27,32 @@ export default function LoginScreen({ route, navigation }, props) {
   }
 
   const onFooterLinkPress = () => {
-    navigation.navigate("Registration");
+    navigation.navigate('Registration');
   };
 
   const onForgotPress = () => {
-    navigation.navigate("Forgot");
+    navigation.navigate('Forgot');
   };
 
   function handleError(error) {
-    if (error === "auth/wrong-password") {
-      setError("Incorrect password.");
-    } else if (error === "auth/user-not-found") {
-      setError("Your account does not exist.");
-      setErrorEmail("Your account does not exist.");
-    } else if (error === "auth/too-many-requests") {
-      setError("You are submitting too many requests, wait a few minutes.");
+    if (error === 'auth/wrong-password') {
+      setError('Incorrect password.');
+    } else if (error === 'auth/user-not-found') {
+      setError('Your account does not exist.');
+      setErrorEmail('Your account does not exist.');
+    } else if (error === 'auth/too-many-requests') {
+      setError('You are submitting too many requests, wait a few minutes.');
       setErrorEmail(
-        "You are submitting too many requests, wait a few minutes."
+        'You are submitting too many requests, wait a few minutes.'
       );
-    } else if (error == "auth/invalid-email") {
-      setErrorEmail("Please enter a valid email.");
+    } else if (error == 'auth/invalid-email') {
+      setErrorEmail('Please enter a valid email.');
     }
   }
 
   async function storeToken(user) {
     try {
-      await AsyncStorage.setItem("user_data", JSON.stringify(user));
+      await AsyncStorage.setItem('user_data', JSON.stringify(user));
     } catch (error) {
       console.log(error);
     }
@@ -56,7 +60,7 @@ export default function LoginScreen({ route, navigation }, props) {
 
   async function getToken() {
     try {
-      let user_data = await AsyncStorage.getItem("user_data");
+      let user_data = await AsyncStorage.getItem('user_data');
       if (user_data == null) {
         return false;
       }
@@ -68,19 +72,19 @@ export default function LoginScreen({ route, navigation }, props) {
 
   async function handleSubmit() {
     try {
-      setError("");
-      setErrorEmail("");
+      setError('');
+      setErrorEmail('');
       await firebase
         .auth()
         .setPersistence(firebase.auth.Auth.Persistence.LOCAL);
       var res = await login(email, password);
       storeToken(JSON.stringify(res.user));
       console.log(res.user);
-      setEmail("");
-      setPassword("");
+      setEmail('');
+      setPassword('');
       setPropState(false);
 
-      navigation.navigate("Home");
+      navigation.navigate('Home');
     } catch (error) {
       handleError(error.code === undefined ? error : error.code);
     }
@@ -97,15 +101,15 @@ export default function LoginScreen({ route, navigation }, props) {
     getToken().then((res) => {
       if (res) {
         console.log(res);
-        navigation.navigate("Home");
+        navigation.navigate('Home');
       }
     });
 
     async function purgeOld() {
-      console.log("THIS SHOULD ONLY PRINT ONCE PER LOAD");
+      console.log('THIS SHOULD ONLY PRINT ONCE PER LOAD');
       try {
         try {
-          await firestore.collection("searching").doc();
+          await firestore.collection('searching').doc();
         } catch (error) {}
       } catch (error) {}
     }
@@ -116,14 +120,14 @@ export default function LoginScreen({ route, navigation }, props) {
       <KeyboardAwareScrollView
         contentContainerStyle={styles.viewContainer}
         // style={{ flexGrow: 1, width: "100%" }}
-        keyboardShouldPersistTaps="never"
+        keyboardShouldPersistTaps='never'
         scrollEnabled={true}
       >
         <View style={styles.innerContainer}>
           <Image
             style={styles.logo}
-            resizeMode="center"
-            source={require("../../../assets/DimeAssets/homelogo.png")}
+            resizeMode='center'
+            source={require('../../../assets/DimeAssets/homelogo.png')}
           />
 
           {state && (
@@ -133,34 +137,42 @@ export default function LoginScreen({ route, navigation }, props) {
           )}
           <View style={styles.inputContainer}>
             <Reinput
-              keyboardType="email-address"
+              keyboardType='email-address'
               style={styles.input}
-              label="E-mail"
-              labelColor="#000000"
-              placeholderColor="#000000"
-              underlineColor="#000000"
-              labelActiveColor="#E64398"
-              activeColor="#E64398"
+              label='E-mail'
+              labelColor='#000000'
+              placeholderColor='#000000'
+              underlineColor='#000000'
+              labelActiveColor='#E64398'
+              activeColor='#E64398'
               value={email}
               error={errorEmail}
+              ref={emailRef}
               onChangeText={(text) => setEmail(text)}
-              autoCapitalize="none"
+              onSubmitEditing={() => {
+                passRef.current.focus();
+              }}
+              autoCapitalize='none'
             />
 
             <Reinput
               style={styles.input}
-              label="Password"
+              label='Password'
               value={password}
               error={error}
-              labelColor="#000000"
-              placeholderColor="#000000"
-              underlineColor="#000000"
-              labelActiveColor="#E64398"
-              activeColor="#E64398"
+              ref={passRef}
+              labelColor='#000000'
+              placeholderColor='#000000'
+              underlineColor='#000000'
+              labelActiveColor='#E64398'
+              activeColor='#E64398'
               secureTextEntry
               placeholderVisibility={true}
               onChangeText={(text) => setPassword(text)}
-              autoCapitalize="none"
+              onSubmitEditing={() => {
+                handleSubmit();
+              }}
+              autoCapitalize='none'
             />
             <TouchableOpacity
               style={styles.button}

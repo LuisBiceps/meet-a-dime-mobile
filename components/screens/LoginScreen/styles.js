@@ -25,7 +25,7 @@ export default StyleSheet.create({
     fontSize: 16,
   },
   input: {
-    height: 60,
+    height: 70,
     // borderRadius: 5,
     overflow: 'hidden',
     // backgroundColor: 'white',
