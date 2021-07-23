@@ -234,7 +234,7 @@ export default function HomeScreen({ navigation }, props) {
 
   async function killSearch() {
     setId("none");
-    setMatch("Not searching.");
+    setMatch("Not searching");
     setError("");
     setIsSearching(true);
     clearAllTimeouts();
@@ -449,7 +449,7 @@ export default function HomeScreen({ navigation }, props) {
                   matchFound = false;
                   setId("none");
                   setIsSearching(true);
-                  setMatch("Not searching.");
+                  setMatch("Not searching");
                   setError("");
                   // setOpenSearch(false);
                   // clearTimeout(timeOut);
@@ -553,7 +553,7 @@ export default function HomeScreen({ navigation }, props) {
                     }
                     deleteOldRecordAfterAbandon();
                     setIsSearching(true);
-                    setMatch("Not searching.");
+                    setMatch("Not searching");
                     setError("");
                     if (observer.current !== null) {
                       observer.current();
@@ -628,7 +628,7 @@ export default function HomeScreen({ navigation }, props) {
 
                 matchFound = false;
                 setId("none");
-                setMatch("Searching.");
+                setMatch("Searching");
                 setError("");
                 // setOpenSearch(false);
                 // clearTimeout(timeOut);
@@ -675,7 +675,7 @@ export default function HomeScreen({ navigation }, props) {
                     }
                     deleteOldRecordAfterAbandon();
 
-                    setMatch("Not searching.");
+                    setMatch("Not searching");
                     setIsSearching(true);
                     setError("");
                     if (observer.current !== null) {
@@ -753,32 +753,38 @@ export default function HomeScreen({ navigation }, props) {
         <TouchableOpacity style={styles.button} onPress={navProfile}>
           <Text style={styles.buttonText}>Profile</Text>
         </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => {
-            searching();
-            setIsSearching(false);
-          }}
-          disabled={lockout}
-        >
-          <Text style={styles.buttonText}>New Chat</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={killSearch}
-          disabled={isSearching}
-        >
-          <Text style={styles.buttonText}>Stop Search</Text>
-        </TouchableOpacity>
-        {match && match === "Not searching." && (
-          <Text severity="warning">{match}</Text>
+        {match && match !== "Searching" && (
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => {
+              searching();
+              setIsSearching(false);
+            }}
+            disabled={lockout}
+          >
+            <Text style={styles.buttonText}>New Chat</Text>
+          </TouchableOpacity>
         )}
-        {match && match === "Searching." && (
-          <Text severity="info">{match}</Text>
+        {match && match === "Searching" && (
+          <TouchableOpacity
+            style={styles.button}
+            onPress={killSearch}
+            disabled={isSearching}
+          >
+            <Text style={styles.buttonText}>Stop Search</Text>
+          </TouchableOpacity>
         )}
-        {match && match !== "Not searching." && match !== "Searching." && (
-          <Text severity="success">{match}</Text>
+        {/* {match && match === "Not searching" && <Text>{match}</Text>} */}
+
+        {match && (match === "Searching" || match.startsWith("Found match!")) && (
+          <View>
+            <Image
+              style={styles.searchImage}
+              source={require("../../../assets/DimeAssets/searchcoin.gif")}
+            ></Image>
+          </View>
         )}
+        {match && match.startsWith("Found match!") && <Text>{match}</Text>}
       </View>
       <TouchableOpacity style={styles.logout} onPress={handleLogout}>
         <Text style={styles.buttonText}>Logout</Text>
