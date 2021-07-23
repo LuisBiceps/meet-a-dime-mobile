@@ -753,7 +753,7 @@ export default function HomeScreen({ navigation }, props) {
         <TouchableOpacity style={styles.button} onPress={navProfile}>
           <Text style={styles.buttonText}>Profile</Text>
         </TouchableOpacity>
-        {match && match !== "Searching" && (
+        {match && match !== "Searching" && !match.startsWith("Found match!") && (
           <TouchableOpacity
             style={styles.button}
             onPress={() => {
