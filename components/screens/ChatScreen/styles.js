@@ -34,10 +34,11 @@ export default StyleSheet.create({
   },
   button: {
     backgroundColor: "#E64398",
-    marginLeft: 30,
-    marginRight: 30,
-    marginTop: 50,
+    marginLeft: 10,
+    marginRight: 10,
+    marginTop: 100,
     height: 48,
+    width: 100,
 
     borderRadius: 5,
     alignItems: "center",
