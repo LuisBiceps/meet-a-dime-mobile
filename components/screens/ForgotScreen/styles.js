@@ -2,7 +2,7 @@ import { Dimensions, StyleSheet } from 'react-native';
 const { width, height } = Dimensions.get('window');
 export default StyleSheet.create({
   container: {
-    paddingTop: height / 8.25,
+    paddingTop: height / 5.25,
     flex: 1,
     justifyContent: 'center',
     height: height / 1.9,
@@ -12,8 +12,8 @@ export default StyleSheet.create({
   title: { justifyContent: 'center' },
   logo: {
     flex: 1,
-    height: 315,
-    width: 350,
+    height: 120,
+    width: 400,
 
     alignSelf: 'center',
     margin: 10,
@@ -48,27 +48,13 @@ export default StyleSheet.create({
     borderWidth: 2,
     borderRadius: 30,
     paddingTop: 10,
-    // paddingBottom: 20,
+    paddingBottom: 20,
     borderColor: '#C5C5C5',
     backgroundColor: 'white',
     margin: 20,
     shadowOpacity: 0.2,
     shadowOffset: { width: 1, height: 5 },
   },
-  registerContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    marginTop: 15,
-    borderStyle: 'solid',
-    borderWidth: 2,
-    borderRadius: 30,
-    borderColor: '#7E7E7E',
-    paddingTop: 10,
-    paddingBottom: 20,
-    backgroundColor: '#DDDDDD',
-    margin: 20,
-  },
-
   button: {
     backgroundColor: '#E64398',
     marginLeft: 30,
@@ -81,8 +67,8 @@ export default StyleSheet.create({
   },
   register: {
     backgroundColor: '#B39BC8',
-    marginLeft: 30,
-    marginRight: 30,
+    marginLeft: 100,
+    marginRight: 100,
     marginTop: 10,
     height: 48,
     borderRadius: 50,
@@ -102,11 +88,34 @@ export default StyleSheet.create({
     marginTop: 20,
   },
   footerText: {
+    fontSize: 36,
+    textAlign: 'center',
+    color: '#000000',
+  },
+  footerSubText: {
+    fontSize: 14,
+    textAlign: 'center',
+    color: '#000000',
+  },
+
+  footerLink: {
+    color: 'blue',
+    fontWeight: 'normal',
+    fontSize: 16,
+  },
+  signupView: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    textAlign: 'center',
+    marginTop: 20,
+  },
+  signUpText: {
     fontSize: 16,
     textAlign: 'center',
     color: '#000000',
   },
-  footerLink: {
+  signUpLink: {
     color: 'blue',
     fontWeight: 'normal',
     fontSize: 16,

@@ -26,6 +26,10 @@ export default function LoginScreen({ route, navigation }, props) {
     navigation.navigate('Registration');
   };
 
+  const onForgotPress = () => {
+    navigation.navigate('Forgot');
+  };
+
   function handleError(error) {
     if (error === 'auth/wrong-password') {
       setError('Incorrect password.');
@@ -119,7 +123,7 @@ export default function LoginScreen({ route, navigation }, props) {
           <Image
             style={styles.logo}
             resizeMode='center'
-            source={require('../../../assets/DimeAssets/headerlogo.png')}
+            source={require('../../../assets/DimeAssets/homelogo.png')}
           />
 
           {state && (
@@ -127,44 +131,60 @@ export default function LoginScreen({ route, navigation }, props) {
               Extra verification is required for changing password
             </Text>
           )}
+          <View style={styles.inputContainer}>
+            <Reinput
+              style={styles.input}
+              label='E-mail'
+              labelColor='#000000'
+              placeholderColor='#000000'
+              underlineColor='#000000'
+              labelActiveColor='#E64398'
+              activeColor='#E64398'
+              value={email}
+              error={errorEmail}
+              onChangeText={(text) => setEmail(text)}
+              autoCapitalize='none'
+            />
 
-          <Reinput
-            style={styles.input}
-            label='E-mail'
-            labelActiveColor='#E64398'
-            activeColor='#E64398'
-            value={email}
-            error={errorEmail}
-            onChangeText={(text) => setEmail(text)}
-            autoCapitalize='none'
-          />
+            <Reinput
+              style={styles.input}
+              label='Password'
+              value={password}
+              error={error}
+              labelColor='#000000'
+              placeholderColor='#000000'
+              underlineColor='#000000'
+              labelActiveColor='#E64398'
+              activeColor='#E64398'
+              secureTextEntry
+              placeholderVisibility={true}
+              onChangeText={(text) => setPassword(text)}
+              autoCapitalize='none'
+            />
+            <TouchableOpacity
+              style={styles.button}
+              onPress={() => handleSubmit()}
+            >
+              <Text style={styles.buttonTitle}>Log In</Text>
+            </TouchableOpacity>
 
-          <Reinput
-            style={styles.input}
-            label='Password'
-            value={password}
-            error={error}
-            labelActiveColor='#E64398'
-            activeColor='#E64398'
-            secureTextEntry
-            placeholderVisibility={true}
-            onChangeText={(text) => setPassword(text)}
-            autoCapitalize='none'
-          />
-
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => handleSubmit()}
-          >
-            <Text style={styles.buttonTitle}>Log in</Text>
-          </TouchableOpacity>
-          <View style={styles.footerView}>
-            <Text style={styles.footerText}>
-              Don't have an account?{' '}
-              <Text onPress={onFooterLinkPress} style={styles.footerLink}>
-                Sign up
+            <View style={styles.footerView}>
+              <Text style={styles.footerText}>
+                <Text onPress={onForgotPress} style={styles.footerLink}>
+                  Forgot Password?
+                </Text>
               </Text>
-            </Text>
+            </View>
+
+            <View style={styles.registerContainer}>
+              <Text style={styles.footerText}>Don't have an account?</Text>
+              <TouchableOpacity
+                style={styles.register}
+                onPress={() => onFooterLinkPress()}
+              >
+                <Text style={styles.buttonTitle}>Sign Up</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
       </KeyboardAwareScrollView>
