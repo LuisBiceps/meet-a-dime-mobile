@@ -206,7 +206,7 @@ export default function AfterScreen({ route, navigation }) {
   const [match_age, setMatchAge] = useState("");
   const [match_name, setMatchName] = useState("user");
   const [match_sex, setMatchSex] = useState("");
-  const [match_photo, setMatchPhoto] = useState("");
+  const [match_photo, setMatchPhoto] = useState(DEFAULT_COIN_IMAGE);
   async function fetchMatchInfo() {
     try {
       const token = currentUser && (await currentUser.getIdToken());

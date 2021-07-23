@@ -620,18 +620,22 @@ export default function ChatScreen({ route, navigation }) {
               <Text style={styles.modalText}>
                 You did the time, do you want the dime?
               </Text>
-              <Pressable
-                style={[styles.button, styles.buttonClose]}
-                onPress={noMatch}
-              >
-                <Text style={styles.textStyle}>No</Text>
-              </Pressable>
-              <Pressable
-                style={[styles.button, styles.buttonClose]}
-                onPress={pendingMatch}
-              >
-                <Text style={styles.textStyle}>Yes</Text>
-              </Pressable>
+              <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
+                <Pressable onPress={noMatch}>
+                  {/* <Text style={styles.textStyle}>No</Text> */}
+                  <Image
+                    style={styles.dimeImages}
+                    source={require("../../../assets/DimeAssets/sleepycoin.png")}
+                  ></Image>
+                </Pressable>
+                <Pressable onPress={pendingMatch}>
+                  {/* <Text style={styles.textStyle}>Yes</Text> */}
+                  <Image
+                    style={styles.dimeImages}
+                    source={require("../../../assets/DimeAssets/hearteyes.png")}
+                  ></Image>
+                </Pressable>
+              </View>
             </View>
           </View>
         </Modal>

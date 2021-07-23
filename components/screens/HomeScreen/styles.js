@@ -1,32 +1,33 @@
-import { StyleSheet, Dimensions } from 'react-native';
-const { width, height } = Dimensions.get('window');
+import { StyleSheet, Dimensions } from "react-native";
+const { width, height } = Dimensions.get("window");
 
 export default StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
+    alignItems: "center",
     height: height / 2,
   },
   formContainer: {
-    flexDirection: 'column',
+    flexDirection: "column",
     height: 20,
     marginTop: 10,
     marginBottom: 20,
     marginLeft: 10,
     marginRight: 15,
     flex: 1,
+
     paddingTop: 1,
     paddingBottom: 1,
     paddingLeft: 30,
     paddingRight: 30,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "flex-start",
+    alignItems: "center",
   },
   logo: {
     flex: 1,
     width: 350,
-    resizeMode: 'contain',
-    alignSelf: 'center',
+    resizeMode: "contain",
+    alignSelf: "center",
     margin: 5,
     marginLeft: 15,
     marginRight: 15,
@@ -34,43 +35,43 @@ export default StyleSheet.create({
   input: {
     height: 48,
     borderRadius: 5,
-    overflow: 'hidden',
-    backgroundColor: 'white',
+    overflow: "hidden",
+    backgroundColor: "white",
     paddingLeft: 16,
     flex: 1,
     marginRight: 5,
   },
   button: {
-    backgroundColor: '#e64398',
+    backgroundColor: "#e64398",
     marginLeft: 30,
     marginRight: 30,
     marginTop: 5,
     marginBottom: 5,
     height: 48,
     borderRadius: 50,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     width: width / 3,
   },
   logout: {
-    backgroundColor: '#e64398',
+    backgroundColor: "#e64398",
     marginLeft: 30,
     marginRight: 30,
     marginTop: 5,
     marginBottom: 35,
     height: 48,
     borderRadius: 50,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     width: width / 3,
   },
   buttonText: {
-    color: 'white',
+    color: "white",
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   text: {
-    color: 'black',
+    color: "black",
     fontSize: 16,
   },
   listContainer: {
@@ -79,12 +80,16 @@ export default StyleSheet.create({
   },
   entityContainer: {
     marginTop: 16,
-    borderBottomColor: '#cccccc',
+    borderBottomColor: "#cccccc",
     borderBottomWidth: 1,
     paddingBottom: 16,
   },
   entityText: {
     fontSize: 20,
-    color: '#333333',
+    color: "#333333",
+  },
+  searchImage: {
+    height: 250,
+    width: 250,
   },
 });
