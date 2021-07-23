@@ -303,7 +303,7 @@ export default function ChatScreen({ route, navigation }) {
         leavePageWith("match_made");
       } else {
         // Nothing yet, lets wait for a change to the matchTail.
-        var localObserver = (observer.current = firestore
+        var localObserver = firestore
           .collection("searching")
           .doc(currentUser.uid)
           .onSnapshot((docSnapshot) => {
@@ -315,13 +315,9 @@ export default function ChatScreen({ route, navigation }) {
               // THEY SAID YES !! (but after)
               setSuccessMatches();
               console.log("other person (the match) said yes after");
-              if (observer.current !== null) observer.current();
-              if (observerState !== null) observerState();
               setObserverState(null);
               observer.current = null;
-              if (observerState !== null) observerState();
-              setObserverState(null);
-              observer.current = null;
+              localObserver();
               clearTimeout(extended_timeout);
               clearTimeout(extendedTimeoutRef.current);
               clearTimeout(extendedTimeoutState);
@@ -335,21 +331,17 @@ export default function ChatScreen({ route, navigation }) {
             ) {
               // The other person timed out..
               console.log("other person (the match) timed out");
-              if (observer.current !== null) observer.current();
-              if (observerState !== null) observerState();
               setObserverState(null);
               observer.current = null;
-              if (observerState !== null) observerState();
-              setObserverState(null);
-              observer.current = null;
+              localObserver();
               clearTimeout(extended_timeout);
               clearTimeout(extendedTimeoutRef.current);
               clearTimeout(extendedTimeoutState);
 
               leavePageWith("match_timedout");
             }
-          }));
-        setObserverState(localObserver);
+          });
+        // setObserverState(localObserver);
       }
     }
 
@@ -372,10 +364,11 @@ export default function ChatScreen({ route, navigation }) {
         leavePageWith("match_made");
       } else {
         // I need to passively listen for a document change.
-        var localObserver = (observer.current = firestore
+        var localObserver = firestore
           .collection("searching")
           .doc(match_id)
           .onSnapshot((docSnapshot) => {
+            console.log(docSnapshot);
             if (
               docSnapshot &&
               docSnapshot.data() &&
@@ -384,13 +377,10 @@ export default function ChatScreen({ route, navigation }) {
               // THEY SAID YES !! (but after)
               setSuccessMatches();
               console.log("other person (the seeker) said yes after");
-              if (observer.current !== null) observer.current();
-              if (observerState !== null) observerState();
+
               setObserverState(null);
               observer.current = null;
-              if (observerState !== null) observerState();
-              setObserverState(null);
-              observer.current = null;
+              localObserver();
               clearTimeout(extended_timeout);
               clearTimeout(extendedTimeoutRef.current);
               clearTimeout(extendedTimeoutState);
@@ -404,21 +394,17 @@ export default function ChatScreen({ route, navigation }) {
             ) {
               // The other person timed out..
               console.log("other person (the seeker) timed out");
-              if (observer.current !== null) observer.current();
-              if (observerState !== null) observerState();
               setObserverState(null);
               observer.current = null;
-              if (observerState !== null) observerState();
-              setObserverState(null);
-              observer.current = null;
+              localObserver();
               clearTimeout(extended_timeout);
               clearTimeout(extendedTimeoutRef.current);
               clearTimeout(extendedTimeoutState);
 
               leavePageWith("match_timedout");
             }
-          }));
-        setObserverState(localObserver);
+          });
+        // setObserverState(localObserver);
       }
     }
   }
