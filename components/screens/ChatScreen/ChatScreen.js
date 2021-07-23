@@ -823,10 +823,6 @@ export default function ChatScreen({ route, navigation }) {
             />
           );
         }}
-        renderSystemMessage={(props) => {
-          console.log("system");
-          return <Text>mesage</Text>;
-        }}
         messages={messages}
         onSend={(messages) => onSend(messages)}
         user={{ _id: currentUser.uid }}
