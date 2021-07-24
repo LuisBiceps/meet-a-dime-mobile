@@ -321,10 +321,12 @@ export default function EditProfileScreen({ route, navigation }, props) {
         .collection('users')
         .doc(currentUser.uid)
         .update({ sex: sex });
-      await firestore
-        .collection('users')
-        .doc(currentUser.uid)
-        .update({ sexOrientation: orientation });
+      if (orientation !== 'Choose your sexual orientation...') {
+        await firestore
+          .collection('users')
+          .doc(currentUser.uid)
+          .update({ sexOrientation: orientation });
+      }
       await firestore
         .collection('users')
         .doc(currentUser.uid)
@@ -413,6 +415,8 @@ export default function EditProfileScreen({ route, navigation }, props) {
 
   function handleOrientation(preference) {
     if (preference === '0') {
+      // if (orientLabel !== 'Choose your sexual orientation...')
+
       setOrientation('Choose your sexual orientation...');
       setOrientLabel('Choose your sexual orientation...');
     } else if (preference === '1') {

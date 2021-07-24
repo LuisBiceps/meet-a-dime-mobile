@@ -744,131 +744,138 @@ export default function HomeScreen({ navigation }, props) {
   }
 
   return (
-    <View style={styles.container}>
-      <Image
-        style={styles.logo}
-        source={require('../../../assets/DimeAssets/headerlogo.png')}
-      />
-      <Text style={styles.text}>Welcome back, {name}!</Text>
-      <View style={styles.formContainer}>
-        {match && match !== 'Searching' && (
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => {
-              searching();
-              setIsSearching(false);
-            }}
-            disabled={lockout || (match && match.startsWith('Found match!'))}
-          >
-            <Text style={styles.buttonText}>
-              {match && match.startsWith('Found match!')
-                ? 'Found match!'
-                : 'New Chat'}
-            </Text>
-          </TouchableOpacity>
-        )}
-        {match && match === 'Searching' && (
-          <TouchableOpacity
-            style={styles.button}
-            onPress={killSearch}
-            disabled={isSearching}
-          >
-            <Text style={styles.buttonText}>Stop Search</Text>
-          </TouchableOpacity>
-        )}
-        {/* {match && match === "Not searching" && <Text>{match}</Text>} */}
+    <KeyboardAwareScrollView
+      contentContainerStyle={styles.container}
+      // style={{ flexGrow: 1, width: "100%" }}
+      keyboardShouldPersistTaps='never'
+    >
+      <View style={styles.container}>
+        <Image
+          style={styles.logo}
+          source={require('../../../assets/DimeAssets/headerlogo.png')}
+        />
+        <Text style={styles.text}>Welcome back, {name}!</Text>
+        <View style={styles.formContainer}>
+          {match && match !== 'Searching' && (
+            <TouchableOpacity
+              style={styles.button}
+              onPress={() => {
+                searching();
+                setIsSearching(false);
+              }}
+              disabled={lockout || (match && match.startsWith('Found match!'))}
+            >
+              <Text style={styles.buttonText}>
+                {match && match.startsWith('Found match!')
+                  ? 'Found match!'
+                  : 'New Chat'}
+              </Text>
+            </TouchableOpacity>
+          )}
+          {match && match === 'Searching' && (
+            <TouchableOpacity
+              style={styles.button}
+              onPress={killSearch}
+              disabled={isSearching}
+            >
+              <Text style={styles.buttonText}>Stop Search</Text>
+            </TouchableOpacity>
+          )}
+          {/* {match && match === "Not searching" && <Text>{match}</Text>} */}
 
-        {match && (match === 'Searching' || match.startsWith('Found match!')) && (
-          <View style={styles.modal}>
-            <Image
-              style={styles.searchImage}
-              source={require('../../../assets/DimeAssets/searchcoin.gif')}
-            ></Image>
-          </View>
-        )}
-        {/* {match && match.startsWith('Found match!') && (
+          {match &&
+            (match === 'Searching' || match.startsWith('Found match!')) && (
+              <View style={styles.modal}>
+                <Image
+                  style={styles.searchImage}
+                  source={require('../../../assets/DimeAssets/searchcoin.gif')}
+                ></Image>
+              </View>
+            )}
+          {/* {match && match.startsWith('Found match!') && (
           <Text style={styles.matchFound}>{match}</Text>
         )} */}
-      </View>
+        </View>
 
-      <View
-        style={{
-          flexDirection: 'row',
-          flexWrap: 'wrap',
-          alignItems: 'center',
-          justifyContent: 'center',
-          alignContent: 'center',
-          position: 'absolute',
-          top: 500,
-          marginTop: 10,
-          width: '100%',
-        }}
-      >
-        <Reinput
-          keyboardType='web-search'
-          label='Search Previous Matches'
-          labelColor='#000000'
-          placeholderColor='#000000'
-          underlineColor='#000000'
-          labelActiveColor='#E64398'
-          activeColor='#E64398'
-          value={search}
-          ref={searchRef}
-          onChangeText={(text) => {
-            setSearch(text);
+        <View
+          style={{
+            flexDirection: 'row',
+            flexWrap: 'wrap',
+            alignItems: 'center',
+            justifyContent: 'center',
+            alignContent: 'center',
+            position: 'absolute',
+            top: 500,
+            marginTop: 10,
+            width: '100%',
           }}
-          onSubmitEditing={() => {
-            {
-              fetchSuccessMatch(search);
+        >
+          <Reinput
+            keyboardType='web-search'
+            label='Search Previous Matches'
+            labelColor='#000000'
+            placeholderColor='#000000'
+            underlineColor='#000000'
+            labelActiveColor='#E64398'
+            activeColor='#E64398'
+            value={search}
+            ref={searchRef}
+            onChangeText={(text) => {
+              setSearch(text);
+            }}
+            onSubmitEditing={() => {
+              {
+                fetchSuccessMatch(search);
 
-              Keyboard.dismiss();
-            }
-          }}
-          autoCapitalize='none'
-          style={{ width: 320 }}
-        />
-      </View>
+                Keyboard.dismiss();
+              }
+            }}
+            autoCapitalize='none'
+            style={{ width: 320 }}
+          />
+        </View>
 
-      {matchesArray && matchesArray.length !== 0 && (
-        <ScrollView style={styles.matches} horizontal={true}>
-          {matchesArray.map((vals, index) => {
-            // console.log(vals);
-            var age = moment().diff(vals.birth, 'years');
-            return (
-              <View
-                key={index}
-                style={{ width: 150, height: 150, marginHorizontal: 10 }}
-              >
-                <Image
-                  style={{
-                    width: 150,
-                    height: 150,
-                    borderRadius: 100,
-                    borderRadius: 150 / 2,
-                    overflow: 'hidden',
-                    borderWidth: 3,
-                    borderColor: '#e4a',
-                  }}
-                  source={{ uri: vals.photo }}
-                ></Image>
+        {matchesArray && matchesArray.length !== 0 && (
+          <ScrollView style={styles.matches} horizontal={true}>
+            {matchesArray.map((vals, index) => {
+              // console.log(vals);
+              var age = moment().diff(vals.birth, 'years');
+              return (
+                <View
+                  key={index}
+                  style={{ width: 150, height: 150, marginHorizontal: 10 }}
+                >
+                  <Image
+                    style={{
+                      width: 150,
+                      height: 150,
+                      borderRadius: 100,
+                      borderRadius: 150 / 2,
+                      overflow: 'hidden',
+                      borderWidth: 3,
+                      borderColor: '#e4a',
+                    }}
+                    source={{ uri: vals.photo }}
+                  ></Image>
 
-                <View style={{ alignItems: 'center' }}>
-                  <Text>{vals.firstName + ' ' + vals.lastName}</Text>
-                  <Text>{age + ' • ' + vals.sex[0]}</Text>
+                  <View style={{ alignItems: 'center' }}>
+                    <Text>{vals.firstName + ' ' + vals.lastName}</Text>
+                    <Text>{age + ' • ' + vals.sex[0]}</Text>
 
-                  <Text>{vals.phone}</Text>
+                    <Text>{vals.phone}</Text>
+                  </View>
                 </View>
-              </View>
-            );
-          })}
-        </ScrollView>
-      )}
-      {matchesArray && matchesArray.length === 0 && !searchMatchesOnce && (
-        <Text style={styles.bottomText}>No matches yet.. 😔</Text>
-      )}
-      {matchesArray && matchesArray.length === 0 && searchMatchesOnce && (
-        <Text style={styles.bottomText}>No results.</Text>
-      )}
-    </View>
+              );
+            })}
+          </ScrollView>
+        )}
+        {matchesArray && matchesArray.length === 0 && !searchMatchesOnce && (
+          <Text style={styles.bottomText}>No matches yet.. 😔</Text>
+        )}
+        {matchesArray && matchesArray.length === 0 && searchMatchesOnce && (
+          <Text style={styles.bottomText}>No results.</Text>
+        )}
+      </View>
+    </KeyboardAwareScrollView>
   );
 }
