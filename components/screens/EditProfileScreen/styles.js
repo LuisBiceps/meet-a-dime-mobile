@@ -29,9 +29,9 @@ export default StyleSheet.create({
   response: {
     fontSize: 11,
   },
-  headingContainer: { flex: 1, alignItems: 'center' },
+  headingContainer: { flex: 1, alignItems: 'center', marginTop: 50 },
   heading: {
-    fontSize: 20,
+    fontSize: 24,
     color: '#000000',
   },
   slider: {

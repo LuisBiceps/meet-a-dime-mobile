@@ -2,10 +2,10 @@ import { Dimensions, StyleSheet } from 'react-native';
 const { width, height } = Dimensions.get('window');
 export default StyleSheet.create({
   container: {
-    paddingTop: height / 8.25,
+    paddingTop: width / 10,
     flex: 1,
     justifyContent: 'center',
-    height: height / 1.9,
+    height: height / 1,
     backgroundColor: '#dceaff',
   },
   innerContainer: { borderStyle: 'solid', borderWidth: 0 },

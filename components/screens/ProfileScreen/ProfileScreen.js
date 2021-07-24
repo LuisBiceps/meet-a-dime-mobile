@@ -214,22 +214,23 @@ export default function ProfileScreen({ navigation }) {
   return (
     <View style={styles.container}>
       <KeyboardAwareScrollView
-        style={{ flex: 1, width: '100%' }}
-        keyboardShouldPersistTaps='never'
-        scrollEnabled={scroll}
-      >
-        <Image style={styles.logo} source={source} />
+        style={{}}
+        keyboardShouldPersistTaps="never"
+        scrollEnabled={scroll}>
+        <View style={styles.profile}>
+          <Image style={styles.logo} source={source} />
 
-        <View style={styles.headingContainer}>
-          {/* <Text stype={styles.heading}>{myPhoto.toString()}</Text> */}
+          <View style={styles.headingContainer}>
+            {/* <Text stype={styles.heading}>{myPhoto.toString()}</Text> */}
 
-          <Text style={styles.heading}>{firstName + ' ' + lastName}</Text>
-          <Text style={styles.heading}>{phone}</Text>
+            <Text style={styles.heading}>{firstName + ' ' + lastName}</Text>
+            <Text style={styles.heading}>{phone}</Text>
+          </View>
         </View>
 
         {showProgress && (
           <View style={styles.responseContainer}>
-            <Progress.Bar progress={progress / 100} color='#E64398' />
+            <Progress.Bar progress={progress / 100} color="#E64398" />
           </View>
         )}
 

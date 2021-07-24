@@ -1,4 +1,5 @@
 import { StyleSheet, Dimensions } from 'react-native';
+import { AuthProvider } from '../../contexts/AuthContext';
 const { width, height } = Dimensions.get('window');
 
 export default StyleSheet.create({
@@ -11,6 +12,15 @@ export default StyleSheet.create({
   innerContainer: { flexDirection: 'row' },
 
   title: {},
+  profile: {
+    backgroundColor: '#eff',
+    borderWidth: 3,
+
+    borderColor: '#cfc3e8',
+    borderRadius: 50,
+    width: width / 1.3,
+    flex: 1,
+  },
   logo: {
     flex: 1,
     height: 150,
@@ -21,7 +31,6 @@ export default StyleSheet.create({
     borderColor: '#E64398',
     alignSelf: 'center',
     margin: 10,
-    marginTop: 35,
   },
   rangeContainer: {
     flex: 1,

@@ -468,13 +468,12 @@ export default function EditProfileScreen({ route, navigation }, props) {
     <View style={styles.container}>
       <KeyboardAwareScrollView
         style={{ flex: 1, width: '100%' }}
-        keyboardShouldPersistTaps='never'
-        scrollEnabled={scroll}
-      >
-        <Image
+        keyboardShouldPersistTaps="never"
+        scrollEnabled={scroll}>
+        {/* <Image
           style={styles.logo}
           source={require('../../../assets/DimeAssets/coinsignup.png')}
-        />
+        /> */}
         <View style={styles.headingContainer}>
           <Text style={styles.heading}>Update Profile</Text>
         </View>
@@ -482,12 +481,12 @@ export default function EditProfileScreen({ route, navigation }, props) {
         <View style={styles.innerContainer}>
           <Reinput
             style={styles.firstname}
-            label='First Name'
-            labelActiveColor='#E64398'
-            labelColor='#000000'
-            placeholderColor='#000000'
-            underlineColor='#000000'
-            activeColor='#E64398'
+            label="First Name"
+            labelActiveColor="#E64398"
+            labelColor="#000000"
+            placeholderColor="#000000"
+            underlineColor="#000000"
+            activeColor="#E64398"
             value={firstName}
             error={firstNameError}
             ref={firstNameRef}
@@ -495,17 +494,17 @@ export default function EditProfileScreen({ route, navigation }, props) {
             onSubmitEditing={() => {
               lastNameRef.current.focus();
             }}
-            autoCapitalize='words'
+            autoCapitalize="words"
           />
 
           <Reinput
             style={styles.lastname}
-            label='Last Name'
-            labelActiveColor='#E64398'
-            labelColor='#000000'
-            placeholderColor='#000000'
-            underlineColor='#000000'
-            activeColor='#E64398'
+            label="Last Name"
+            labelActiveColor="#E64398"
+            labelColor="#000000"
+            placeholderColor="#000000"
+            underlineColor="#000000"
+            activeColor="#E64398"
             value={lastName}
             error={lastNameError}
             ref={lastNameRef}
@@ -513,17 +512,17 @@ export default function EditProfileScreen({ route, navigation }, props) {
             onSubmitEditing={() => {
               emailRef.current.focus();
             }}
-            autoCapitalize='words'
+            autoCapitalize="words"
           />
         </View>
         <Reinput
           style={styles.input}
-          label='E-mail'
-          labelActiveColor='#E64398'
-          labelColor='#000000'
-          placeholderColor='#000000'
-          underlineColor='#000000'
-          activeColor='#E64398'
+          label="E-mail"
+          labelActiveColor="#E64398"
+          labelColor="#000000"
+          placeholderColor="#000000"
+          underlineColor="#000000"
+          activeColor="#E64398"
           value={email}
           error={emailError}
           ref={emailRef}
@@ -531,19 +530,19 @@ export default function EditProfileScreen({ route, navigation }, props) {
           onSubmitEditing={() => {
             passRef.current.focus();
           }}
-          autoCapitalize='none'
+          autoCapitalize="none"
         />
 
         <Reinput
           style={styles.input}
-          label='Password'
-          placeholder='Leave blank to keep the same password'
+          label="Password"
+          placeholder="Leave blank to keep the same password"
           placeholderVisibility={true}
-          labelActiveColor='#E64398'
-          labelColor='#000000'
-          placeholderColor='#757575'
-          underlineColor='#000000'
-          activeColor='#E64398'
+          labelActiveColor="#E64398"
+          labelColor="#000000"
+          placeholderColor="#757575"
+          underlineColor="#000000"
+          activeColor="#E64398"
           value={password}
           error={passError}
           ref={passRef}
@@ -551,19 +550,19 @@ export default function EditProfileScreen({ route, navigation }, props) {
           onSubmitEditing={() => {
             confirmRef.current.focus();
           }}
-          autoCapitalize='none'
+          autoCapitalize="none"
           secureTextEntry
         />
         <Reinput
           style={styles.input}
-          label='Confirm Password'
-          labelActiveColor='#E64398'
-          labelColor='#000000'
-          placeholder='Leave blank to keep the same password'
+          label="Confirm Password"
+          labelActiveColor="#E64398"
+          labelColor="#000000"
+          placeholder="Leave blank to keep the same password"
           placeholderVisibility={true}
-          placeholderColor='#757575'
-          underlineColor='#000000'
-          activeColor='#E64398'
+          placeholderColor="#757575"
+          underlineColor="#000000"
+          activeColor="#E64398"
           value={confirmPassword}
           error={confirmError}
           ref={confirmRef}
@@ -571,25 +570,24 @@ export default function EditProfileScreen({ route, navigation }, props) {
           onSubmitEditing={() => {
             phoneRef.current.focus();
           }}
-          autoCapitalize='none'
+          autoCapitalize="none"
           secureTextEntry
         />
         {passChange !== '' && <Text style={styles.heading}>{passChange}</Text>}
         <TouchableOpacity
           style={styles.button}
-          onPress={() => handlePasswordUpdate()}
-        >
+          onPress={() => handlePasswordUpdate()}>
           <Text style={styles.buttonTitle}>Change Password</Text>
         </TouchableOpacity>
 
         <Reinput
           style={styles.input}
-          label='Phone Number'
-          labelActiveColor='#E64398'
-          labelColor='#000000'
-          placeholderColor='#000000'
-          underlineColor='#000000'
-          activeColor='#E64398'
+          label="Phone Number"
+          labelActiveColor="#E64398"
+          labelColor="#000000"
+          placeholderColor="#000000"
+          underlineColor="#000000"
+          activeColor="#E64398"
           value={phone}
           error={phoneError}
           ref={phoneRef}
@@ -597,7 +595,7 @@ export default function EditProfileScreen({ route, navigation }, props) {
           onSubmitEditing={() => {
             responseRef.current.focus();
           }}
-          autoCapitalize='none'
+          autoCapitalize="none"
         />
 
         {hasGeneralError && (
@@ -606,8 +604,7 @@ export default function EditProfileScreen({ route, navigation }, props) {
         <View style={styles.buttonGroup}>
           <TouchableOpacity
             style={styles.toggle}
-            onPress={() => showSexPicker()}
-          >
+            onPress={() => showSexPicker()}>
             <Text style={styles.buttonTitle}>{sex + sexToggle}</Text>
           </TouchableOpacity>
 
@@ -617,13 +614,12 @@ export default function EditProfileScreen({ route, navigation }, props) {
               onValueChange={(e) => {
                 setOptionsState(e);
                 handleSex(e);
-              }}
-            >
-              <Picker.Item label='Choose your sex...' value='0' />
-              <Picker.Item label='Male' value='1'>
+              }}>
+              <Picker.Item label="Choose your sex..." value="0" />
+              <Picker.Item label="Male" value="1">
                 <Text>Male</Text>
               </Picker.Item>
-              <Picker.Item label='Female' value='2'>
+              <Picker.Item label="Female" value="2">
                 <Text>Female</Text>
               </Picker.Item>
             </Picker>
@@ -631,8 +627,7 @@ export default function EditProfileScreen({ route, navigation }, props) {
 
           <TouchableOpacity
             style={styles.toggle}
-            onPress={() => showOrientPicker()}
-          >
+            onPress={() => showOrientPicker()}>
             <Text style={styles.buttonTitle}>{orientLabel + orientToggle}</Text>
           </TouchableOpacity>
 
@@ -643,40 +638,37 @@ export default function EditProfileScreen({ route, navigation }, props) {
                 setOrientationState(e);
                 handleOrientation(e);
                 console.log(orientation);
-              }}
-            >
+              }}>
               <Picker.Item
-                label='Choose your sexual orientation...'
-                value='0'
+                label="Choose your sexual orientation..."
+                value="0"
               />
-              <Picker.Item label='Straight' value='1' />
-              <Picker.Item label='Gay/Lesbian' value='2' />
-              <Picker.Item label='Bisexual' value='3' />
+              <Picker.Item label="Straight" value="1" />
+              <Picker.Item label="Gay/Lesbian" value="2" />
+              <Picker.Item label="Bisexual" value="3" />
             </Picker>
           )}
 
           <TouchableOpacity
             style={styles.toggle}
             onPress={() => showDatePicker()}
-            disabled={true}
-          >
+            disabled={true}>
             <Text style={styles.buttonTitle}>{birth}</Text>
           </TouchableOpacity>
           {show && (
             <DateTimePicker
-              testID='dateTimePicker'
+              testID="dateTimePicker"
               value={date}
               mode={'date'}
               is24Hour={false}
-              display='spinner'
+              display="spinner"
               onChange={onChange}
               // style={styles.button}
             />
           )}
           <TouchableOpacity
             style={styles.toggle}
-            onPress={() => showRangePicker()}
-          >
+            onPress={() => showRangePicker()}>
             <Text style={styles.buttonTitle}>
               {'Select an age range' + rangeToggle}
             </Text>
@@ -708,22 +700,21 @@ export default function EditProfileScreen({ route, navigation }, props) {
 
         <Reinput
           style={styles.input}
-          label='End of Chat Response'
-          labelActiveColor='#E64398'
-          labelColor='#000000'
-          placeholderColor='#000000'
-          underlineColor='#000000'
-          activeColor='#E64398'
+          label="End of Chat Response"
+          labelActiveColor="#E64398"
+          labelColor="#000000"
+          placeholderColor="#000000"
+          underlineColor="#000000"
+          activeColor="#E64398"
           value={response}
           ref={responseRef}
           //error={errorEmail}
           onChangeText={(text) => setResponse(text)}
-          autoCapitalize='none'
+          autoCapitalize="none"
         />
         <TouchableOpacity
           style={styles.register}
-          onPress={() => handleSubmit()}
-        >
+          onPress={() => handleSubmit()}>
           <Text style={styles.buttonTitle}>Save Changes</Text>
         </TouchableOpacity>
         <TouchableOpacity
@@ -747,8 +738,7 @@ export default function EditProfileScreen({ route, navigation }, props) {
                 },
               ]
             );
-          }}
-        >
+          }}>
           <Text style={styles.buttonTitle}>Delete Account</Text>
         </TouchableOpacity>
       </KeyboardAwareScrollView>
