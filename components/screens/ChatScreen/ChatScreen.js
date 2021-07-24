@@ -63,11 +63,13 @@ export default function ChatScreen({ route, navigation }) {
   const roomRef = useRef("");
   const [socket, setSocket] = useState("");
   const { currentUser, logout } = useAuth();
-  const EXPIRE_IN_MINUTES = 1; // 10 minutes
+  const EXPIRE_IN_MINUTES = 4; // 10 minutes
 
   const modalExpire = 30000; // 30 seconds in MS
 
   const [match_age, setMatchAge] = useState("");
+  const [matchImageSize, setMatchImageSize] = useState(75);
+  const [matchInfoContainer, setMatchInfoContainer] = useState(80);
   const isFocused = useIsFocused();
   const [match_name, setMatchName] = useState("user");
   const [match_sex, setMatchSex] = useState("");
@@ -75,6 +77,7 @@ export default function ChatScreen({ route, navigation }) {
   const [modalVisible, setModalVisible] = useState(false);
   const [observerState, setObserverState] = useState(null);
   const [timeoutState, setTimeoutState] = useState(null);
+  const [welcomeModal, setWelcomeModal] = useState(true);
   const [extendedTimeoutState, setExtendedTimeoutState] = useState(null);
   const { match_id, timeout } = route.params;
   const observer = useRef(null);
@@ -816,6 +819,72 @@ export default function ChatScreen({ route, navigation }) {
           </TouchableOpacity>
         </View>
 
+        <TouchableOpacity
+          style={{ backgroundColor: matchImageSize === 75 ? null : null }}
+          onPress={() => {
+            if (matchImageSize === 75) {
+              setMatchImageSize(150);
+              setMatchInfoContainer(150);
+            }
+            if (matchImageSize === 150) {
+              setMatchImageSize(75);
+              setMatchInfoContainer(80);
+            }
+          }}
+        >
+          <View
+            style={{
+              flexDirection: "column",
+              flexWrap: "wrap",
+              alignItems: "flex-start",
+              justifyContent: matchImageSize === 75 ? "flex-end" : "center",
+
+              height: matchInfoContainer,
+
+              alignContent: "center",
+            }}
+          >
+            <Image
+              style={{
+                height: matchImageSize,
+                width: matchImageSize,
+                borderRadius: 150 / 2,
+                overflow: "hidden",
+                borderWidth: 3,
+                borderColor: "#e4a",
+              }}
+              source={{ uri: match_photo }}
+            />
+
+            <Text
+              style={{
+                color: matchImageSize === 75 ? "#E64398" : "#E64398",
+                marginLeft: 10,
+                fontSize: 20,
+              }}
+            >
+              {match_name}
+            </Text>
+            <Text
+              style={{
+                color: matchImageSize === 75 ? "#E64398" : "#E64398",
+                marginLeft: 10,
+                fontSize: 20,
+              }}
+            >
+              {match_age}
+            </Text>
+            <Text
+              style={{
+                color: matchImageSize === 75 ? "#E64398" : "#E64398",
+                marginLeft: 10,
+                fontSize: 20,
+              }}
+            >
+              {match_sex}
+            </Text>
+          </View>
+        </TouchableOpacity>
         <Modal
           animationType="slide"
           transparent={true}

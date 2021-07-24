@@ -73,6 +73,28 @@ export default StyleSheet.create({
     alignItems: "center",
     marginTop: 22,
   },
+  welcomeCenter: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 22,
+  },
+  welcomeModalView: {
+    margin: 20,
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 35,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    height: 340,
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
   modalView: {
     margin: 20,
     backgroundColor: "white",
@@ -114,9 +136,22 @@ export default StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
+  heading: {
+    marginLeft: 10,
+    fontSize: 20,
+    color: "#E64398",
+  },
   dimeImages: {
     height: 120,
     width: 120,
     marginHorizontal: 10,
+  },
+  matchImage: {
+    height: 75,
+    width: 75,
+    borderRadius: 150 / 2,
+    overflow: "hidden",
+    borderWidth: 3,
+    borderColor: "#e4a",
   },
 });
