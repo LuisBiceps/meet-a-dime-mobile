@@ -12,6 +12,7 @@ import {
   Pressable,
   LogBox,
   Dimensions,
+  TouchableWithoutFeedback,
 } from 'react-native';
 import { useIsFocused } from '@react-navigation/native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
