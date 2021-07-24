@@ -424,6 +424,7 @@ export default function HomeScreen({ navigation }, props) {
         var myAge = moment().diff(userInfoState.current.birth, 'years');
 
         if (
+          doc.id !== currentUser.uid &&
           doc.data().match === '' &&
           searchingSex.includes(doc.data().sex) &&
           doc.data().search_sex.includes(userInfoState.current.sex) &&
@@ -758,8 +759,7 @@ export default function HomeScreen({ navigation }, props) {
               searching();
               setIsSearching(false);
             }}
-            disabled={lockout || (match && match.startsWith('Found match!'))}
-          >
+            disabled={lockout || (match && match.startsWith('Found match!'))}>
             <Text style={styles.buttonText}>
               {match && match.startsWith('Found match!')
                 ? 'Found match!'
@@ -771,8 +771,7 @@ export default function HomeScreen({ navigation }, props) {
           <TouchableOpacity
             style={styles.button}
             onPress={killSearch}
-            disabled={isSearching}
-          >
+            disabled={isSearching}>
             <Text style={styles.buttonText}>Stop Search</Text>
           </TouchableOpacity>
         )}
@@ -782,8 +781,7 @@ export default function HomeScreen({ navigation }, props) {
           <View style={styles.modal}>
             <Image
               style={styles.searchImage}
-              source={require('../../../assets/DimeAssets/searchcoin.gif')}
-            ></Image>
+              source={require('../../../assets/DimeAssets/searchcoin.gif')}></Image>
           </View>
         )}
         {/* {match && match.startsWith('Found match!') && (
@@ -802,16 +800,15 @@ export default function HomeScreen({ navigation }, props) {
           top: 500,
           marginTop: 10,
           width: '100%',
-        }}
-      >
+        }}>
         <Reinput
-          keyboardType='web-search'
-          label='Search Previous Matches'
-          labelColor='#000000'
-          placeholderColor='#000000'
-          underlineColor='#000000'
-          labelActiveColor='#E64398'
-          activeColor='#E64398'
+          keyboardType="web-search"
+          label="Search Previous Matches"
+          labelColor="#000000"
+          placeholderColor="#000000"
+          underlineColor="#000000"
+          labelActiveColor="#E64398"
+          activeColor="#E64398"
           value={search}
           ref={searchRef}
           onChangeText={(text) => {
@@ -824,7 +821,7 @@ export default function HomeScreen({ navigation }, props) {
               Keyboard.dismiss();
             }
           }}
-          autoCapitalize='none'
+          autoCapitalize="none"
           style={{ width: 320 }}
         />
       </View>
@@ -837,8 +834,7 @@ export default function HomeScreen({ navigation }, props) {
             return (
               <View
                 key={index}
-                style={{ width: 150, height: 150, marginHorizontal: 10 }}
-              >
+                style={{ width: 150, height: 150, marginHorizontal: 10 }}>
                 <Image
                   style={{
                     width: 150,
@@ -849,8 +845,7 @@ export default function HomeScreen({ navigation }, props) {
                     borderWidth: 3,
                     borderColor: '#e4a',
                   }}
-                  source={{ uri: vals.photo }}
-                ></Image>
+                  source={{ uri: vals.photo }}></Image>
 
                 <View style={{ alignItems: 'center' }}>
                   <Text>{vals.firstName + ' ' + vals.lastName}</Text>
