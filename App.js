@@ -31,6 +31,7 @@ import { Entypo } from '@expo/vector-icons';
 import root from './root';
 import useWindowDimensions from 'react-native/Libraries/Utilities/useWindowDimensions';
 import styles from './components/screens/LoginScreen/styles';
+import { color } from 'react-native-reanimated';
 
 if (!global.btoa) {
   global.btoa = encode;
@@ -52,7 +53,7 @@ const NavigationDrawerStructure = (props) => {
       <View style={root.icon}>
         <TouchableOpacity onPress={toggleDrawer}>
           <Text>
-            <Entypo name='menu' size={36} color='black' />{' '}
+            <Entypo name="menu" size={36} color="black" />{' '}
           </Text>
         </TouchableOpacity>
       </View>
@@ -63,9 +64,9 @@ const NavigationDrawerStructure = (props) => {
 export default function App() {
   function HomeWork() {
     return (
-      <Stack.Navigator initialRouteName='Login'>
+      <Stack.Navigator initialRouteName="Login">
         <Stack.Screen
-          name='Home'
+          name="Home"
           component={HomeScreen}
           options={({ navigation, route }) => ({
             headerLeft: (props) => (
@@ -81,17 +82,17 @@ export default function App() {
 
         <>
           <Stack.Screen
-            name='Login'
+            name="Login"
             component={LoginScreen}
             options={{ headerShown: false, gestureEnabled: false }}
           />
           <Stack.Screen
-            name='Logout'
+            name="Logout"
             component={LogoutScreen}
             options={{ headerShown: false, gestureEnabled: false }}
           />
           <Stack.Screen
-            name='Registration'
+            name="Registration"
             component={RegistrationScreen}
             options={({ navigation, route }) => ({
               headerLeft: (props) => (
@@ -108,7 +109,7 @@ export default function App() {
             })}
           />
           <Stack.Screen
-            name='Verify'
+            name="Verify"
             component={VerifyScreen}
             options={
               (({ navigation, route }) => ({
@@ -128,17 +129,17 @@ export default function App() {
           />
 
           <Stack.Screen
-            name='Chat'
+            name="Chat"
             component={ChatScreen}
             options={{ headerShown: false, gestureEnabled: false }}
           />
           <Stack.Screen
-            name='After'
+            name="After"
             component={AfterScreen}
             options={{ headerShown: false, gestureEnabled: false }}
           />
           <Stack.Screen
-            name='Forgot'
+            name="Forgot"
             component={ForgotScreen}
             options={{ headerShown: false, gestureEnabled: false }}
           />
@@ -149,9 +150,9 @@ export default function App() {
 
   function ProfileWork() {
     return (
-      <Stack.Navigator initialRouteName='Profile'>
+      <Stack.Navigator initialRouteName="Profile">
         <Stack.Screen
-          name='Profile'
+          name="Profile"
           component={ProfileScreen}
           options={({ navigation, route }) => ({
             headerLeft: (props) => (
@@ -165,7 +166,7 @@ export default function App() {
           })}
         />
         <Stack.Screen
-          name='Home'
+          name="Home"
           component={HomeScreen}
           options={({ navigation, route }) => ({
             headerLeft: (props) => (
@@ -179,12 +180,12 @@ export default function App() {
           })}
         />
         <Stack.Screen
-          name='Edit'
+          name="Edit"
           component={EditProfileScreen}
           options={({ navigation, route }) => ({
             headerLeft: (props) => (
               <HeaderBackButton
-                headerTitle=''
+                headerTitle=""
                 {...props}
                 onPress={() => navigation.navigate('Profile')}
               />
@@ -196,12 +197,12 @@ export default function App() {
           })}
         />
         <Stack.Screen
-          name='Conversation'
+          name="Conversation"
           component={ConversationScreen}
           options={({ navigation, route }) => ({
             headerLeft: (props) => (
               <HeaderBackButton
-                headerTitle=''
+                headerTitle=""
                 {...props}
                 onPress={() => navigation.navigate('Profile')}
               />
@@ -219,23 +220,39 @@ export default function App() {
   return (
     <NavigationContainer>
       <AuthProvider>
-        <Drawer.Navigator drawerType='back' keyboardDismissMode='on-drag'>
+        <Drawer.Navigator
+          drawerType="back"
+          keyboardDismissMode="on-drag"
+          drawerStyle={root.drawer}
+          drawerContentOptions={{
+            activeBackgroundColor: '#e371ac',
+            activeTintColor: 'white',
+          }}>
           <Drawer.Screen
-            name='Home'
+            name="Home"
             component={HomeWork}
-            options={({ navigation, route }) => ({
-              headerLeft: (props) => (
-                <NavigationDrawerStructure navigationProps={navigation} />
-              ),
-              headerTransparent: 'true',
-              headerTitle: '',
-              headerBackTitle: ' ',
-              headerTintColor: '#e64398',
-              gestureEnabled: true,
-            })}
+            options={
+              (({ navigation, route }) => ({
+                headerLeft: (props) => (
+                  <NavigationDrawerStructure navigationProps={navigation} />
+                ),
+                headerTransparent: 'true',
+                headerTitle: '',
+                headerBackTitle: ' ',
+                headerTintColor: '#e64398',
+                gestureEnabled: true,
+              }),
+              {
+                icon: ({ focused, color, size }) => {
+                  <Text>
+                    <Entypo name="home" size={size} color="black" />;
+                  </Text>;
+                },
+              })
+            }
           />
           <Drawer.Screen
-            name='Profile'
+            name="Profile"
             component={ProfileWork}
             options={({ navigation, route }) => ({
               headerLeft: (props) => (
@@ -249,9 +266,9 @@ export default function App() {
             })}
           />
           <Drawer.Screen
-            name='Logout'
+            name="Logout"
             component={LogoutScreen}
-            headerTitleAlign='center'
+            headerTitleAlign="center"
             options={({ navigation, route }) => ({
               headerLeft: (props) => (
                 <NavigationDrawerStructure navigationProps={navigation} />

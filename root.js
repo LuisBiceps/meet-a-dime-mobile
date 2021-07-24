@@ -26,6 +26,7 @@ export default StyleSheet.create({
     borderRadius: 25,
     padding: 10,
   },
+  drawer: {},
   toggle: {
     backgroundColor: '#e64398',
     marginLeft: 3,

@@ -745,7 +745,9 @@ export default function HomeScreen({ navigation }, props) {
   }
 
   return (
-    <KeyboardAwareScrollView keyboardShouldPersistTaps="never">
+    <KeyboardAwareScrollView
+      contentContainerStyle={styles.container}
+      keyboardShouldPersistTaps="never">
       <View style={styles.container}>
         <Image
           style={styles.logo}
