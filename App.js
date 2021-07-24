@@ -28,6 +28,7 @@ import 'firebase/firestore';
 import { AuthProvider } from './components/contexts/AuthContext';
 import { AppNavigator } from './components/routes/AppNavigator';
 import { Entypo } from '@expo/vector-icons';
+import { MaterialIcons } from '@expo/vector-icons';
 import root from './root';
 import useWindowDimensions from 'react-native/Libraries/Utilities/useWindowDimensions';
 import styles from './components/screens/LoginScreen/styles';
@@ -227,6 +228,12 @@ export default function App() {
           drawerContentOptions={{
             activeBackgroundColor: '#e371ac',
             activeTintColor: 'white',
+            labelStyle: {
+              fontSize: 24,
+              fontWeight: 'bold',
+              marginTop: 5,
+              marginBottom: 5,
+            },
           }}>
           <Drawer.Screen
             name="Home"
@@ -243,42 +250,72 @@ export default function App() {
                 gestureEnabled: true,
               }),
               {
-                icon: ({ focused, color, size }) => {
-                  <Text>
-                    <Entypo name="home" size={size} color="black" />;
-                  </Text>;
-                },
+                drawerIcon: ({ focused, size }) => (
+                  <Text style={root.drawerIcon}>
+                    <Entypo
+                      name="home"
+                      size={40}
+                      color={focused ? 'white' : '#e64398'}
+                    />
+                  </Text>
+                ),
               })
             }
           />
           <Drawer.Screen
             name="Profile"
             component={ProfileWork}
-            options={({ navigation, route }) => ({
-              headerLeft: (props) => (
-                <NavigationDrawerStructure navigationProps={navigation} />
-              ),
-              headerTransparent: 'true',
-              headerTitle: '',
-              headerBackTitle: ' ',
-              headerTintColor: '#e64398',
-              gestureEnabled: true,
-            })}
+            options={
+              (({ navigation, route }) => ({
+                headerLeft: (props) => (
+                  <NavigationDrawerStructure navigationProps={navigation} />
+                ),
+                headerTransparent: 'true',
+                headerTitle: '',
+                headerBackTitle: ' ',
+                headerTintColor: '#e64398',
+                gestureEnabled: true,
+              }),
+              {
+                drawerIcon: ({ focused, size }) => (
+                  <Text style={root.drawerIcon}>
+                    <MaterialIcons
+                      name="account-box"
+                      size={40}
+                      color={focused ? 'white' : '#e64398'}
+                    />
+                  </Text>
+                ),
+              })
+            }
           />
           <Drawer.Screen
             name="Logout"
             component={LogoutScreen}
             headerTitleAlign="center"
-            options={({ navigation, route }) => ({
-              headerLeft: (props) => (
-                <NavigationDrawerStructure navigationProps={navigation} />
-              ),
-              headerTransparent: 'true',
-              headerTitle: '',
-              headerBackTitle: ' ',
-              headerTintColor: '#e64398',
-              gestureEnabled: false,
-            })}
+            options={
+              (({ navigation, route }) => ({
+                headerLeft: (props) => (
+                  <NavigationDrawerStructure navigationProps={navigation} />
+                ),
+                headerTransparent: 'true',
+                headerTitle: '',
+                headerBackTitle: ' ',
+                headerTintColor: '#e64398',
+                gestureEnabled: true,
+              }),
+              {
+                drawerIcon: ({ focused, size }) => (
+                  <Text style={root.drawerIcon}>
+                    <MaterialIcons
+                      name="exit-to-app"
+                      size={40}
+                      color={focused ? 'white' : '#e64398'}
+                    />
+                  </Text>
+                ),
+              })
+            }
           />
         </Drawer.Navigator>
       </AuthProvider>

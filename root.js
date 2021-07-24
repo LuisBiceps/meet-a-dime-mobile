@@ -3,6 +3,11 @@ const { width, height } = Dimensions.get('window');
 
 export default StyleSheet.create({
   icon: {},
+  drawerIcon: {
+    marginLeft: 0,
+    alignSelf: 'center',
+    textAlign: 'center',
+  },
   container: {
     flex: 1,
     justifyContent: 'center',
