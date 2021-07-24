@@ -89,7 +89,7 @@ export default StyleSheet.create({
     color: "#333333",
   },
   searchImage: {
-    height: 250,
-    width: 250,
+    height: 200,
+    width: 200,
   },
 });
