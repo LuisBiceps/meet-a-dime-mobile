@@ -7,15 +7,26 @@ import {
   TouchableOpacity,
   View,
   Image,
+  Alert,
   Modal,
   Pressable,
   LogBox,
+  Dimensions,
 } from "react-native";
 import { useIsFocused } from "@react-navigation/native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import { GiftedChat, Bubble, Actions } from "react-native-gifted-chat";
+import {
+  GiftedChat,
+  Bubble,
+  Actions,
+  Send,
+  Composer,
+  InputToolbar,
+  SystemMessage,
+} from "react-native-gifted-chat";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { AntDesign } from "@expo/vector-icons";
+import { Ionicons } from "@expo/vector-icons";
 import styles from "./styles";
 import firebase from "firebase/app";
 import "firebase/auth";
@@ -34,7 +45,17 @@ export default function ChatScreen({ route, navigation }) {
   const matchPhotoRef = useRef("");
   const myPhotoRef = useRef("");
   const [error, setError] = useState("");
+  const emojis = ["❤️", "🥰", "😇"];
+  var random_emoji = emojis[Math.floor(Math.random() * 3)];
+
+  const [welcomeMessage, setWelcomeMessage] = useState(
+    "Joined the room. Good luck! " + random_emoji
+  );
+  const [userSaidYes, setUserSaidYes] = useState(false);
   const [messages, setMessages] = useState([]);
+  const [modalText, setModalText] = useState(
+    "You did the time, do you want the dime?"
+  );
   const [images, setImages] = useState([]);
   const timeoutRef1 = useRef(null);
   const [sentMessage, setSentMessage] = useState(false);
@@ -202,6 +223,7 @@ export default function ChatScreen({ route, navigation }) {
   }
 
   async function pendingMatch() {
+    setUserSaidYes(true);
     if (timeoutRef1.current !== null) clearTimeout(timeoutRef1.current);
     // This disconnects then sends to the /after page with a state.
     function leavePageWith(stateString) {
@@ -427,6 +449,7 @@ export default function ChatScreen({ route, navigation }) {
         }
       }
     };
+
     if (isFocused) {
       fetchMatchInfo();
       setIsChatting();
@@ -439,20 +462,6 @@ export default function ChatScreen({ route, navigation }) {
         console.log(
           `Email: "${currentUser.email}" \n With User ID: "${currentUser.uid}" connected with socket id: "${sock.id}"`
         );
-
-        setMessages((previousMessages) => {
-          var joinmsg = "sfdg";
-          const emojis = ["❤️", "🥰", "😇"];
-          var random_emoji = emojis[Math.floor(Math.random() * 3)];
-          joinmsg = "Joined the room. Good luck! " + random_emoji;
-          GiftedChat.append(previousMessages, {
-            _id: currentUser.uid,
-            text: joinmsg,
-            createdAt: new Date(),
-            system: true,
-            // Any additional custom parameters are passed through
-          });
-        });
       });
 
       const ids = [currentUser.uid, match_id];
@@ -611,6 +620,21 @@ export default function ChatScreen({ route, navigation }) {
     );
   }, []);
 
+  function doubleCheck() {
+    Alert.alert(
+      "You are about to report this user.",
+      "All reports are secret and will not alert this match.",
+      [
+        {
+          text: "OK",
+          onPress: handleReport,
+        },
+        {
+          text: "Go Back",
+        },
+      ]
+    );
+  }
   async function handleReport() {
     var chat_history = [];
 
@@ -706,15 +730,30 @@ export default function ChatScreen({ route, navigation }) {
   //     });
   //   }
 
-  async function sendImage() {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
-      allowsEditing: true,
-      base64: true,
-      aspect: [4, 3],
-      quality: 1,
-    });
+  async function sendImage(type = "library") {
+    let result = null;
 
+    if (type === "library")
+      result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.All,
+        allowsEditing: true,
+        base64: true,
+        aspect: [3, 3],
+        quality: 1,
+      });
+    else if (type === "camera") {
+      const { status } = await ImagePicker.requestCameraPermissionsAsync();
+      if (status === "granted")
+        result = await ImagePicker.launchCameraAsync({
+          mediaTypes: ImagePicker.MediaTypeOptions.All,
+          allowsEditing: true,
+          base64: true,
+          aspect: [3, 3],
+          quality: 1,
+        });
+    }
+
+    if (result.cancelled) return;
     let compressed = await ImageManipulator.manipulateAsync(result.uri, [], {
       format: ImageManipulator.SaveFormat.JPEG,
       compress: 0,
@@ -756,17 +795,27 @@ export default function ChatScreen({ route, navigation }) {
           style={{
             flexDirection: "row",
             flexWrap: "wrap",
-            alignItems: "center",
-            justifyContent: "center",
+            alignItems: "flex-start",
+            justifyContent: "space-between",
+            marginTop: 50,
+            height: 100,
+
+            alignContent: "center",
           }}
         >
-          <TouchableOpacity style={styles.button} onPress={handleAbandon}>
-            <Text>Abandon</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.button} onPress={handleReport}>
-            <Text>Report</Text>
+          <Image
+            style={styles.logo}
+            source={require("../../../assets/DimeAssets/headerlogo.png")}
+          />
+          <TouchableOpacity
+            onLongPress={doubleCheck}
+            style={styles.button}
+            onPress={handleAbandon}
+          >
+            <Text style={styles.buttonTitle}>Abandon</Text>
           </TouchableOpacity>
         </View>
+
         <Modal
           animationType="slide"
           transparent={true}
@@ -778,31 +827,76 @@ export default function ChatScreen({ route, navigation }) {
         >
           <View style={styles.centeredView}>
             <View style={styles.modalView}>
-              <Text style={styles.modalText}>
-                You did the time, do you want the dime?
-              </Text>
+              <Text style={styles.modalText}>{modalText}</Text>
               <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
-                <Pressable onPress={pendingMatch}>
-                  {/* <Text style={styles.textStyle}>Yes</Text> */}
+                {!userSaidYes && (
+                  <>
+                    <Pressable onPress={pendingMatch}>
+                      <Image
+                        style={styles.dimeImages}
+                        source={require("../../../assets/DimeAssets/hearteyes.png")}
+                      ></Image>
+                    </Pressable>
+                    <Pressable onPress={noMatch}>
+                      <Image
+                        style={styles.dimeImages}
+                        source={require("../../../assets/DimeAssets/sleepycoin.png")}
+                      ></Image>
+                    </Pressable>
+                  </>
+                )}
+                {userSaidYes && (
                   <Image
                     style={styles.dimeImages}
-                    source={require("../../../assets/DimeAssets/hearteyes.png")}
+                    source={require("../../../assets/DimeAssets/coinWaiting.gif")}
                   ></Image>
-                </Pressable>
-                <Pressable onPress={noMatch}>
-                  {/* <Text style={styles.textStyle}>No</Text> */}
-                  <Image
-                    style={styles.dimeImages}
-                    source={require("../../../assets/DimeAssets/sleepycoin.png")}
-                  ></Image>
-                </Pressable>
+                )}
               </View>
             </View>
           </View>
         </Modal>
       </View>
-
       <GiftedChat
+        renderComposer={(props) => {
+          return (
+            <Composer
+              {...props}
+              placeholder="Type your message here..."
+              textInputStyle={{
+                color: "#222B45",
+                backgroundColor: "#fff",
+                borderWidth: 1,
+                borderRadius: 20,
+                marginRight: 10,
+                borderColor: "#e5e5ea",
+                paddingTop: 8.5,
+                paddingHorizontal: 12,
+                marginLeft: 0,
+                marginBottom: 10,
+              }}
+            />
+          );
+        }}
+        renderSend={(sendProps) => {
+          return (
+            <Send
+              {...sendProps}
+              containerStyle={{
+                width: 40,
+                height: 40,
+                borderRadius: "100%",
+                backgroundColor: "#e4a",
+                marginRight: 10,
+                alignItems: "center",
+                justifyContent: "center",
+                marginHorizontal: 4,
+                marginBottom: 5,
+              }}
+            >
+              <Ionicons name="triangle-sharp" size={20} color="white" />
+            </Send>
+          );
+        }}
         renderBubble={(props) => {
           return (
             <Bubble
@@ -832,37 +926,58 @@ export default function ChatScreen({ route, navigation }) {
         //     <Text>Select Image</Text>
         //   </TouchableOpacity>;
         // }}
+
+        renderChatEmpty={(props) => {
+          return (
+            <View
+              style={{
+                alignItems: "center",
+                justifyContent: "center",
+                top: Dimensions.get("window").height / 2 - 100,
+                // marginHorizontal: Dimensions.get("window").width / 5,
+                transform: [{ scaleY: -1 }],
+              }}
+            >
+              <Text style={{ fontSize: 18 }}>{welcomeMessage}</Text>
+            </View>
+          );
+        }}
         renderActions={(props) => {
           return (
             <Actions
               {...props}
               containerStyle={{
-                width: 44,
-                height: 44,
+                width: 40,
+                height: 40,
                 alignItems: "center",
                 justifyContent: "center",
                 marginLeft: 4,
                 marginRight: 4,
-                marginBottom: 0,
+                marginBottom: 6,
               }}
               icon={() => (
-                <AntDesign name="pluscircle" size={24} color="black" />
+                <AntDesign name="pluscircle" size={24} color="#bad" />
               )}
               options={{
                 "Choose From Library": () => {
                   console.log("Choose From Library");
                   sendImage();
                 },
+                "Use Camera": () => {
+                  console.log("Select Photo");
+                  sendImage("camera");
+                },
                 Cancel: () => {
                   console.log("Cancel");
                 },
               }}
-              optionTintColor="#222B45"
+              optionTintColor="#e4a"
             />
           );
         }}
         alwaysShowSend
         scrollToBottom
+        onPressAvatar={() => {}}
       />
     </>
   );

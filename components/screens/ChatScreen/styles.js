@@ -1,5 +1,6 @@
 import { Dimensions, StyleSheet } from "react-native";
 const { width, height } = Dimensions.get("window");
+var scale = 1.19;
 export default StyleSheet.create({
   container: {
     marginTop: height / 3.25,
@@ -10,14 +11,33 @@ export default StyleSheet.create({
   innerContainer: { borderStyle: "solid", borderWidth: 0 },
   title: { justifyContent: "center" },
   logo: {
-    flex: 1,
-    height: 100,
-    width: 350,
+    height: 62.5 * scale,
+    width: 250 * scale,
+    alignItems: "center",
+    justifyContent: "center",
+    alignContent: "center",
+    marginHorizontal: 0,
+  },
+  button: {
+    backgroundColor: "#da3636",
 
-    alignSelf: "center",
-    margin: 10,
-    marginLeft: 15,
-    marginRight: 15,
+    fontWeight: "bold",
+
+    color: "white",
+
+    height: 48,
+    width: 120,
+    marginRight: 10,
+    marginTop: 10,
+    borderRadius: 30,
+    alignItems: "center",
+    justifyContent: "center",
+    alignContent: "center",
+  },
+  buttonTitle: {
+    color: "white",
+    fontSize: 20,
+    fontWeight: "bold",
   },
   input: {
     height: 48,
@@ -31,23 +51,6 @@ export default StyleSheet.create({
     marginLeft: 30,
     marginRight: 30,
     paddingLeft: 16,
-  },
-  button: {
-    backgroundColor: "#E64398",
-    marginLeft: 10,
-    marginRight: 10,
-    marginTop: 100,
-    height: 48,
-    width: 100,
-
-    borderRadius: 5,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  buttonTitle: {
-    color: "white",
-    fontSize: 16,
-    fontWeight: "bold",
   },
   footerView: {
     flex: 1,
