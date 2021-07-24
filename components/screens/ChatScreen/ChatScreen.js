@@ -667,6 +667,7 @@ export default function ChatScreen({ route, navigation }) {
       }, EXPIRE_IN_MINUTES * 60000 + modalExpire);
     }
     return () => {
+      socketRef.current.emit('leave-room-silently', currentUser.uid, room);
       console.log('left chat, cleaned up.');
       setModalVisible(false);
       if (observer.current !== null) observer.current();
@@ -978,8 +979,30 @@ export default function ChatScreen({ route, navigation }) {
             <Bubble
               {...props}
               textStyle={{
+                left: {
+                  fontSize: props.currentMessage.text.match(
+                    /\p{Extended_Pictographic}/
+                  )
+                    ? 30
+                    : null,
+                  lineHeight: props.currentMessage.text.match(
+                    /\p{Extended_Pictographic}/
+                  )
+                    ? 30
+                    : null,
+                },
                 right: {
                   color: 'white',
+                  fontSize: props.currentMessage.text.match(
+                    /\p{Extended_Pictographic}/
+                  )
+                    ? 30
+                    : null,
+                  lineHeight: props.currentMessage.text.match(
+                    /\p{Extended_Pictographic}/
+                  )
+                    ? 30
+                    : null,
                 },
               }}
               wrapperStyle={{
@@ -1020,36 +1043,38 @@ export default function ChatScreen({ route, navigation }) {
         renderActions={(props) => {
           return (
             <>
-              <Actions
-                {...props}
-                containerStyle={{
-                  width: 30,
-                  height: 40,
-                  alignItems: 'flex-end',
-                  justifyContent: 'center',
+              {bothInitialized && (
+                <Actions
+                  {...props}
+                  containerStyle={{
+                    width: 30,
+                    height: 40,
+                    alignItems: 'flex-end',
+                    justifyContent: 'center',
 
-                  marginBottom: 6,
-                }}
-                icon={() => (
-                  <View style={{}}>
-                    <MaterialCommunityIcons
-                      name="message-outline"
-                      size={30}
-                      color="#bad"
-                    />
-                  </View>
-                )}
-                options={{
-                  'Conversation Starters': () => {
-                    console.log('Conversations pressed');
-                    handleRandomQuestion(match_name, match_responses);
-                  },
-                  Cancel: () => {
-                    console.log('Cancel');
-                  },
-                }}
-                optionTintColor="#e4a"
-              />
+                    marginBottom: 6,
+                  }}
+                  icon={() => (
+                    <View style={{}}>
+                      <MaterialCommunityIcons
+                        name="message-outline"
+                        size={30}
+                        color="#bad"
+                      />
+                    </View>
+                  )}
+                  options={{
+                    'Conversation Starters': () => {
+                      console.log('Conversations pressed');
+                      handleRandomQuestion(match_name, match_responses);
+                    },
+                    Cancel: () => {
+                      console.log('Cancel');
+                    },
+                  }}
+                  optionTintColor="#e4a"
+                />
+              )}
               <Actions
                 {...props}
                 containerStyle={{
