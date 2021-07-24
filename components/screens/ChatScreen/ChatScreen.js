@@ -37,6 +37,7 @@ import moment from 'moment';
 import { useRoute } from '@react-navigation/core';
 import { io } from 'socket.io-client';
 import * as ImagePicker from 'expo-image-picker';
+import { MaterialIcons } from '@expo/vector-icons';
 import * as ImageManipulator from 'expo-image-manipulator';
 export default function ChatScreen({ route, navigation }) {
   const firestore = firebase.firestore();
@@ -73,6 +74,8 @@ export default function ChatScreen({ route, navigation }) {
   const [match_age, setMatchAge] = useState('');
   const [matchImageSize, setMatchImageSize] = useState(75);
   const [matchInfoContainer, setMatchInfoContainer] = useState(80);
+  // const [matchImageSize, setMatchImageSize] = useState(170);
+  // const [matchInfoContainer, setMatchInfoContainer] = useState(180);
   const isFocused = useIsFocused();
   const [match_name, setMatchName] = useState('user');
   const [match_sex, setMatchSex] = useState('');
@@ -807,8 +810,7 @@ export default function ChatScreen({ route, navigation }) {
             height: 100,
 
             alignContent: 'center',
-          }}
-        >
+          }}>
           <Image
             style={styles.logo}
             source={require('../../../assets/DimeAssets/headerlogo.png')}
@@ -816,21 +818,19 @@ export default function ChatScreen({ route, navigation }) {
           <TouchableOpacity
             onLongPress={doubleCheck}
             style={styles.button}
-            onPress={handleAbandon}
-          >
+            onPress={handleAbandon}>
             <Text style={styles.buttonTitle}>Abandon</Text>
           </TouchableOpacity>
         </View>
 
         <Modal
-          animationType='slide'
+          animationType="slide"
           transparent={true}
           visible={modalVisible}
           onRequestClose={() => {
             // Alert.alert("Modal has been closed.");
             setModalVisible(!modalVisible);
-          }}
-        >
+          }}>
           <View style={styles.centeredView}>
             <View style={styles.modalView}>
               <Text style={styles.modalText}>{modalText}</Text>
@@ -840,22 +840,19 @@ export default function ChatScreen({ route, navigation }) {
                     <Pressable onPress={pendingMatch}>
                       <Image
                         style={styles.dimeImages}
-                        source={require('../../../assets/DimeAssets/hearteyes.png')}
-                      ></Image>
+                        source={require('../../../assets/DimeAssets/hearteyes.png')}></Image>
                     </Pressable>
                     <Pressable onPress={noMatch}>
                       <Image
                         style={styles.dimeImages}
-                        source={require('../../../assets/DimeAssets/sleepycoin.png')}
-                      ></Image>
+                        source={require('../../../assets/DimeAssets/sleepycoin.png')}></Image>
                     </Pressable>
                   </>
                 )}
                 {userSaidYes && (
                   <Image
                     style={styles.dimeImages}
-                    source={require('../../../assets/DimeAssets/coinWaiting.gif')}
-                  ></Image>
+                    source={require('../../../assets/DimeAssets/coinWaiting.gif')}></Image>
                 )}
               </View>
             </View>
@@ -868,7 +865,7 @@ export default function ChatScreen({ route, navigation }) {
           return (
             <Composer
               {...props}
-              placeholder='Type your message here...'
+              placeholder="Type your message here..."
               textInputStyle={{
                 color: '#222B45',
                 backgroundColor: '#fff',
@@ -898,9 +895,8 @@ export default function ChatScreen({ route, navigation }) {
                 justifyContent: 'center',
                 marginHorizontal: 4,
                 marginBottom: 7,
-              }}
-            >
-              <Ionicons name='triangle-sharp' size={20} color='white' />
+              }}>
+              <Ionicons name="triangle-sharp" size={20} color="white" />
             </Send>
           );
         }}
@@ -943,8 +939,7 @@ export default function ChatScreen({ route, navigation }) {
                 top: Dimensions.get('window').height / 2 - 100,
                 // marginHorizontal: Dimensions.get("window").width / 5,
                 transform: [{ scaleY: -1 }],
-              }}
-            >
+              }}>
               <Text style={{ fontSize: 18 }}>{welcomeMessage}</Text>
             </View>
           );
@@ -963,7 +958,7 @@ export default function ChatScreen({ route, navigation }) {
                 marginBottom: 6,
               }}
               icon={() => (
-                <AntDesign name='pluscircle' size={24} color='#bad' />
+                <AntDesign name="pluscircle" size={24} color="#bad" />
               )}
               options={{
                 'Choose From Library': () => {
@@ -978,7 +973,7 @@ export default function ChatScreen({ route, navigation }) {
                   console.log('Cancel');
                 },
               }}
-              optionTintColor='#e4a'
+              optionTintColor="#e4a"
             />
           );
         }}
@@ -990,72 +985,87 @@ export default function ChatScreen({ route, navigation }) {
         style={{
           position: 'absolute',
           top: 140,
-
-          flexDirection: 'column',
-          flexWrap: 'wrap',
-          alignItems: 'flex-start',
-          justifyContent: matchImageSize === 75 ? 'center' : 'center',
-
-          height: matchInfoContainer,
-          backgroundColor: 'rgba(187, 170, 221, 0.5)',
-          borderRadius: 20,
-          paddingHorizontal: 10,
-          alignContent: 'flex-start',
-          marginLeft: 10,
-        }}
-      >
+        }}>
         <TouchableOpacity
           onPress={() => {
             if (matchImageSize === 75) {
-              setMatchImageSize(150);
-              setMatchInfoContainer(150);
+              setMatchImageSize(170);
+              setMatchInfoContainer(180);
             }
-            if (matchImageSize === 150) {
+            if (matchImageSize === 170) {
               setMatchImageSize(75);
               setMatchInfoContainer(80);
             }
-          }}
-        >
-          <Image
-            style={{
-              height: matchImageSize,
-              width: matchImageSize,
-              borderRadius: 150 / 2,
+          }}>
+          {matchImageSize !== 170 && (
+            <>
+              <Text style={{ marginLeft: 10, color: '#bad' }}>Match</Text>
+              <MaterialIcons
+                style={{ marginLeft: 10 }}
+                name="info"
+                size={40}
+                color="#bad"
+              />
+            </>
+          )}
 
-              overflow: 'hidden',
-              borderWidth: 3,
-              borderColor: '#e4a',
-            }}
-            source={{ uri: match_photo }}
-          />
+          {matchImageSize === 170 && (
+            <View
+              style={{
+                flexDirection: 'column',
+                flexWrap: 'wrap',
+                alignItems: 'flex-start',
+                justifyContent: matchImageSize === 75 ? 'center' : 'center',
+
+                height: matchInfoContainer,
+                backgroundColor: 'rgba(187, 170, 221, 0.5)',
+                borderRadius: 20,
+                paddingHorizontal: 10,
+                alignContent: 'flex-start',
+                marginLeft: 10,
+              }}>
+              <Image
+                style={{
+                  height: matchImageSize,
+                  width: matchImageSize,
+                  borderRadius: 400 / 2,
+                  marginVertical: 10,
+                  overflow: 'hidden',
+                  borderWidth: 3,
+                  borderColor: '#e4a',
+                }}
+                source={{ uri: match_photo }}
+              />
+
+              <Text
+                style={{
+                  color: matchImageSize === 75 ? '#E64398' : '#E64398',
+                  marginLeft: 10,
+                  fontSize: matchImageSize === 75 ? 16 : 20,
+                }}>
+                {match_name}
+              </Text>
+
+              <Text
+                style={{
+                  color: matchImageSize === 75 ? '#E64398' : '#E64398',
+                  marginLeft: 10,
+                  fontSize: matchImageSize === 75 ? 16 : 20,
+                }}>
+                {match_age}
+              </Text>
+
+              <Text
+                style={{
+                  color: matchImageSize === 75 ? '#E64398' : '#E64398',
+                  marginLeft: 10,
+                  fontSize: matchImageSize === 75 ? 16 : 20,
+                }}>
+                {match_sex}
+              </Text>
+            </View>
+          )}
         </TouchableOpacity>
-        <Text
-          style={{
-            color: matchImageSize === 75 ? '#E64398' : '#E64398',
-            marginLeft: 10,
-            fontSize: matchImageSize === 75 ? 16 : 20,
-          }}
-        >
-          {match_name}
-        </Text>
-        <Text
-          style={{
-            color: matchImageSize === 75 ? '#E64398' : '#E64398',
-            marginLeft: 10,
-            fontSize: matchImageSize === 75 ? 16 : 20,
-          }}
-        >
-          {match_age}
-        </Text>
-        <Text
-          style={{
-            color: matchImageSize === 75 ? '#E64398' : '#E64398',
-            marginLeft: 10,
-            fontSize: matchImageSize === 75 ? 16 : 20,
-          }}
-        >
-          {match_sex}
-        </Text>
       </View>
     </>
   );

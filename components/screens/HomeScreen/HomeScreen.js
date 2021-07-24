@@ -23,7 +23,7 @@ import axios from 'axios';
 import moment, { relativeTimeThreshold } from 'moment';
 import { useRoute } from '@react-navigation/core';
 import { useIsFocused } from '@react-navigation/native';
-import { set } from 'react-native-reanimated';
+
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 export default function HomeScreen({ navigation }, props) {
@@ -785,7 +785,7 @@ export default function HomeScreen({ navigation }, props) {
               <View style={styles.modal}>
                 <Image
                   style={styles.searchImage}
-                  source={require('../../../assets/DimeAssets/searchcoin.gif')}></Image>
+                  source={require('../../../assets/DimeAssets/searchcoinsmall.gif')}></Image>
               </View>
             )}
           {/* {match && match.startsWith('Found match!') && (

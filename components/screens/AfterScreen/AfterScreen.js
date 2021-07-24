@@ -12,12 +12,14 @@ import {
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { GiftedChat, Bubble } from 'react-native-gifted-chat';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 import firebase from 'firebase/app';
 import 'firebase/auth';
 import 'firebase/firestore';
 import { useAuth } from '../../contexts/AuthContext';
 import axios from 'axios';
+import { FontAwesome } from '@expo/vector-icons';
 import moment from 'moment';
 import { useIsFocused, useRoute } from '@react-navigation/core';
 import { io } from 'socket.io-client';
@@ -338,8 +340,7 @@ export default function AfterScreen({ route, navigation }) {
     <View style={styles.container}>
       <KeyboardAwareScrollView
         style={{ flex: 1, width: '100%' }}
-        keyboardShouldPersistTaps='never'
-      >
+        keyboardShouldPersistTaps="never">
         <Image style={styles.logo} source={{ uri: match_photo }} />
         <View style={styles.headingContainer}>
           {/* <Text stype={styles.heading}>{myPhoto.toString()}</Text> */}
@@ -376,10 +377,20 @@ export default function AfterScreen({ route, navigation }) {
               'Other user was reported. This report is secret and they were not alerted 🚫'}
           </Text>
           {pageType && pageType == 'match_made' && (
-            <Text style={styles.heading}>{match_phoneNumber}</Text>
+            <Text style={{ fontSize: 26, color: '#E64398', marginTop: 20 }}>
+              <FontAwesome name="mobile-phone" size={26} color="#E64398" />{' '}
+              {match_phoneNumber}
+            </Text>
           )}
           {pageType && pageType == 'match_made' && (
-            <Text style={styles.heading}>{match_exitMessage}</Text>
+            <Text style={{ fontSize: 26, color: '#E64398', marginBottom: 20 }}>
+              <MaterialCommunityIcons
+                name="message-outline"
+                size={20}
+                color="#E64398"
+              />{' '}
+              {match_exitMessage}
+            </Text>
           )}
         </View>
 
@@ -387,8 +398,7 @@ export default function AfterScreen({ route, navigation }) {
           style={styles.button}
           onPress={() => {
             navigation.navigate('Home');
-          }}
-        >
+          }}>
           <Text style={styles.buttonTitle}>Go Home</Text>
         </TouchableOpacity>
       </KeyboardAwareScrollView>
