@@ -132,7 +132,11 @@ export default function App() {
           <Stack.Screen
             name="Chat"
             component={ChatScreen}
-            options={{ headerShown: false, gestureEnabled: false }}
+            options={{
+              headerShown: false,
+              gestureEnabled: false,
+              drawerLockMode: '',
+            }}
           />
           <Stack.Screen
             name="After"
@@ -247,7 +251,12 @@ export default function App() {
                 headerTitle: '',
                 headerBackTitle: ' ',
                 headerTintColor: '#e64398',
-                gestureEnabled: true,
+                ChatScreen: {
+                  screen: ChatScreen,
+                  navigationOptions: (navigation) => ({
+                    drawerLockMode: 'locked-closed',
+                  }),
+                },
               }),
               {
                 drawerIcon: ({ focused, size }) => (

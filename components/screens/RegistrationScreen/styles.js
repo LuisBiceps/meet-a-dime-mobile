@@ -31,8 +31,9 @@ export default StyleSheet.create({
   },
   headingContainer: { flex: 1, alignItems: 'center' },
   heading: {
-    fontSize: 20,
-    color: '#000000',
+    fontSize: 24,
+    color: '#E64398',
+    fontWeight: 'bold',
   },
   slider: {
     width: width / 1.5,

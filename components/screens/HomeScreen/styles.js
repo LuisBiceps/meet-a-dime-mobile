@@ -77,8 +77,9 @@ export default StyleSheet.create({
     fontWeight: 'bold',
   },
   text: {
-    color: 'black',
-    fontSize: 16,
+    fontSize: 20,
+    color: '#9f88b3',
+    fontWeight: 'bold',
     position: 'absolute',
     top: 200,
   },
