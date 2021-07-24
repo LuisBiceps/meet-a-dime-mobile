@@ -1,6 +1,6 @@
 import { Dimensions, StyleSheet } from "react-native";
 const { width, height } = Dimensions.get("window");
-var scale = 1.19;
+var scale = 1.15;
 export default StyleSheet.create({
   container: {
     marginTop: height / 3.25,
