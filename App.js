@@ -2,7 +2,12 @@ import 'react-native-gesture-handler';
 import React, { useEffect, useState } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
-import { createDrawerNavigator } from '@react-navigation/drawer';
+import {
+  createDrawerNavigator,
+  DrawerContentScrollView,
+  DrawerItemList,
+  DrawerItem,
+} from '@react-navigation/drawer';
 import { createStackNavigator } from '@react-navigation/stack';
 import { HeaderBackButton } from '@react-navigation/stack';
 import LoginScreen from './components/screens/LoginScreen/LoginScreen';
@@ -24,6 +29,8 @@ import { AuthProvider } from './components/contexts/AuthContext';
 import { AppNavigator } from './components/routes/AppNavigator';
 import { Entypo } from '@expo/vector-icons';
 import root from './root';
+import useWindowDimensions from 'react-native/Libraries/Utilities/useWindowDimensions';
+import styles from './components/screens/LoginScreen/styles';
 
 if (!global.btoa) {
   global.btoa = encode;
@@ -185,7 +192,7 @@ export default function App() {
             headerTransparent: 'true',
             headerTitle: '',
             headerTintColor: '#e64398',
-            gestureEnabled: false,
+            gestureEnabled: true,
           })}
         />
         <Stack.Screen
@@ -202,12 +209,13 @@ export default function App() {
             headerTransparent: 'true',
             headerTitle: '',
             headerTintColor: '#e64398',
-            gestureEnabled: false,
+            gestureEnabled: true,
           })}
         />
       </Stack.Navigator>
     );
   }
+
   return (
     <NavigationContainer>
       <AuthProvider>
@@ -243,6 +251,7 @@ export default function App() {
           <Drawer.Screen
             name='Logout'
             component={LogoutScreen}
+            headerTitleAlign='center'
             options={({ navigation, route }) => ({
               headerLeft: (props) => (
                 <NavigationDrawerStructure navigationProps={navigation} />
