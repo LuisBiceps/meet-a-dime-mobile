@@ -424,6 +424,7 @@ export default function HomeScreen({ navigation }, props) {
         var myAge = moment().diff(userInfoState.current.birth, "years");
 
         if (
+          doc.id !== currentUser.uid &&
           doc.data().match === "" &&
           searchingSex.includes(doc.data().sex) &&
           doc.data().search_sex.includes(userInfoState.current.sex) &&
