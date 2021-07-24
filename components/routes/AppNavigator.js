@@ -11,6 +11,7 @@ import Profile from '../screens/ProfileScreen/ProfileScreen';
 import After from '../screens/AfterScreen/AfterScreen';
 import Forgot from '../screens/ForgotScreen/ForgotScreen';
 import Conversation from '../screens/ConversationScreen/ConversationScreen';
+import Logout from '../screens/LogoutScreen/LogoutScreen';
 
 const Stack = createStackNavigator();
 
@@ -26,6 +27,7 @@ const HomeNavigator = () => (
     <Stack.Screen name='After' component={After} />
     <Stack.Screen name='Forgot' component={Forgot} />
     <Stack.Screen name='Conversation' component={Conversation} />
+    <Stack.Screen name='Logout' component={Logout} />
   </Stack.Navigator>
 );
 

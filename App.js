@@ -1,7 +1,8 @@
 import 'react-native-gesture-handler';
 import React, { useEffect, useState } from 'react';
-import { Text, TouchableOpacity } from 'react-native';
+import { Text, TouchableOpacity, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
+import { createDrawerNavigator } from '@react-navigation/drawer';
 import { createStackNavigator } from '@react-navigation/stack';
 import { HeaderBackButton } from '@react-navigation/stack';
 import LoginScreen from './components/screens/LoginScreen/LoginScreen';
@@ -14,12 +15,15 @@ import ProfileScreen from './components/screens/ProfileScreen/ProfileScreen';
 import AfterScreen from './components/screens/AfterScreen/AfterScreen';
 import ForgotScreen from './components/screens/ForgotScreen/ForgotScreen';
 import ConversationScreen from './components/screens/ConversationScreen/ConversationScreen';
+import LogoutScreen from './components/screens/LogoutScreen/LogoutScreen';
 import { decode, encode } from 'base-64';
 import firebase from 'firebase/app';
 import 'firebase/auth';
 import 'firebase/firestore';
 import { AuthProvider } from './components/contexts/AuthContext';
 import { AppNavigator } from './components/routes/AppNavigator';
+import { Entypo } from '@expo/vector-icons';
+import root from './root';
 
 if (!global.btoa) {
   global.btoa = encode;
@@ -30,45 +34,77 @@ if (!global.atob) {
 }
 
 const Stack = createStackNavigator();
+const Drawer = createDrawerNavigator();
+
+const NavigationDrawerStructure = (props) => {
+  const toggleDrawer = () => {
+    props.navigationProps.toggleDrawer();
+  };
+  return (
+    <View style={root.container}>
+      <View style={root.icon}>
+        <TouchableOpacity onPress={toggleDrawer}>
+          <Text>
+            <Entypo name='menu' size={36} color='black' />{' '}
+          </Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+};
 
 export default function App() {
-  return (
-    <NavigationContainer>
-      <AuthProvider>
-        <Stack.Navigator initialRouteName='Login'>
+  function HomeWork() {
+    return (
+      <Stack.Navigator initialRouteName='Login'>
+        <Stack.Screen
+          name='Home'
+          component={HomeScreen}
+          options={({ navigation, route }) => ({
+            headerLeft: (props) => (
+              <NavigationDrawerStructure navigationProps={navigation} />
+            ),
+            headerTransparent: 'true',
+            headerTitle: '',
+            headerBackTitle: ' ',
+            headerTintColor: '#e64398',
+            gestureEnabled: false,
+          })}
+        />
+
+        <>
           <Stack.Screen
-            name='Home'
-            component={HomeScreen}
+            name='Login'
+            component={LoginScreen}
             options={{ headerShown: false, gestureEnabled: false }}
           />
-
-          <>
-            <Stack.Screen
-              name='Login'
-              component={LoginScreen}
-              options={{ headerShown: false, gestureEnabled: false }}
-            />
-            <Stack.Screen
-              name='Registration'
-              component={RegistrationScreen}
-              options={({ navigation, route }) => ({
-                headerLeft: (props) => (
-                  <HeaderBackButton
-                    {...props}
-                    headerBackTitle=''
-                    onPress={() => navigation.navigate('Login')}
-                  />
-                ),
-                headerTransparent: 'true',
-                headerTitle: '',
-                headerBackTitle: ' ',
-                headerTintColor: '#e64398',
-              })}
-            />
-            <Stack.Screen
-              name='Verify'
-              component={VerifyScreen}
-              options={({ navigation, route }) => ({
+          <Stack.Screen
+            name='Logout'
+            component={LogoutScreen}
+            options={{ headerShown: false, gestureEnabled: false }}
+          />
+          <Stack.Screen
+            name='Registration'
+            component={RegistrationScreen}
+            options={({ navigation, route }) => ({
+              headerLeft: (props) => (
+                <HeaderBackButton
+                  {...props}
+                  onPress={() => navigation.navigate('Login')}
+                />
+              ),
+              headerTransparent: 'true',
+              headerTitle: '',
+              headerBackTitle: ' ',
+              headerTintColor: '#e64398',
+              gestureEnabled: false,
+            })}
+          />
+          <Stack.Screen
+            name='Verify'
+            component={VerifyScreen}
+            options={
+              (({ navigation, route }) => ({
                 headerLeft: (props) => (
                   <HeaderBackButton
                     {...props}
@@ -79,62 +115,146 @@ export default function App() {
                 headerTransparent: 'true',
                 headerTitle: '',
                 headerTintColor: '#e64398',
-              })}
-            />
-            <Stack.Screen
-              name='Edit'
-              component={EditProfileScreen}
-              options={({ navigation, route }) => ({
-                headerLeft: (props) => (
-                  <HeaderBackButton
-                    headerTitle=''
-                    {...props}
-                    onPress={() => navigation.navigate('Profile')}
-                  />
-                ),
-                headerTransparent: 'true',
-                headerTitle: '',
-                headerTintColor: '#e64398',
-              })}
-            />
-            <Stack.Screen
-              name='Profile'
-              component={ProfileScreen}
-              options={({ navigation, route }) => ({
-                headerLeft: (props) => (
-                  <HeaderBackButton
-                    headerTitle=''
-                    {...props}
-                    onPress={() => navigation.navigate('Home')}
-                  />
-                ),
-                headerTransparent: 'true',
-                headerTitle: '',
-                headerTintColor: '#e64398',
-              })}
-            />
-            <Stack.Screen
-              name='Chat'
-              component={ChatScreen}
-              options={{ headerShown: false, gestureEnabled: false }}
-            />
-            <Stack.Screen
-              name='After'
-              component={AfterScreen}
-              options={{ headerShown: false, gestureEnabled: false }}
-            />
-            <Stack.Screen
-              name='Forgot'
-              component={ForgotScreen}
-              options={{ headerShown: false, gestureEnabled: false }}
-            />
-            <Stack.Screen
-              name='Conversation'
-              component={ConversationScreen}
-              options={{ headerShown: false, gestureEnabled: true }}
-            />
-          </>
-        </Stack.Navigator>
+              }),
+              { gestureEnabled: false })
+            }
+          />
+
+          <Stack.Screen
+            name='Chat'
+            component={ChatScreen}
+            options={{ headerShown: false, gestureEnabled: false }}
+          />
+          <Stack.Screen
+            name='After'
+            component={AfterScreen}
+            options={{ headerShown: false, gestureEnabled: false }}
+          />
+          <Stack.Screen
+            name='Forgot'
+            component={ForgotScreen}
+            options={{ headerShown: false, gestureEnabled: false }}
+          />
+        </>
+      </Stack.Navigator>
+    );
+  }
+
+  function ProfileWork() {
+    return (
+      <Stack.Navigator initialRouteName='Profile'>
+        <Stack.Screen
+          name='Profile'
+          component={ProfileScreen}
+          options={({ navigation, route }) => ({
+            headerLeft: (props) => (
+              <NavigationDrawerStructure navigationProps={navigation} />
+            ),
+            headerTransparent: 'true',
+            headerTitle: '',
+            headerBackTitle: ' ',
+            headerTintColor: '#e64398',
+            gestureEnabled: false,
+          })}
+        />
+        <Stack.Screen
+          name='Home'
+          component={HomeScreen}
+          options={({ navigation, route }) => ({
+            headerLeft: (props) => (
+              <NavigationDrawerStructure navigationProps={navigation} />
+            ),
+            headerTransparent: 'true',
+            headerTitle: '',
+            headerBackTitle: ' ',
+            headerTintColor: '#e64398',
+            gestureEnabled: false,
+          })}
+        />
+        <Stack.Screen
+          name='Edit'
+          component={EditProfileScreen}
+          options={({ navigation, route }) => ({
+            headerLeft: (props) => (
+              <HeaderBackButton
+                headerTitle=''
+                {...props}
+                onPress={() => navigation.navigate('Profile')}
+              />
+            ),
+            headerTransparent: 'true',
+            headerTitle: '',
+            headerTintColor: '#e64398',
+            gestureEnabled: false,
+          })}
+        />
+        <Stack.Screen
+          name='Conversation'
+          component={ConversationScreen}
+          options={({ navigation, route }) => ({
+            headerLeft: (props) => (
+              <HeaderBackButton
+                headerTitle=''
+                {...props}
+                onPress={() => navigation.navigate('Profile')}
+              />
+            ),
+            headerTransparent: 'true',
+            headerTitle: '',
+            headerTintColor: '#e64398',
+            gestureEnabled: false,
+          })}
+        />
+      </Stack.Navigator>
+    );
+  }
+  return (
+    <NavigationContainer>
+      <AuthProvider>
+        <Drawer.Navigator drawerType='back' keyboardDismissMode='on-drag'>
+          <Drawer.Screen
+            name='Home'
+            component={HomeWork}
+            options={({ navigation, route }) => ({
+              headerLeft: (props) => (
+                <NavigationDrawerStructure navigationProps={navigation} />
+              ),
+              headerTransparent: 'true',
+              headerTitle: '',
+              headerBackTitle: ' ',
+              headerTintColor: '#e64398',
+              gestureEnabled: false,
+            })}
+          />
+          <Drawer.Screen
+            name='Profile'
+            component={ProfileWork}
+            options={({ navigation, route }) => ({
+              headerLeft: (props) => (
+                <NavigationDrawerStructure navigationProps={navigation} />
+              ),
+              headerTransparent: 'true',
+              headerTitle: '',
+              headerBackTitle: ' ',
+              headerTintColor: '#e64398',
+              gestureEnabled: false,
+            })}
+          />
+          <Drawer.Screen
+            name='Logout'
+            component={LogoutScreen}
+            options={({ navigation, route }) => ({
+              headerLeft: (props) => (
+                <NavigationDrawerStructure navigationProps={navigation} />
+              ),
+              headerTransparent: 'true',
+              headerTitle: '',
+              headerBackTitle: ' ',
+              headerTintColor: '#e64398',
+              gestureEnabled: false,
+            })}
+          />
+        </Drawer.Navigator>
       </AuthProvider>
     </NavigationContainer>
   );

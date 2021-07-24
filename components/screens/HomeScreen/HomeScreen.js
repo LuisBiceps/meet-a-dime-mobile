@@ -709,42 +709,6 @@ export default function HomeScreen({ navigation }, props) {
     }
   }
 
-  async function handleLogout() {
-    try {
-      await logout();
-      await AsyncStorage.removeItem('user_data');
-      setMatch('Not searching');
-      setId('none');
-      clearTimeout(timeout.current);
-      clearAllTimeouts();
-      console.log('LEAVING! logout');
-      setLockout(false);
-      if (observer.current !== null) {
-        observer.current();
-      } else {
-        console.log('could not clear observer');
-      }
-      navigation.navigate('Login');
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
-  function navProfile() {
-    setMatch('Not searching');
-    setId('none');
-    clearTimeout(timeout.current);
-    clearAllTimeouts();
-    console.log('LEAVING! profile');
-    setLockout(false);
-    if (observer.current !== null) {
-      observer.current();
-    } else {
-      console.log('could not clear observer');
-    }
-    navigation.navigate('Profile');
-  }
-
   return (
     <View style={styles.container}>
       <Image
@@ -753,9 +717,6 @@ export default function HomeScreen({ navigation }, props) {
       />
       <Text style={styles.text}>Welcome back, {name}!</Text>
       <View style={styles.formContainer}>
-        <TouchableOpacity style={styles.button} onPress={navProfile}>
-          <Text style={styles.buttonText}>Profile</Text>
-        </TouchableOpacity>
         {match && match !== 'Searching' && !match.startsWith('Found match!') && (
           <TouchableOpacity
             style={styles.button}
@@ -789,9 +750,6 @@ export default function HomeScreen({ navigation }, props) {
         )}
         {match && match.startsWith('Found match!') && <Text>{match}</Text>}
       </View>
-      <TouchableOpacity style={styles.logout} onPress={handleLogout}>
-        <Text style={styles.buttonText}>Logout</Text>
-      </TouchableOpacity>
     </View>
   );
 }
