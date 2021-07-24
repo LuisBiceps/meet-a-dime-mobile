@@ -137,6 +137,12 @@ export default function ChatScreen({ route, navigation }) {
 
   var text = '';
 
+  function hasEmoji(str) {
+    const nbEmojiOrNumber = (str.match(/\p{Emoji}/gu) || []).length;
+    const nbNumber = (str.match(/\p{Number}/gu) || []).length;
+    return nbEmojiOrNumber > nbNumber;
+  }
+
   async function fetchMatchInfo() {
     try {
       const token = currentUser && (await currentUser.getIdToken());
@@ -979,30 +985,8 @@ export default function ChatScreen({ route, navigation }) {
             <Bubble
               {...props}
               textStyle={{
-                left: {
-                  fontSize: props.currentMessage.text.match(
-                    /\p{Extended_Pictographic}/
-                  )
-                    ? 30
-                    : null,
-                  lineHeight: props.currentMessage.text.match(
-                    /\p{Extended_Pictographic}/
-                  )
-                    ? 30
-                    : null,
-                },
                 right: {
                   color: 'white',
-                  fontSize: props.currentMessage.text.match(
-                    /\p{Extended_Pictographic}/
-                  )
-                    ? 30
-                    : null,
-                  lineHeight: props.currentMessage.text.match(
-                    /\p{Extended_Pictographic}/
-                  )
-                    ? 30
-                    : null,
                 },
               }}
               wrapperStyle={{

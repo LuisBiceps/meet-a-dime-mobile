@@ -199,7 +199,7 @@ export default function App() {
             headerTransparent: 'true',
             headerTitle: '',
             headerTintColor: '#e64398',
-            gestureEnabled: true,
+            gestureEnabled: false,
           })}
         />
         <Stack.Screen
@@ -216,7 +216,7 @@ export default function App() {
             headerTransparent: 'true',
             headerTitle: '',
             headerTintColor: '#e64398',
-            gestureEnabled: true,
+            gestureEnabled: false,
           })}
         />
       </Stack.Navigator>
@@ -243,23 +243,18 @@ export default function App() {
           <Drawer.Screen
             name="Home"
             component={HomeWork}
-            options={
-              (({ navigation, route }) => ({
-                headerLeft: (props) => (
-                  <NavigationDrawerStructure navigationProps={navigation} />
-                ),
+            options={({ navigation, route }) => {
+              return {
+                headerTitle: 'test',
+                gestureEnabled: true,
                 headerTransparent: 'true',
                 headerTitle: '',
                 headerBackTitle: ' ',
                 headerTintColor: '#e64398',
-                ChatScreen: {
-                  screen: ChatScreen,
-                  navigationOptions: (navigation) => ({
-                    drawerLockMode: 'locked-closed',
-                  }),
-                },
-              }),
-              {
+                headerLeft: (props) => (
+                  <NavigationDrawerStructure navigationProps={navigation} />
+                ),
+
                 drawerIcon: ({ focused, size }) => (
                   <Text style={root.drawerIcon}>
                     <Entypo
@@ -269,24 +264,23 @@ export default function App() {
                     />
                   </Text>
                 ),
-              })
-            }
+              };
+            }}
           />
           <Drawer.Screen
             name="Profile"
             component={ProfileWork}
-            options={
-              (({ navigation, route }) => ({
-                headerLeft: (props) => (
-                  <NavigationDrawerStructure navigationProps={navigation} />
-                ),
+            options={({ navigation, route }) => {
+              return {
+                headerTitle: 'test',
+                gestureEnabled: true,
                 headerTransparent: 'true',
                 headerTitle: '',
                 headerBackTitle: ' ',
                 headerTintColor: '#e64398',
-                gestureEnabled: true,
-              }),
-              {
+                headerLeft: (props) => (
+                  <NavigationDrawerStructure navigationProps={navigation} />
+                ),
                 drawerIcon: ({ focused, size }) => (
                   <Text style={root.drawerIcon}>
                     <MaterialIcons
@@ -296,25 +290,24 @@ export default function App() {
                     />
                   </Text>
                 ),
-              })
-            }
+              };
+            }}
           />
           <Drawer.Screen
             name="Logout"
             component={LogoutScreen}
             headerTitleAlign="center"
-            options={
-              (({ navigation, route }) => ({
-                headerLeft: (props) => (
-                  <NavigationDrawerStructure navigationProps={navigation} />
-                ),
+            options={({ navigation, route }) => {
+              return {
+                headerTitle: 'test',
+                gestureEnabled: true,
                 headerTransparent: 'true',
                 headerTitle: '',
                 headerBackTitle: ' ',
                 headerTintColor: '#e64398',
-                gestureEnabled: true,
-              }),
-              {
+                headerLeft: (props) => (
+                  <NavigationDrawerStructure navigationProps={navigation} />
+                ),
                 drawerIcon: ({ focused, size }) => (
                   <Text style={root.drawerIcon}>
                     <MaterialIcons
@@ -324,8 +317,8 @@ export default function App() {
                     />
                   </Text>
                 ),
-              })
-            }
+              };
+            }}
           />
         </Drawer.Navigator>
         <StatusBar style="dark" />
