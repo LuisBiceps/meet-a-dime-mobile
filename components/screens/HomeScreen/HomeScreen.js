@@ -43,6 +43,7 @@ export default function HomeScreen({ navigation }, props) {
   const [isSearching, setIsSearching] = useState(true);
   const [matchesArray, setMatchesArray] = useState([]);
   const [progress, setProgress] = useState(-1);
+  const [userIsInitialized, setUserIsInitialized] = useState(0);
   // const [sopen, setOpenSearch] = useState(false);
   const [search, setSearch] = useState('');
   const searchRef = useRef('');
@@ -120,6 +121,9 @@ export default function HomeScreen({ navigation }, props) {
             console.log(response.data);
             setMyPhoto(response.data.photo);
             if (myPhoto) console.log(myPhoto);
+            if (response.data.initializedProfile === 1) {
+              setUserIsInitialized(1);
+            }
             setName(response.data.firstName);
           } catch (error) {
             console.log(error);
@@ -400,6 +404,7 @@ export default function HomeScreen({ navigation }, props) {
             navigation.navigate('Chat', {
               match_id: doc_id,
               timeout: timeout.current,
+              user_initialized: userIsInitialized,
             });
           }
         }, 100));
@@ -621,6 +626,7 @@ export default function HomeScreen({ navigation }, props) {
                       navigation.navigate('Chat', {
                         match_id: change.doc.data().match,
                         timeout: timeout.current,
+                        user_initialized: userIsInitialized,
                       });
                     }
                   },
