@@ -15,6 +15,7 @@ import {
 } from 'react-native';
 import { useIsFocused } from '@react-navigation/native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import {
   GiftedChat,
   Bubble,
@@ -44,7 +45,7 @@ export default function ChatScreen({ route, navigation }) {
   const messageRef = useRef('');
   const socketRef = useRef('');
   const matchPhotoRef = useRef('');
-  const myPhotoRef = useRef('');
+  // const myPhotoRef = useRef('');
   const [error, setError] = useState('');
   const emojis = ['❤️', '🥰', '😇'];
   var random_emoji = emojis[Math.floor(Math.random() * 3)];
@@ -64,7 +65,7 @@ export default function ChatScreen({ route, navigation }) {
   const roomRef = useRef('');
   const [socket, setSocket] = useState('');
   const { currentUser, logout } = useAuth();
-  const EXPIRE_IN_MINUTES = 1; // 10 minutes
+  const EXPIRE_IN_MINUTES = 4; // 10 minutes
 
   const modalExpire = 30000; // 30 seconds in MS
 
@@ -85,9 +86,54 @@ export default function ChatScreen({ route, navigation }) {
   const [timeoutState, setTimeoutState] = useState(null);
   const [welcomeModal, setWelcomeModal] = useState(true);
   const [extendedTimeoutState, setExtendedTimeoutState] = useState(null);
-  const { match_id, timeout } = route.params;
+  const { match_id, timeout, user_initialized } = route.params;
   const observer = useRef(null);
   const extendedTimeoutRef = useRef();
+
+  const [bothInitialized, setBothInitialized] = useState(false);
+  const [match_initialized, setMatchInitialized] = useState(-1);
+  const [match_responses, setMatchResponses] = useState([]);
+  const question1 = 'What do you like to do for fun or to relax?';
+  const question2 = 'What do you do for a living?';
+  const question3 = 'Would you say you are a romantic?';
+  const question4 = 'Are you an optimist or a pessimist?';
+  const question5 = 'What are you most passionate about?';
+  const question6 = "Do you like horoscopes? If so, what's your sign?";
+  const question7 = 'What does an ideal date look like in your eyes?';
+  const question8 = 'What does your ideal future look like?';
+  const question9 = 'What is your favorite type of music?';
+  const question10 = 'Do you have any pets? If you do, tell me about them!';
+  const question11 = 'Do you have any sibilings? If so, how many?';
+  const question12 = 'What is your favorite game to play?';
+  const questions = [
+    question1,
+    question2,
+    question3,
+    question4,
+    question5,
+    question6,
+    question7,
+    question8,
+    question9,
+    question10,
+    question11,
+    question12,
+  ];
+  const question_emojis = [
+    '🌴',
+    '💸',
+    '😘',
+    '😄',
+    '🎺',
+    '♑',
+    '🥰',
+    '🔮',
+    '🎵',
+    '🐾',
+    '👨‍👨‍👦‍👦',
+    '🎮',
+  ];
+
   var text = '';
 
   async function fetchMatchInfo() {
@@ -113,7 +159,16 @@ export default function ChatScreen({ route, navigation }) {
       if (response.data.photo === '/DimeAssets/hearteyes.png') {
         matchPhotoRef.current = '../../../assets' + response.data.photo;
       } else matchPhotoRef.current = response.data.photo;
-      myPhotoRef.current = response.data.photo;
+      // myPhotoRef.current = response.data.photo;
+      var my_initialized = user_initialized;
+
+      // console.log(my_initialized);
+      // console.log(response.data.initializedProfile);
+      if (my_initialized === 1 && response.data.initializedProfile === 1) {
+        setBothInitialized(true);
+        setMatchResponses(response.data.answers);
+        console.log('BOTH INIT');
+      }
     } catch (error) {
       console.log(error);
     }
@@ -130,6 +185,23 @@ export default function ChatScreen({ route, navigation }) {
       hash |= 0; // Convert to 32bit integer
     }
     return hash;
+  }
+
+  function handleRandomQuestion(matches_firstname, match_responses) {
+    var random_num = Math.floor(Math.random() * 12);
+    var selected = questions[random_num];
+    var related_emoji = question_emojis[random_num];
+    console.log(`${matches_firstname} was asked: ${selected}\n`);
+    console.log(`${related_emoji} ${match_responses[random_num]}`);
+    Alert.alert(
+      `${matches_firstname} was asked: ${selected}\n`,
+      `${related_emoji} ${match_responses[random_num]}`,
+      [
+        {
+          text: 'OK',
+        },
+      ]
+    );
   }
 
   function noMatch() {
@@ -946,41 +1018,94 @@ export default function ChatScreen({ route, navigation }) {
         }}
         renderActions={(props) => {
           return (
-            <Actions
-              {...props}
-              containerStyle={{
-                width: 40,
-                height: 40,
-                alignItems: 'center',
-                justifyContent: 'center',
-                marginLeft: 4,
-                marginRight: 4,
-                marginBottom: 6,
-              }}
-              icon={() => (
-                <AntDesign name="pluscircle" size={24} color="#bad" />
-              )}
-              options={{
-                'Choose From Library': () => {
-                  console.log('Choose From Library');
-                  sendImage();
-                },
-                'Use Camera': () => {
-                  console.log('Select Photo');
-                  sendImage('camera');
-                },
-                Cancel: () => {
-                  console.log('Cancel');
-                },
-              }}
-              optionTintColor="#e4a"
-            />
+            <>
+              <Actions
+                {...props}
+                containerStyle={{
+                  width: 30,
+                  height: 40,
+                  alignItems: 'flex-end',
+                  justifyContent: 'center',
+
+                  marginBottom: 6,
+                }}
+                icon={() => (
+                  <View style={{}}>
+                    <MaterialCommunityIcons
+                      name="message-outline"
+                      size={30}
+                      color="#bad"
+                    />
+                  </View>
+                )}
+                options={{
+                  'Conversation Starters': () => {
+                    console.log('Conversations pressed');
+                    handleRandomQuestion(match_name, match_responses);
+                  },
+                  Cancel: () => {
+                    console.log('Cancel');
+                  },
+                }}
+                optionTintColor="#e4a"
+              />
+              <Actions
+                {...props}
+                containerStyle={{
+                  width: 40,
+                  height: 40,
+                  alignItems: 'flex-start',
+                  justifyContent: 'center',
+
+                  marginBottom: 6,
+                }}
+                icon={() => (
+                  <View style={{}}>
+                    <AntDesign name="pluscircle" size={30} color="#bad" />
+                  </View>
+                )}
+                options={{
+                  'Choose From Library': () => {
+                    console.log('Choose From Library');
+                    sendImage();
+                  },
+                  'Use Camera': () => {
+                    console.log('Select Photo');
+                    sendImage('camera');
+                  },
+                  Cancel: () => {
+                    console.log('Cancel');
+                  },
+                }}
+                optionTintColor="#e4a"
+              />
+            </>
           );
         }}
         alwaysShowSend
         scrollToBottom
         onPressAvatar={() => {}}
       />
+
+      {/* <View
+        style={{
+          position: 'absolute',
+          bottom: 100,
+        }}>
+        {bothInitialized && (
+          <>
+            <MaterialCommunityIcons
+              name="message-outline"
+              style={{ marginLeft: 10 }}
+              size={30}
+              color="#bad"
+            />
+            <Text style={{ marginLeft: 10, color: '#bad' }}>Convo</Text>
+            <Text style={{ marginLeft: 10, color: '#bad' }}>Starters</Text>
+          </>
+        )}
+      </View> */}
+
       <View
         style={{
           position: 'absolute',
