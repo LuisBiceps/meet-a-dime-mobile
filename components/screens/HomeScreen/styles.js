@@ -43,6 +43,13 @@ export default StyleSheet.create({
     flex: 1,
     marginRight: 5,
   },
+  matchCard: {
+    borderWidth: 2,
+    borderColor: '#cfc3e8',
+    borderRadius: 20,
+    // backgroundColor: '#cfc3e8',
+    backgroundColor: '#dceaff',
+  },
   button: {
     backgroundColor: '#e64398',
     top: 225,
@@ -55,7 +62,14 @@ export default StyleSheet.create({
     position: 'absolute',
   },
   matches: {
-    top: 200,
+    top: 5,
+    borderColor: '#C5C5C5',
+    borderWidth: 2,
+    borderRadius: 30,
+    backgroundColor: '#cfc3e8',
+    paddingTop: 30,
+    maxHeight: width / 1.75,
+    marginBottom: width / 5,
   },
   buttonText: {
     color: 'white',

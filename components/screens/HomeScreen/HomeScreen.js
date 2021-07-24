@@ -838,11 +838,20 @@ export default function HomeScreen({ navigation }, props) {
               return (
                 <View
                   key={index}
-                  style={{ width: 150, height: 150, marginHorizontal: 10 }}>
+                  style={[
+                    {
+                      width: 150,
+                      height: 180,
+                      marginHorizontal: 10,
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                    },
+                    styles.matchCard,
+                  ]}>
                   <Image
                     style={{
-                      width: 150,
-                      height: 150,
+                      width: 120,
+                      height: 120,
                       borderRadius: 100,
                       borderRadius: 150 / 2,
                       overflow: 'hidden',
