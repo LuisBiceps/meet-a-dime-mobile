@@ -13,12 +13,13 @@ export default StyleSheet.create({
 
   title: {},
   profile: {
+    alignSelf: 'center',
     backgroundColor: '#eff',
     borderWidth: 3,
 
     borderColor: '#cfc3e8',
     borderRadius: 50,
-    width: width / 1.3,
+    width: width / 1.4,
     flex: 1,
   },
   logo: {
@@ -103,16 +104,6 @@ export default StyleSheet.create({
     marginRight: 3,
     paddingLeft: 0,
   },
-  button: {
-    // backgroundColor: '#e64398',
-    marginLeft: 30,
-    marginRight: 30,
-    marginTop: 20,
-    height: 48,
-    borderRadius: 50,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   buttonGroup: {},
   button: {
     backgroundColor: '#e64398',
@@ -123,7 +114,7 @@ export default StyleSheet.create({
     borderRadius: 50,
     alignItems: 'center',
     justifyContent: 'center',
-    width: width / 2.25,
+    width: width / 1.5,
   },
   generalError: {
     fontSize: 11,
@@ -145,7 +136,7 @@ export default StyleSheet.create({
   },
   buttonTitle: {
     color: 'white',
-    fontSize: 14,
+    fontSize: 16,
     fontWeight: 'bold',
   },
   footerView: {
