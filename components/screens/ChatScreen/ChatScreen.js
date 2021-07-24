@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState, useRef } from "react";
+import React, { useCallback, useEffect, useState, useRef } from 'react';
 import {
   FlatList,
   Keyboard,
@@ -12,9 +12,9 @@ import {
   Pressable,
   LogBox,
   Dimensions,
-} from "react-native";
-import { useIsFocused } from "@react-navigation/native";
-import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+} from 'react-native';
+import { useIsFocused } from '@react-navigation/native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import {
   GiftedChat,
   Bubble,
@@ -23,59 +23,59 @@ import {
   Composer,
   InputToolbar,
   SystemMessage,
-} from "react-native-gifted-chat";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { AntDesign } from "@expo/vector-icons";
-import { Ionicons } from "@expo/vector-icons";
-import styles from "./styles";
-import firebase from "firebase/app";
-import "firebase/auth";
-import "firebase/firestore";
-import { useAuth } from "../../contexts/AuthContext";
-import axios from "axios";
-import moment from "moment";
-import { useRoute } from "@react-navigation/core";
-import { io } from "socket.io-client";
-import * as ImagePicker from "expo-image-picker";
-import * as ImageManipulator from "expo-image-manipulator";
+} from 'react-native-gifted-chat';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { AntDesign } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
+import styles from './styles';
+import firebase from 'firebase/app';
+import 'firebase/auth';
+import 'firebase/firestore';
+import { useAuth } from '../../contexts/AuthContext';
+import axios from 'axios';
+import moment from 'moment';
+import { useRoute } from '@react-navigation/core';
+import { io } from 'socket.io-client';
+import * as ImagePicker from 'expo-image-picker';
+import * as ImageManipulator from 'expo-image-manipulator';
 export default function ChatScreen({ route, navigation }) {
   const firestore = firebase.firestore();
-  const messageRef = useRef("");
-  const socketRef = useRef("");
-  const matchPhotoRef = useRef("");
-  const myPhotoRef = useRef("");
-  const [error, setError] = useState("");
-  const emojis = ["❤️", "🥰", "😇"];
+  const messageRef = useRef('');
+  const socketRef = useRef('');
+  const matchPhotoRef = useRef('');
+  const myPhotoRef = useRef('');
+  const [error, setError] = useState('');
+  const emojis = ['❤️', '🥰', '😇'];
   var random_emoji = emojis[Math.floor(Math.random() * 3)];
 
   const [welcomeMessage, setWelcomeMessage] = useState(
-    "Joined the room. Good luck! " + random_emoji
+    'Joined the room. Good luck! ' + random_emoji
   );
   const [userSaidYes, setUserSaidYes] = useState(false);
   const [messages, setMessages] = useState([]);
   const [modalText, setModalText] = useState(
-    "You did the time, do you want the dime?"
+    'You did the time, do you want the dime?'
   );
   const [images, setImages] = useState([]);
   const timeoutRef1 = useRef(null);
   const [sentMessage, setSentMessage] = useState(false);
-  const [room, setRoom] = useState("");
-  const roomRef = useRef("");
-  const [socket, setSocket] = useState("");
+  const [room, setRoom] = useState('');
+  const roomRef = useRef('');
+  const [socket, setSocket] = useState('');
   const { currentUser, logout } = useAuth();
   const EXPIRE_IN_MINUTES = 1; // 10 minutes
 
   const modalExpire = 30000; // 30 seconds in MS
 
   const DEFAULT_COIN_IMAGE =
-    "https://firebasestorage.googleapis.com/v0/b/meet-a-dime.appspot.com/o/default_1.png?alt=media&token=23ab5b95-0214-42e3-9c54-d7811362aafc";
+    'https://firebasestorage.googleapis.com/v0/b/meet-a-dime.appspot.com/o/default_1.png?alt=media&token=23ab5b95-0214-42e3-9c54-d7811362aafc';
 
-  const [match_age, setMatchAge] = useState("");
+  const [match_age, setMatchAge] = useState('');
   const [matchImageSize, setMatchImageSize] = useState(75);
   const [matchInfoContainer, setMatchInfoContainer] = useState(80);
   const isFocused = useIsFocused();
-  const [match_name, setMatchName] = useState("user");
-  const [match_sex, setMatchSex] = useState("");
+  const [match_name, setMatchName] = useState('user');
+  const [match_sex, setMatchSex] = useState('');
   const [match_photo, setMatchPhoto] = useState(DEFAULT_COIN_IMAGE);
   const [modalVisible, setModalVisible] = useState(false);
   const [observerState, setObserverState] = useState(null);
@@ -85,30 +85,30 @@ export default function ChatScreen({ route, navigation }) {
   const { match_id, timeout } = route.params;
   const observer = useRef(null);
   const extendedTimeoutRef = useRef();
-  var text = "";
+  var text = '';
 
   async function fetchMatchInfo() {
     try {
       const token = currentUser && (await currentUser.getIdToken());
       var config = {
-        method: "post",
-        url: "https://meetadime.herokuapp.com/api/getbasicuser",
+        method: 'post',
+        url: 'https://meetadime.herokuapp.com/api/getbasicuser',
         header: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
           //   Authorization: `Bearer ${token}`,
         },
         data: { uid: match_id },
       };
-      axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
       var response = await axios(config);
-      console.log("Fetching data");
-      setMatchAge(moment().diff(response.data.birth, "years"));
+      console.log('Fetching data');
+      setMatchAge(moment().diff(response.data.birth, 'years'));
       setMatchName(response.data.firstName);
       setMatchSex(response.data.sex);
       setMatchPhoto(response.data.photo);
 
-      if (response.data.photo === "/DimeAssets/hearteyes.png") {
-        matchPhotoRef.current = "../../../assets" + response.data.photo;
+      if (response.data.photo === '/DimeAssets/hearteyes.png') {
+        matchPhotoRef.current = '../../../assets' + response.data.photo;
       } else matchPhotoRef.current = response.data.photo;
       myPhotoRef.current = response.data.photo;
     } catch (error) {
@@ -133,19 +133,19 @@ export default function ChatScreen({ route, navigation }) {
     if (timeoutRef1.current !== null) clearTimeout(timeoutRef1.current);
     setTimeout(async () => {
       await firestore
-        .collection("users")
+        .collection('users')
         .doc(currentUser.uid)
         .update({
           FailMatch: firebase.firestore.FieldValue.arrayUnion(match_id),
         });
       await firestore
-        .collection("users")
+        .collection('users')
         .doc(match_id)
         .update({
           FailMatch: firebase.firestore.FieldValue.arrayUnion(currentUser.uid),
         });
-      socketRef.current.emit("leave-room", currentUser.uid, room);
-      console.log("LEFT MY ROOM TOO");
+      socketRef.current.emit('leave-room', currentUser.uid, room);
+      console.log('LEFT MY ROOM TOO');
       setModalVisible(false);
       if (observer.current !== null) observer.current();
       if (observerState !== null) observerState();
@@ -153,9 +153,9 @@ export default function ChatScreen({ route, navigation }) {
       observer.current = null;
 
       if (timeoutRef1.current !== null) clearTimeout(timeoutRef1.current);
-      navigation.navigate("After", {
+      navigation.navigate('After', {
         match_id: match_id,
-        type: "user_didnt_go_well",
+        type: 'user_didnt_go_well',
       });
     }, 0);
   }
@@ -164,32 +164,32 @@ export default function ChatScreen({ route, navigation }) {
     // console.log('Checking searching doc');
     try {
       var myDoc = await firestore
-        .collection("searching")
+        .collection('searching')
         .doc(currentUser.uid)
         .get();
       if (myDoc.exists) {
         await firestore
-          .collection("searching")
+          .collection('searching')
           .doc(currentUser.uid)
           .update({ isChatting: 1 });
       } else {
         await firestore
-          .collection("searching")
+          .collection('searching')
           .doc(match_id)
           .update({ isChatting: 1 });
       }
-      console.log("Set is chatting.");
+      console.log('Set is chatting.');
     } catch (error) {
       console.log(error);
     }
   }
 
   async function noMatchTimeout() {
-    var seeker = "none";
-    var match = "none";
+    var seeker = 'none';
+    var match = 'none';
 
     try {
-      var docRef = firestore.collection("searching").doc(currentUser.uid);
+      var docRef = firestore.collection('searching').doc(currentUser.uid);
       var doc = await docRef.get();
       if (doc.exists) {
         seeker = currentUser.uid;
@@ -200,32 +200,32 @@ export default function ChatScreen({ route, navigation }) {
       }
 
       if (currentUser.uid === seeker) {
-        await firestore.collection("searching").doc(currentUser.uid).update({
-          seekerTail: "timeout",
+        await firestore.collection('searching').doc(currentUser.uid).update({
+          seekerTail: 'timeout',
         });
-        console.log("I am the seeker, I set my value TIMEOUT.");
+        console.log('I am the seeker, I set my value TIMEOUT.');
       }
 
       if (currentUser.uid === match) {
-        await firestore.collection("searching").doc(match_id).update({
-          matchTail: "timeout",
+        await firestore.collection('searching').doc(match_id).update({
+          matchTail: 'timeout',
         });
-        console.log("I am the match, I set my value TIMEOUT.");
+        console.log('I am the match, I set my value TIMEOUT.');
       }
     } catch (error) {
       console.log(error);
     }
 
-    socketRef.current.emit("leave-room-silently", currentUser.uid, room);
+    socketRef.current.emit('leave-room-silently', currentUser.uid, room);
     if (observer.current !== null) observer.current();
     if (observerState !== null) observerState();
     setObserverState(null);
     observer.current = null;
 
     if (timeoutRef1.current !== null) clearTimeout(timeoutRef1.current);
-    navigation.navigate("After", { match_id: match_id, type: "timeout" });
+    navigation.navigate('After', { match_id: match_id, type: 'timeout' });
 
-    console.log("Left room silently");
+    console.log('Left room silently');
   }
 
   async function pendingMatch() {
@@ -234,12 +234,12 @@ export default function ChatScreen({ route, navigation }) {
     // This disconnects then sends to the /after page with a state.
     function leavePageWith(stateString) {
       socketRef.current.emit(
-        "leave-room-silently",
+        'leave-room-silently',
         currentUser.uid,
         roomRef.current
       );
       setModalVisible(false);
-      console.log("going to after page1");
+      console.log('going to after page1');
       if (observer.current !== null) observer.current();
 
       if (observerState !== null) observerState();
@@ -249,19 +249,19 @@ export default function ChatScreen({ route, navigation }) {
       clearTimeout(extendedTimeoutRef.current);
       clearTimeout(extendedTimeoutState);
       if (timeoutRef1.current !== null) clearTimeout(timeoutRef1.current);
-      navigation.navigate("After", { match_id: match_id, type: stateString });
-      console.log("going to after page2");
+      navigation.navigate('After', { match_id: match_id, type: stateString });
+      console.log('going to after page2');
     }
     // This sets both eachothe to success matches, if we get actually get there.
     async function setSuccessMatches() {
       await firestore
-        .collection("users")
+        .collection('users')
         .doc(currentUser.uid)
         .update({
           SuccessMatch: firebase.firestore.FieldValue.arrayUnion(match_id),
         });
       await firestore
-        .collection("users")
+        .collection('users')
         .doc(match_id)
         .update({
           SuccessMatch: firebase.firestore.FieldValue.arrayUnion(
@@ -273,7 +273,7 @@ export default function ChatScreen({ route, navigation }) {
     // This extended timeout waits for an answer.
     var extended_timeout = setTimeout(() => {
       socketRef.current.emit(
-        "leave-room-silently",
+        'leave-room-silently',
         currentUser.uid,
         roomRef.current
       );
@@ -287,9 +287,9 @@ export default function ChatScreen({ route, navigation }) {
       setObserverState(null);
       observer.current = null;
       if (timeoutRef1.current !== null) clearTimeout(timeoutRef1.current);
-      navigation.navigate("After", {
+      navigation.navigate('After', {
         match_id: match_id,
-        type: "extended_timeout",
+        type: 'extended_timeout',
       });
     }, modalExpire);
 
@@ -297,11 +297,11 @@ export default function ChatScreen({ route, navigation }) {
     extendedTimeoutRef.current = extended_timeout;
 
     // Identify who is who.
-    var seeker = "none";
-    var match = "none";
+    var seeker = 'none';
+    var match = 'none';
 
     // There is only one doc. If I am the doc name, I am seeker. else, match
-    var docRef = firestore.collection("searching").doc(currentUser.uid);
+    var docRef = firestore.collection('searching').doc(currentUser.uid);
     var doc = await docRef.get();
     if (doc.exists) {
       seeker = currentUser.uid;
@@ -313,40 +313,40 @@ export default function ChatScreen({ route, navigation }) {
 
     // If im seeker, I need to set my value to true and wait for matchTail.
     if (currentUser.uid === seeker) {
-      await firestore.collection("searching").doc(currentUser.uid).update({
-        seekerTail: "true",
+      await firestore.collection('searching').doc(currentUser.uid).update({
+        seekerTail: 'true',
       });
-      console.log("I am the seeker, I set my value true.");
+      console.log('I am the seeker, I set my value true.');
       // Now, check immediately just in case.
       var res = await firestore
-        .collection("searching")
+        .collection('searching')
         .doc(currentUser.uid)
         .get();
-      if (res.data().matchTail === "true") {
+      if (res.data().matchTail === 'true') {
         // OTHER PERSON SAID YES!!!!
         setSuccessMatches();
-        console.log("match said yes!!");
+        console.log('match said yes!!');
         clearTimeout(extended_timeout);
         clearTimeout(extendedTimeoutRef.current);
         clearTimeout(extendedTimeoutState);
         clearTimeout(extendedTimeoutRef.current);
         clearTimeout(extendedTimeoutState);
 
-        leavePageWith("match_made");
+        leavePageWith('match_made');
       } else {
         // Nothing yet, lets wait for a change to the matchTail.
         var localObserver = firestore
-          .collection("searching")
+          .collection('searching')
           .doc(currentUser.uid)
           .onSnapshot((docSnapshot) => {
             if (
               docSnapshot &&
               docSnapshot.data() &&
-              docSnapshot.data().matchTail === "true"
+              docSnapshot.data().matchTail === 'true'
             ) {
               // THEY SAID YES !! (but after)
               setSuccessMatches();
-              console.log("other person (the match) said yes after");
+              console.log('other person (the match) said yes after');
               setObserverState(null);
               observer.current = null;
               localObserver();
@@ -354,15 +354,15 @@ export default function ChatScreen({ route, navigation }) {
               clearTimeout(extendedTimeoutRef.current);
               clearTimeout(extendedTimeoutState);
 
-              leavePageWith("match_made");
+              leavePageWith('match_made');
             }
             if (
               docSnapshot &&
               docSnapshot.data() &&
-              docSnapshot.data().matchTail === "timeout"
+              docSnapshot.data().matchTail === 'timeout'
             ) {
               // The other person timed out..
-              console.log("other person (the match) timed out");
+              console.log('other person (the match) timed out');
               setObserverState(null);
               observer.current = null;
               localObserver();
@@ -370,7 +370,7 @@ export default function ChatScreen({ route, navigation }) {
               clearTimeout(extendedTimeoutRef.current);
               clearTimeout(extendedTimeoutState);
 
-              leavePageWith("match_timedout");
+              leavePageWith('match_timedout');
             }
           });
         // setObserverState(localObserver);
@@ -379,36 +379,36 @@ export default function ChatScreen({ route, navigation }) {
 
     // If im match, I need to set my match to true and wait for seekerTail.
     if (currentUser.uid === match) {
-      await firestore.collection("searching").doc(match_id).update({
-        matchTail: "true",
+      await firestore.collection('searching').doc(match_id).update({
+        matchTail: 'true',
       });
-      console.log("I am the match, I set my value true.");
+      console.log('I am the match, I set my value true.');
       // Now, check immediately just in case.
-      res = await firestore.collection("searching").doc(match_id).get();
-      if (res.data().seekerTail === "true") {
+      res = await firestore.collection('searching').doc(match_id).get();
+      if (res.data().seekerTail === 'true') {
         // OTHER PERSON SAID YES!!!!
         setSuccessMatches();
-        console.log("seeker said yes!!");
+        console.log('seeker said yes!!');
         clearTimeout(extended_timeout);
         clearTimeout(extendedTimeoutRef.current);
         clearTimeout(extendedTimeoutState);
 
-        leavePageWith("match_made");
+        leavePageWith('match_made');
       } else {
         // I need to passively listen for a document change.
         var localObserver = firestore
-          .collection("searching")
+          .collection('searching')
           .doc(match_id)
           .onSnapshot((docSnapshot) => {
             console.log(docSnapshot);
             if (
               docSnapshot &&
               docSnapshot.data() &&
-              docSnapshot.data().seekerTail === "true"
+              docSnapshot.data().seekerTail === 'true'
             ) {
               // THEY SAID YES !! (but after)
               setSuccessMatches();
-              console.log("other person (the seeker) said yes after");
+              console.log('other person (the seeker) said yes after');
 
               setObserverState(null);
               observer.current = null;
@@ -417,15 +417,15 @@ export default function ChatScreen({ route, navigation }) {
               clearTimeout(extendedTimeoutRef.current);
               clearTimeout(extendedTimeoutState);
 
-              leavePageWith("match_made");
+              leavePageWith('match_made');
             }
             if (
               docSnapshot &&
               docSnapshot.data() &&
-              docSnapshot.data().seekerTail === "timeout"
+              docSnapshot.data().seekerTail === 'timeout'
             ) {
               // The other person timed out..
-              console.log("other person (the seeker) timed out");
+              console.log('other person (the seeker) timed out');
               setObserverState(null);
               observer.current = null;
               localObserver();
@@ -433,7 +433,7 @@ export default function ChatScreen({ route, navigation }) {
               clearTimeout(extendedTimeoutRef.current);
               clearTimeout(extendedTimeoutState);
 
-              leavePageWith("match_timedout");
+              leavePageWith('match_timedout');
             }
           });
         // setObserverState(localObserver);
@@ -444,14 +444,14 @@ export default function ChatScreen({ route, navigation }) {
   const id = currentUser.uid;
 
   useEffect(() => {
-    LogBox.ignoreLogs(["Animated: `useNativeDriver`"]);
-    LogBox.ignoreLogs(["Animated.event now requires"]);
+    LogBox.ignoreLogs(['Animated: `useNativeDriver`']);
+    LogBox.ignoreLogs(['Animated.event now requires']);
     async () => {
-      if (Platform.OS !== "web") {
+      if (Platform.OS !== 'web') {
         const { status } =
           await ImagePicker.requestMediaLibraryPermissionsAsync();
-        if (status !== "granted") {
-          alert("Sorry, we need camera roll permissions for this to work!");
+        if (status !== 'granted') {
+          alert('Sorry, we need camera roll permissions for this to work!');
         }
       }
     };
@@ -459,12 +459,12 @@ export default function ChatScreen({ route, navigation }) {
     if (isFocused) {
       fetchMatchInfo();
       setIsChatting();
-      var roomInUseEffect = "";
+      var roomInUseEffect = '';
       if (timeout !== null) clearTimeout(timeout);
-      const sock = io("https://meetadime.herokuapp.com/");
+      const sock = io('https://meetadime.herokuapp.com/');
       sock.auth = { id };
       sock.connect();
-      sock.on("connect", () => {
+      sock.on('connect', () => {
         console.log(
           `Email: "${currentUser.email}" \n With User ID: "${currentUser.uid}" connected with socket id: "${sock.id}"`
         );
@@ -475,11 +475,11 @@ export default function ChatScreen({ route, navigation }) {
       const new_room = ids[0] + ids[1];
       roomRef.current = new_room;
       sock.emit(
-        "join-room",
+        'join-room',
         currentUser.uid.toString(),
         new_room.toString(),
         function (message) {
-          if (message === "joined") {
+          if (message === 'joined') {
             setRoom(new_room);
             roomInUseEffect = new_room;
           }
@@ -489,11 +489,11 @@ export default function ChatScreen({ route, navigation }) {
       setSocket(sock);
       socketRef.current = sock;
 
-      sock.on("message", (message, user, messageID) => {
+      sock.on('message', (message, user, messageID) => {
         var messageId = hash_str(messageID + new Date().toDateString());
 
         sock.emit(
-          "seen-message",
+          'seen-message',
           currentUser.uid,
           new_room,
           messageID,
@@ -514,12 +514,12 @@ export default function ChatScreen({ route, navigation }) {
       });
 
       sock.on(
-        "image",
+        'image',
         (message, user, message_ID) => {
           var messageId = hash_str(message_ID + new Date().toDateString());
-          console.log("new image recieved!");
+          console.log('new image recieved!');
           sock.emit(
-            "seen-message",
+            'seen-message',
             currentUser.uid,
             new_room,
             message_ID,
@@ -530,7 +530,7 @@ export default function ChatScreen({ route, navigation }) {
           setMessages((previousMessages) =>
             GiftedChat.append(previousMessages, {
               _id: messageId,
-              text: "",
+              text: '',
               image: message,
               createdAt: new Date(),
               user: {
@@ -544,18 +544,18 @@ export default function ChatScreen({ route, navigation }) {
         // console.log(user);
       );
 
-      sock.on("abandoned", (message) => {
+      sock.on('abandoned', (message) => {
         //Somehow show the user their match left
 
         setTimeout(async () => {
           await firestore
-            .collection("users")
+            .collection('users')
             .doc(currentUser.uid)
             .update({
               FailMatch: firebase.firestore.FieldValue.arrayUnion(match_id),
             });
           await firestore
-            .collection("users")
+            .collection('users')
             .doc(match_id)
             .update({
               FailMatch: firebase.firestore.FieldValue.arrayUnion(
@@ -563,9 +563,9 @@ export default function ChatScreen({ route, navigation }) {
               ),
             });
 
-          sock.emit("leave-room", currentUser.uid, room);
+          sock.emit('leave-room', currentUser.uid, room);
           // Clear timeouts
-          console.log("LEAVING ROOM");
+          console.log('LEAVING ROOM');
           if (timeoutRef1.current !== null) clearTimeout(timeoutRef1.current);
           if (observer.current !== null) observer.current();
           if (observerState !== null) observerState();
@@ -574,9 +574,9 @@ export default function ChatScreen({ route, navigation }) {
           if (observerState !== null) observerState();
 
           observer.current = null;
-          navigation.navigate("After", {
+          navigation.navigate('After', {
             match_id: match_id,
-            type: "match_abandoned",
+            type: 'match_abandoned',
           });
         }, 0);
       });
@@ -585,13 +585,13 @@ export default function ChatScreen({ route, navigation }) {
         setModalVisible(true);
       }, EXPIRE_IN_MINUTES * 60000);
       timeoutRef1.current = setTimeout(() => {
-        console.log("calling no match timeout");
+        console.log('calling no match timeout');
         setModalVisible(false);
         noMatchTimeout();
       }, EXPIRE_IN_MINUTES * 60000 + modalExpire);
     }
     return () => {
-      console.log("left chat, cleaned up.");
+      console.log('left chat, cleaned up.');
       setModalVisible(false);
       if (observer.current !== null) observer.current();
       if (observerState !== null) observerState();
@@ -613,7 +613,7 @@ export default function ChatScreen({ route, navigation }) {
     );
 
     socketRef.current.emit(
-      "send-to-room",
+      'send-to-room',
       currentUser.uid,
       roomRef.current,
       newMessage[0].text,
@@ -628,15 +628,15 @@ export default function ChatScreen({ route, navigation }) {
 
   function doubleCheck() {
     Alert.alert(
-      "You are about to report this user.",
-      "All reports are secret and will not alert this match.",
+      'You are about to report this user.',
+      'All reports are secret and will not alert this match.',
       [
         {
-          text: "OK",
+          text: 'OK',
           onPress: handleReport,
         },
         {
-          text: "Go Back",
+          text: 'Go Back',
         },
       ]
     );
@@ -651,34 +651,34 @@ export default function ChatScreen({ route, navigation }) {
 
     try {
       var result = await firestore
-        .collection("reports")
+        .collection('reports')
         .doc(currentUser.uid)
         .get();
       if (result.exists) {
         const obj = {};
         obj[match_id] = chat_history;
-        await firestore.collection("reports").doc(currentUser.uid).update(obj);
+        await firestore.collection('reports').doc(currentUser.uid).update(obj);
       } else {
         const obj = {};
         obj[match_id] = chat_history;
-        await firestore.collection("reports").doc(currentUser.uid).set(obj);
+        await firestore.collection('reports').doc(currentUser.uid).set(obj);
       }
     } catch (error) {
       console.log(error);
     }
 
-    socketRef.current.emit("leave-room", currentUser.uid, roomRef.current);
-    console.log("REPORTED OTHER USER.");
+    socketRef.current.emit('leave-room', currentUser.uid, roomRef.current);
+    console.log('REPORTED OTHER USER.');
 
     try {
       await firestore
-        .collection("users")
+        .collection('users')
         .doc(currentUser.uid)
         .update({
           FailMatch: firebase.firestore.FieldValue.arrayUnion(match_id),
         });
       await firestore
-        .collection("users")
+        .collection('users')
         .doc(match_id)
         .update({
           FailMatch: firebase.firestore.FieldValue.arrayUnion(currentUser.uid),
@@ -692,24 +692,24 @@ export default function ChatScreen({ route, navigation }) {
     setObserverState(null);
     observer.current = null;
 
-    navigation.navigate("After", {
+    navigation.navigate('After', {
       match_id: match_id,
-      type: "user_reported",
+      type: 'user_reported',
     });
 
     return;
   }
 
   async function handleAbandon() {
-    socketRef.current.emit("leave-room", currentUser.uid, roomRef.current);
+    socketRef.current.emit('leave-room', currentUser.uid, roomRef.current);
     await firestore
-      .collection("users")
+      .collection('users')
       .doc(currentUser.uid)
       .update({
         FailMatch: firebase.firestore.FieldValue.arrayUnion(match_id),
       });
     await firestore
-      .collection("users")
+      .collection('users')
       .doc(match_id)
       .update({
         FailMatch: firebase.firestore.FieldValue.arrayUnion(currentUser.uid),
@@ -720,9 +720,9 @@ export default function ChatScreen({ route, navigation }) {
     setObserverState(null);
     observer.current = null;
 
-    navigation.navigate("After", {
+    navigation.navigate('After', {
       match_id: match_id,
-      type: "user_abandoned",
+      type: 'user_abandoned',
     });
   }
   //   function handleSubmit() {
@@ -736,10 +736,10 @@ export default function ChatScreen({ route, navigation }) {
   //     });
   //   }
 
-  async function sendImage(type = "library") {
+  async function sendImage(type = 'library') {
     let result = null;
 
-    if (type === "library")
+    if (type === 'library')
       result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.All,
         allowsEditing: true,
@@ -747,9 +747,9 @@ export default function ChatScreen({ route, navigation }) {
         aspect: [3, 3],
         quality: 1,
       });
-    else if (type === "camera") {
+    else if (type === 'camera') {
       const { status } = await ImagePicker.requestCameraPermissionsAsync();
-      if (status === "granted")
+      if (status === 'granted')
         result = await ImagePicker.launchCameraAsync({
           mediaTypes: ImagePicker.MediaTypeOptions.All,
           allowsEditing: true,
@@ -770,10 +770,10 @@ export default function ChatScreen({ route, navigation }) {
     // console.log(compressed.base64);
     var image_id = Date().toString();
     socket.emit(
-      "send-image-to-room",
+      'send-image-to-room',
       currentUser.uid,
       roomRef.current,
-      "data:image/jpeg;base64," + the_image,
+      'data:image/jpeg;base64,' + the_image,
       image_id
       // function () {
       //   console.log('recieved on server side.');
@@ -785,7 +785,7 @@ export default function ChatScreen({ route, navigation }) {
     setMessages((previousMessages) =>
       GiftedChat.append(previousMessages, {
         _id: messageId,
-        text: "",
+        text: '',
         image: result.uri,
         createdAt: new Date(),
         user: {
@@ -799,19 +799,19 @@ export default function ChatScreen({ route, navigation }) {
       <View>
         <View
           style={{
-            flexDirection: "row",
-            flexWrap: "wrap",
-            alignItems: "flex-start",
-            justifyContent: "space-between",
+            flexDirection: 'row',
+            flexWrap: 'wrap',
+            alignItems: 'flex-start',
+            justifyContent: 'space-between',
             marginTop: 50,
             height: 100,
 
-            alignContent: "center",
+            alignContent: 'center',
           }}
         >
           <Image
             style={styles.logo}
-            source={require("../../../assets/DimeAssets/headerlogo.png")}
+            source={require('../../../assets/DimeAssets/headerlogo.png')}
           />
           <TouchableOpacity
             onLongPress={doubleCheck}
@@ -823,7 +823,7 @@ export default function ChatScreen({ route, navigation }) {
         </View>
 
         <Modal
-          animationType="slide"
+          animationType='slide'
           transparent={true}
           visible={modalVisible}
           onRequestClose={() => {
@@ -834,19 +834,19 @@ export default function ChatScreen({ route, navigation }) {
           <View style={styles.centeredView}>
             <View style={styles.modalView}>
               <Text style={styles.modalText}>{modalText}</Text>
-              <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
+              <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
                 {!userSaidYes && (
                   <>
                     <Pressable onPress={pendingMatch}>
                       <Image
                         style={styles.dimeImages}
-                        source={require("../../../assets/DimeAssets/hearteyes.png")}
+                        source={require('../../../assets/DimeAssets/hearteyes.png')}
                       ></Image>
                     </Pressable>
                     <Pressable onPress={noMatch}>
                       <Image
                         style={styles.dimeImages}
-                        source={require("../../../assets/DimeAssets/sleepycoin.png")}
+                        source={require('../../../assets/DimeAssets/sleepycoin.png')}
                       ></Image>
                     </Pressable>
                   </>
@@ -854,7 +854,7 @@ export default function ChatScreen({ route, navigation }) {
                 {userSaidYes && (
                   <Image
                     style={styles.dimeImages}
-                    source={require("../../../assets/DimeAssets/coinWaiting.gif")}
+                    source={require('../../../assets/DimeAssets/coinWaiting.gif')}
                   ></Image>
                 )}
               </View>
@@ -868,14 +868,14 @@ export default function ChatScreen({ route, navigation }) {
           return (
             <Composer
               {...props}
-              placeholder="Type your message here..."
+              placeholder='Type your message here...'
               textInputStyle={{
-                color: "#222B45",
-                backgroundColor: "#fff",
+                color: '#222B45',
+                backgroundColor: '#fff',
                 borderWidth: 1,
                 borderRadius: 20,
                 marginRight: 10,
-                borderColor: "#e5e5ea",
+                borderColor: '#e5e5ea',
                 paddingTop: 8.5,
                 paddingHorizontal: 12,
                 marginLeft: 0,
@@ -889,18 +889,18 @@ export default function ChatScreen({ route, navigation }) {
             <Send
               {...sendProps}
               containerStyle={{
-                width: 40,
-                height: 40,
-                borderRadius: "100%",
-                backgroundColor: "#e4a",
+                width: 35,
+                height: 35,
+                borderRadius: '100%',
+                backgroundColor: '#e4a',
                 marginRight: 10,
-                alignItems: "center",
-                justifyContent: "center",
+                alignItems: 'center',
+                justifyContent: 'center',
                 marginHorizontal: 4,
-                marginBottom: 5,
+                marginBottom: 7,
               }}
             >
-              <Ionicons name="triangle-sharp" size={20} color="white" />
+              <Ionicons name='triangle-sharp' size={20} color='white' />
             </Send>
           );
         }}
@@ -910,15 +910,15 @@ export default function ChatScreen({ route, navigation }) {
               {...props}
               textStyle={{
                 right: {
-                  color: "white",
+                  color: 'white',
                 },
               }}
               wrapperStyle={{
                 left: {
-                  backgroundColor: "#e5e5ea",
+                  backgroundColor: '#e5e5ea',
                 },
                 right: {
-                  backgroundColor: "#e64398",
+                  backgroundColor: '#e64398',
                 },
               }}
             />
@@ -938,9 +938,9 @@ export default function ChatScreen({ route, navigation }) {
           return (
             <View
               style={{
-                alignItems: "center",
-                justifyContent: "center",
-                top: Dimensions.get("window").height / 2 - 100,
+                alignItems: 'center',
+                justifyContent: 'center',
+                top: Dimensions.get('window').height / 2 - 100,
                 // marginHorizontal: Dimensions.get("window").width / 5,
                 transform: [{ scaleY: -1 }],
               }}
@@ -956,29 +956,29 @@ export default function ChatScreen({ route, navigation }) {
               containerStyle={{
                 width: 40,
                 height: 40,
-                alignItems: "center",
-                justifyContent: "center",
+                alignItems: 'center',
+                justifyContent: 'center',
                 marginLeft: 4,
                 marginRight: 4,
                 marginBottom: 6,
               }}
               icon={() => (
-                <AntDesign name="pluscircle" size={24} color="#bad" />
+                <AntDesign name='pluscircle' size={24} color='#bad' />
               )}
               options={{
-                "Choose From Library": () => {
-                  console.log("Choose From Library");
+                'Choose From Library': () => {
+                  console.log('Choose From Library');
                   sendImage();
                 },
-                "Use Camera": () => {
-                  console.log("Select Photo");
-                  sendImage("camera");
+                'Use Camera': () => {
+                  console.log('Select Photo');
+                  sendImage('camera');
                 },
                 Cancel: () => {
-                  console.log("Cancel");
+                  console.log('Cancel');
                 },
               }}
-              optionTintColor="#e4a"
+              optionTintColor='#e4a'
             />
           );
         }}
@@ -988,19 +988,19 @@ export default function ChatScreen({ route, navigation }) {
       />
       <View
         style={{
-          position: "absolute",
+          position: 'absolute',
           top: 140,
 
-          flexDirection: "column",
-          flexWrap: "wrap",
-          alignItems: "flex-start",
-          justifyContent: matchImageSize === 75 ? "center" : "center",
+          flexDirection: 'column',
+          flexWrap: 'wrap',
+          alignItems: 'flex-start',
+          justifyContent: matchImageSize === 75 ? 'center' : 'center',
 
           height: matchInfoContainer,
-          backgroundColor: "rgba(187, 170, 221, 0.5)",
+          backgroundColor: 'rgba(187, 170, 221, 0.5)',
           borderRadius: 20,
           paddingHorizontal: 10,
-          alignContent: "flex-start",
+          alignContent: 'flex-start',
           marginLeft: 10,
         }}
       >
@@ -1022,16 +1022,16 @@ export default function ChatScreen({ route, navigation }) {
               width: matchImageSize,
               borderRadius: 150 / 2,
 
-              overflow: "hidden",
+              overflow: 'hidden',
               borderWidth: 3,
-              borderColor: "#e4a",
+              borderColor: '#e4a',
             }}
             source={{ uri: match_photo }}
           />
         </TouchableOpacity>
         <Text
           style={{
-            color: matchImageSize === 75 ? "#E64398" : "#E64398",
+            color: matchImageSize === 75 ? '#E64398' : '#E64398',
             marginLeft: 10,
             fontSize: matchImageSize === 75 ? 16 : 20,
           }}
@@ -1040,7 +1040,7 @@ export default function ChatScreen({ route, navigation }) {
         </Text>
         <Text
           style={{
-            color: matchImageSize === 75 ? "#E64398" : "#E64398",
+            color: matchImageSize === 75 ? '#E64398' : '#E64398',
             marginLeft: 10,
             fontSize: matchImageSize === 75 ? 16 : 20,
           }}
@@ -1049,7 +1049,7 @@ export default function ChatScreen({ route, navigation }) {
         </Text>
         <Text
           style={{
-            color: matchImageSize === 75 ? "#E64398" : "#E64398",
+            color: matchImageSize === 75 ? '#E64398' : '#E64398',
             marginLeft: 10,
             fontSize: matchImageSize === 75 ? 16 : 20,
           }}

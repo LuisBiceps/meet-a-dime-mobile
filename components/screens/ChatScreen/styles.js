@@ -1,50 +1,50 @@
-import { Dimensions, StyleSheet } from "react-native";
-const { width, height } = Dimensions.get("window");
-var scale = 1.15;
+import { Dimensions, StyleSheet } from 'react-native';
+const { width, height } = Dimensions.get('window');
+var scale = 1.1;
 export default StyleSheet.create({
   container: {
     marginTop: height / 3.25,
     flex: 1,
-    justifyContent: "center",
+    justifyContent: 'center',
     height: height / 1.9,
   },
-  innerContainer: { borderStyle: "solid", borderWidth: 0 },
-  title: { justifyContent: "center" },
+  innerContainer: { borderStyle: 'solid', borderWidth: 0 },
+  title: { justifyContent: 'center' },
   logo: {
     height: 62.5 * scale,
     width: 250 * scale,
-    alignItems: "center",
-    justifyContent: "center",
-    alignContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
+    alignContent: 'center',
     marginHorizontal: 0,
   },
   button: {
-    backgroundColor: "#da3636",
+    backgroundColor: '#da3636',
 
-    fontWeight: "bold",
+    fontWeight: 'bold',
 
-    color: "white",
+    color: 'white',
 
     height: 48,
     width: 120,
     marginRight: 10,
     marginTop: 10,
     borderRadius: 30,
-    alignItems: "center",
-    justifyContent: "center",
-    alignContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
+    alignContent: 'center',
   },
   buttonTitle: {
-    color: "white",
+    color: 'white',
     fontSize: 20,
-    fontWeight: "bold",
+    fontWeight: 'bold',
   },
   input: {
     height: 48,
     borderRadius: 5,
-    overflow: "hidden",
-    backgroundColor: "white",
-    justifyContent: "center",
+    overflow: 'hidden',
+    backgroundColor: 'white',
+    justifyContent: 'center',
 
     marginTop: 10,
     marginBottom: 10,
@@ -54,38 +54,38 @@ export default StyleSheet.create({
   },
   footerView: {
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
     marginTop: 20,
   },
   footerText: {
     fontSize: 16,
-    color: "#2e2e2d",
+    color: '#2e2e2d',
   },
   footerLink: {
-    color: "#E64398",
-    fontWeight: "bold",
+    color: '#E64398',
+    fontWeight: 'bold',
     fontSize: 16,
   },
   centeredView: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
     marginTop: 22,
   },
   welcomeCenter: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
     marginTop: 22,
   },
   welcomeModalView: {
     margin: 20,
-    backgroundColor: "white",
+    backgroundColor: 'white',
     borderRadius: 20,
     padding: 35,
-    alignItems: "center",
-    shadowColor: "#000",
+    alignItems: 'center',
+    shadowColor: '#000',
     shadowOffset: {
       width: 0,
       height: 2,
@@ -97,11 +97,11 @@ export default StyleSheet.create({
   },
   modalView: {
     margin: 20,
-    backgroundColor: "white",
+    backgroundColor: 'white',
     borderRadius: 20,
     padding: 35,
-    alignItems: "center",
-    shadowColor: "#000",
+    alignItems: 'center',
+    shadowColor: '#000',
     shadowOffset: {
       width: 0,
       height: 2,
@@ -112,34 +112,34 @@ export default StyleSheet.create({
   },
 
   buttonOpen: {
-    backgroundColor: "#F194FF",
+    backgroundColor: '#F194FF',
   },
   buttonClose: {
-    backgroundColor: "#2196F3",
+    backgroundColor: '#2196F3',
   },
   textStyle: {
-    color: "white",
-    fontWeight: "bold",
-    textAlign: "center",
+    color: 'white',
+    fontWeight: 'bold',
+    textAlign: 'center',
   },
   modalText: {
     marginBottom: 15,
-    textAlign: "center",
+    textAlign: 'center',
   },
   modalButton: {
-    backgroundColor: "#E64398",
+    backgroundColor: '#E64398',
     marginTop: 10,
     marginBottom: 10,
     height: 40,
     width: 100,
     borderRadius: 5,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   heading: {
     marginLeft: 10,
     fontSize: 20,
-    color: "#E64398",
+    color: '#E64398',
   },
   dimeImages: {
     height: 120,
@@ -150,8 +150,8 @@ export default StyleSheet.create({
     height: 75,
     width: 75,
     borderRadius: 150 / 2,
-    overflow: "hidden",
+    overflow: 'hidden',
     borderWidth: 3,
-    borderColor: "#e4a",
+    borderColor: '#e4a',
   },
 });
