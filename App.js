@@ -33,6 +33,7 @@ import root from './root';
 import useWindowDimensions from 'react-native/Libraries/Utilities/useWindowDimensions';
 import styles from './components/screens/LoginScreen/styles';
 import { color } from 'react-native-reanimated';
+import { StatusBar } from 'expo-status-bar';
 
 if (!global.btoa) {
   global.btoa = encode;
@@ -318,6 +319,7 @@ export default function App() {
             }
           />
         </Drawer.Navigator>
+        <StatusBar style="dark" />
       </AuthProvider>
     </NavigationContainer>
   );
