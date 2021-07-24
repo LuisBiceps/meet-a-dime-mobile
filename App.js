@@ -223,7 +223,7 @@ export default function App() {
               headerTitle: '',
               headerBackTitle: ' ',
               headerTintColor: '#e64398',
-              gestureEnabled: false,
+              gestureEnabled: true,
             })}
           />
           <Drawer.Screen
@@ -237,7 +237,7 @@ export default function App() {
               headerTitle: '',
               headerBackTitle: ' ',
               headerTintColor: '#e64398',
-              gestureEnabled: false,
+              gestureEnabled: true,
             })}
           />
           <Drawer.Screen
