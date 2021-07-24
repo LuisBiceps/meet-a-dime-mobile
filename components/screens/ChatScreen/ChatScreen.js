@@ -12,6 +12,7 @@ import {
   Pressable,
   LogBox,
   Dimensions,
+  TouchableWithoutFeedback,
 } from 'react-native';
 import { useIsFocused } from '@react-navigation/native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
@@ -65,7 +66,7 @@ export default function ChatScreen({ route, navigation }) {
   const roomRef = useRef('');
   const [socket, setSocket] = useState('');
   const { currentUser, logout } = useAuth();
-  const EXPIRE_IN_MINUTES = 4; // 10 minutes
+  const EXPIRE_IN_MINUTES = 1; // 10 minutes
 
   const modalExpire = 30000; // 30 seconds in MS
 

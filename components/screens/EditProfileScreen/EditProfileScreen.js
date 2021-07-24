@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   View,
   Alert,
+  ActionSheetIOS,
 } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { useIsFocused } from '@react-navigation/native';

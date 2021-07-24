@@ -8,6 +8,7 @@ import {
   View,
   Image,
   Platform,
+  ActionSheetIOS,
 } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import * as Progress from 'react-native-progress';
@@ -115,14 +116,52 @@ export default function ProfileScreen({ navigation }) {
     }
   }, [isFocused]);
 
-  const pickImage = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-    });
-    console.log(result);
+  function handlePick() {
+    var mode = '';
+    ActionSheetIOS.showActionSheetWithOptions(
+      {
+        options: ['Camera', 'Library', 'Cancel'],
+        cancelButtonIndex: 2,
+      },
+      (buttonIndex) => {
+        console.log(buttonIndex);
+        if (buttonIndex === 0) {
+          mode = 'camera';
+          pickImage(mode);
+        } else if (buttonIndex === 1) {
+          mode = 'library';
+          pickImage(mode);
+        }
+      }
+    );
+    console.log('MODE', mode);
+  }
+  async function pickImage(mode) {
+    if (mode === '') return;
+
+    var result = null;
+
+    if (mode === 'camera') {
+      const { status } = await ImagePicker.requestCameraPermissionsAsync();
+      if (status === 'granted') {
+        result = await ImagePicker.launchCameraAsync({
+          mediaTypes: ImagePicker.MediaTypeOptions.All,
+          allowsEditing: true,
+          base64: true,
+          aspect: [3, 3],
+          quality: 1,
+        });
+      }
+    } else {
+      result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.All,
+        allowsEditing: true,
+        aspect: [3, 3],
+        quality: 1,
+      });
+    }
+
+    if (result === null) return;
 
     if (!result.cancelled) {
       var re = /(?:\.([^.]+))?$/;
@@ -199,7 +238,7 @@ export default function ProfileScreen({ navigation }) {
         console.log(error);
       }
     }
-  };
+  }
 
   function goEdit() {
     setSwitching(true);
@@ -240,7 +279,7 @@ export default function ProfileScreen({ navigation }) {
           </View>
         )}
         <View style={styles.headingContainer}>
-          <TouchableOpacity style={styles.button} onPress={pickImage}>
+          <TouchableOpacity style={styles.button} onPress={handlePick}>
             <Text style={styles.buttonTitle}>📷 Change Profile Picture</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.button} onPress={goEdit}>
