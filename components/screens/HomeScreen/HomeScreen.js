@@ -439,7 +439,7 @@ export default function HomeScreen({ navigation }, props) {
 
       // The database query. Check all docs for possible matches.
       var snapshot = await firestore.collection('searching').get();
-      snapshot.forEach(async (doc) => {
+      snapshot.forEach((doc) => {
         var myAge = moment().diff(userInfoState.current.birth, 'years');
 
         if (
