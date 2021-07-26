@@ -348,6 +348,20 @@ export default function HomeScreen({ navigation }, props) {
 
     setLockout(true);
 
+    var user_FailMatch = [];
+    var user_SuccessMatch = [];
+    try {
+      var user_userDoc = await firestore
+        .collection('users')
+        .doc(currentUser.uid)
+        .get();
+      user_FailMatch = user_userDoc.data().FailMatch;
+      user_SuccessMatch = user_userDoc.data().SuccessMatch;
+    } catch (error) {
+      console.log(error);
+      return;
+    }
+
     var matchFound = false;
     var matchInternal = '';
 
@@ -425,7 +439,7 @@ export default function HomeScreen({ navigation }, props) {
 
       // The database query. Check all docs for possible matches.
       var snapshot = await firestore.collection('searching').get();
-      snapshot.forEach((doc) => {
+      snapshot.forEach(async (doc) => {
         var myAge = moment().diff(userInfoState.current.birth, 'years');
 
         if (
@@ -438,8 +452,8 @@ export default function HomeScreen({ navigation }, props) {
           doc.data().age >= userInfoState.current.ageRangeMin &&
           doc.data().age <= userInfoState.current.ageRangeMax &&
           doc.data().isChatting === 0 &&
-          !doc.data().SuccessMatch.includes(currentUser.uid) &&
-          !doc.data().FailMatch.includes(currentUser.uid)
+          !doc.data().searchingFailMatch.includes(currentUser.uid) &&
+          !doc.data().searchingSuccessMatch.includes(currentUser.uid)
         ) {
           fillMatch(doc.id);
         }
@@ -519,6 +533,8 @@ export default function HomeScreen({ navigation }, props) {
             seekerTail: 'false',
             matchTail: 'false',
             isChatting: 0,
+            searchingFailMatch: user_FailMatch,
+            searchingSuccessMatch: user_SuccessMatch,
           });
         // Just posted the new doc to the 'searching' collection.
         console.log('DOC CREATED');
