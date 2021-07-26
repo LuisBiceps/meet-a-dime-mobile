@@ -1,6 +1,6 @@
 import 'react-native-gesture-handler';
 import React, { useEffect, useState } from 'react';
-import { Text, TouchableOpacity, View } from 'react-native';
+import { Text, TouchableOpacity, View, LogBox } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import {
   createDrawerNavigator,
@@ -42,6 +42,8 @@ if (!global.btoa) {
 if (!global.atob) {
   global.atob = decode;
 }
+
+LogBox.ignoreLogs(['React state update']);
 
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();

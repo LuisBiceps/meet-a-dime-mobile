@@ -5,7 +5,14 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "eject": "expo eject"
+    "eject": "expo eject",
+    "test": "jest --verbose"
+  },
+  "jest": {
+    "preset": "jest-expo",
+    "transformIgnorePatterns": [
+      "node_modules/(?!(jest-)?react-native|react-clone-referenced-element|@react-native-community|expo(nent)?|@expo(nent)?/.*|react-navigation|@react-navigation/.*|@unimodules/.*|unimodules|sentry-expo|native-base|@sentry/.*)"
+    ]
   },
   "prettier": {
     "trailingComma": "es5",
@@ -33,6 +40,7 @@
     "expo-status-bar": "~1.0.4",
     "firebase": "^8.2.3",
     "formik": "^2.2.9",
+    "jest-expo": "^42.0.1",
     "moment": "^2.29.1",
     "react": "16.13.1",
     "react-dom": "16.13.1",
@@ -44,15 +52,16 @@
     "react-native-image-resizer": "^1.4.5",
     "react-native-keyboard-aware-scroll-view": "^0.9.4",
     "react-native-progress": "^5.0.0",
+    "react-native-reanimated": "~2.2.0",
     "react-native-safe-area-context": "3.2.0",
     "react-native-screens": "~3.4.0",
     "react-native-svg": "12.1.1",
     "react-native-web": "~0.13.12",
+    "react-test-renderer": "^17.0.2",
     "reinput": "^3.7.2",
     "rn-range-slider": "^2.0.4",
     "socket.io-client": "4.1.2",
-    "yup": "^0.32.9",
-    "react-native-reanimated": "~2.2.0"
+    "yup": "^0.32.9"
   },
   "devDependencies": {
     "@babel/core": "^7.9.0"

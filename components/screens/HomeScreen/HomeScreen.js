@@ -437,7 +437,9 @@ export default function HomeScreen({ navigation }, props) {
           myAge >= doc.data().search_age_start &&
           doc.data().age >= userInfoState.current.ageRangeMin &&
           doc.data().age <= userInfoState.current.ageRangeMax &&
-          doc.data().isChatting === 0
+          doc.data().isChatting === 0 &&
+          !doc.data().SuccessMatch.includes(currentUser.uid) &&
+          !doc.data().FailMatch.includes(currentUser.uid)
         ) {
           fillMatch(doc.id);
         }
