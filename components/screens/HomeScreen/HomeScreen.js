@@ -456,6 +456,7 @@ export default function HomeScreen({ navigation }, props) {
           !doc.data().searchingSuccessMatch.includes(currentUser.uid)
         ) {
           fillMatch(doc.id);
+          return;
         }
       });
       //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
